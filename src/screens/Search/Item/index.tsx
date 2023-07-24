@@ -52,13 +52,15 @@ const styles = StyleSheet.create({
     right: 2,
   },
 });
-
-const Item: React.FC<{ avt: string; name: string; message: string }> = ({
-  avt,
-  name,
-  message,
-}) => {
+interface User {
+  name: string;
+  avatar: string | null;
+  email: string | null;
+}
+const Item: React.FC<{ item: User }> = ({ item }) => {
   const navigation = useNavigation();
+  console.log(`${process.env.HOST_SERVER}+${item.avatar}`);
+
   return (
     <TouchableOpacity
       onPress={() => {
@@ -69,7 +71,7 @@ const Item: React.FC<{ avt: string; name: string; message: string }> = ({
       <View>
         <Image
           source={{
-            uri: "https://scontent.fsgn19-1.fna.fbcdn.net/v/t1.6435-1/141995787_512358293071430_1466381692630381917_n.jpg?stp=dst-jpg_s320x320&_nc_cat=111&ccb=1-7&_nc_sid=7206a8&_nc_ohc=9JU-HVeBW-YAX_Uinm_&_nc_ht=scontent.fsgn19-1.fna&oh=00_AfDDgoNUaoowtfVmK9nM693BZ7rkzQhYTCkvgFigIV9R7Q&oe=64D81B8D",
+            uri: `${process.env.HOST_SERVER}${item.avatar}`,
           }}
           style={styles.img}
         >
@@ -77,7 +79,7 @@ const Item: React.FC<{ avt: string; name: string; message: string }> = ({
         </Image>
       </View>
       <View style={styles.info}>
-        <Text style={styles.name}>Riven </Text>
+        <Text style={styles.name}>{item.name} </Text>
         <Text
           numberOfLines={1}
           ellipsizeMode="tail"

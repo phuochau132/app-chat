@@ -17,10 +17,13 @@ import Item from "./Item";
 
 const styles = StyleSheet.create({
   container: {
+    height: "100%",
+    width: "100%",
     paddingLeft: 20,
     paddingRight: 20,
     color: "black",
     display: "flex",
+    flexDirection: "column",
     justifyContent: "center",
   },
   row_center: {
@@ -30,6 +33,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 10,
   },
+  search_bar: {
+    backgroundColor: "#D4D4DA",
+    opacity: 0.4,
+    display: "flex",
+    borderRadius: 30,
+    color: "#3C3C43",
+  },
   text: {
     fontWeight: "bold",
     marginTop: 20,
@@ -38,6 +48,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F2F2F2",
   },
   items: {
+    flex: 1,
     marginTop: 20,
   },
 });
@@ -45,8 +56,8 @@ const styles = StyleSheet.create({
 const Index: React.FC = () => {
   const navigation = useNavigation();
   const [valueSearch, setValueSearch] = useState("");
-  const handleTextSearch = (e: any) => {
-    setValueSearch(e.target.value);
+  const handleTextSearch = (text: string) => {
+    setValueSearch(text);
   };
   return (
     <KeyboardAvoidingView
@@ -60,32 +71,29 @@ const Index: React.FC = () => {
         <Ionicons name="add" size={30} color="black" />
       </View>
       <Searchbar
-        style={{
-          backgroundColor: "#D4D4DA",
-          opacity: 0.4,
-          borderRadius: 15,
-          color: "#3C3C43",
-        }}
-        onChangeText={(e) => {
-          handleTextSearch(e);
+        style={styles.search_bar}
+        onChangeText={(text) => {
+          handleTextSearch(text);
         }}
         value={valueSearch}
         placeholder="Search"
       />
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.items}>
-        <Item></Item>
-        <Item></Item>
-        <Item></Item>
-        <Item></Item>
-        <Item></Item>
-        <Item></Item>
-        <Item></Item>
-        <Item></Item>
-        <Item></Item>
-        <Item></Item>
-        <Item></Item>
-        <Item></Item>
-      </ScrollView>
+      <View style={styles.items}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <Item></Item>
+          <Item></Item>
+          <Item></Item>
+          <Item></Item>
+          <Item></Item>
+          <Item></Item>
+          <Item></Item>
+          <Item></Item>
+          <Item></Item>
+          <Item></Item>
+          <Item></Item>
+          <Item></Item>
+        </ScrollView>
+      </View>
     </KeyboardAvoidingView>
   );
 };

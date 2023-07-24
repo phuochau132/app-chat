@@ -1,5 +1,5 @@
 import { Avatar, Button } from "@rneui/themed";
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Header } from "@rneui/themed";
 import { CheckCircleFilled } from "@ant-design/icons";
@@ -7,6 +7,9 @@ import { Image } from "@rneui/themed";
 import { Ionicons } from "@expo/vector-icons";
 import { ScreenContainer } from "react-native-screens";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import { ActivityIndicator } from "react-native-paper";
+import { global_styles } from "../../../style";
 
 const styles = StyleSheet.create({
   header: {
@@ -29,14 +32,29 @@ const styles = StyleSheet.create({
   },
 });
 const Index: React.FC = () => {
+  const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
   return (
-    <View>
+    <View style={global_styles.wrapper}>
+      {/* {loading && (
+        <View style={global_styles.loadingContainer}>
+          <ActivityIndicator size="large" color="blue" />
+        </View>
+      )} */}
       <Header
         placement="left"
         leftComponent={<Ionicons name="home" size={20} color="white" />}
         centerComponent={{ text: "Appchat", color: "black" }}
         rightComponent={
-          <Ionicons name="chatbox-outline" size={20} color="white" />
+          <Ionicons
+            onPress={() => {
+              setLoading(true);
+              navigation.navigate("chatListFriend");
+            }}
+            name="chatbox-outline"
+            size={20}
+            color="white"
+          />
         }
       />
       <View style={styles.story}>
