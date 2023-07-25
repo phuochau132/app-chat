@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import Toast from "react-native-simple-toast";
 
 const initialState = {
   error: null,
@@ -11,9 +11,11 @@ export const register = createAsyncThunk(
   "auth/register",
   async ({ email, password }: { email: string; password: string }) => {
     try {
-      console.log(process.env.HOST_SERVER);
+      console.log();
+      console.log();
+      console.log(123);
       const response = await axios.post(
-        `${process.env.HOST_SERVER}/api/register`, // Change axios.get to axios.post
+        `${process.env.HOST_SERVER}/api/auth/register`,
         {
           email: email,
           password: password,
@@ -43,10 +45,18 @@ const registerSlice = createSlice({
       .addCase(register.fulfilled, (state: any, action: any) => {
         console.log(123);
         state.status = "succeeded";
+        Toast.show("Register Successfully", Toast.LONG, {
+          backgroundColor: "white",
+          textColor: "black",
+        });
       })
       .addCase(register.rejected, (state: any, action: any) => {
         state.status = "failed";
         state.error = action.error.message;
+        Toast.show(action.error.message, Toast.LONG, {
+          backgroundColor: "white",
+          textColor: "black",
+        });
       });
   },
 });

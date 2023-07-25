@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import axiosInstance from "../../config/axiosConfig";
+import Toast from "react-native-simple-toast";
 const initialState = {
   listUser: [],
   listFiltered: [],
@@ -9,6 +11,9 @@ const initialState = {
 };
 export const loadAllUser: any = createAsyncThunk("auth/loadUser", async () => {
   try {
+    console.log();
+    console.log(123);
+    console.log();
     const response = await axios.get(`${process.env.HOST_SERVER}/api/users`);
     return response.data;
   } catch (error) {
@@ -41,6 +46,10 @@ const userSlice = createSlice({
         state.status = "failed";
         state.user = null;
         state.error = action.error.message;
+        Toast.show(action.error.message, Toast.LONG, {
+          backgroundColor: "white",
+          textColor: "black",
+        });
       });
   },
 });

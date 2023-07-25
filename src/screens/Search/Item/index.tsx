@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
 });
 interface User {
-  name: string;
+  fullName: string;
   avatar: string | null;
   email: string | null;
 }
@@ -79,7 +79,7 @@ const Item: React.FC<{ item: User }> = ({ item }) => {
         </Image>
       </View>
       <View style={styles.info}>
-        <Text style={styles.name}>{item.name} </Text>
+        <Text style={styles.name}>{item.fullName} </Text>
         <Text
           numberOfLines={1}
           ellipsizeMode="tail"

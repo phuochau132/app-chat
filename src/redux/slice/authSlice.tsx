@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { HOST_SERVER } from "@env";
 import axiosInstance from "../../config/axiosConfig";
-import { ToastAndroid } from "react-native";
+import Toast from "react-native-simple-toast";
 
 //"accountNonExpired": true, "accountNonLocked": true, "authorities": [{"authority": "[]"}], "credentialsNonExpired": true, "email": "hau", "enabled": true, "full_name": "nguyenhau", "id": 1, "name": "hau", "roles": [], "username": "hau"}
 interface User {
@@ -21,13 +21,11 @@ export const login = createAsyncThunk(
   async ({ email, password }: { email: string; password: string }) => {
     try {
       console.log(123);
-      console;
-      console.log(123);
-      console.log(123);
+      console.log(`${process.env.HOST_SERVER}/api/users/profile`);
       const response = await axios.post(
-        `${process.env.HOST_SERVER}/api/v1/auth/login`,
+        `${process.env.HOST_SERVER}/api/auth/login`,
         {
-          email: email,
+          userName: email,
           password: password,
         }
       );
@@ -39,39 +37,48 @@ export const login = createAsyncThunk(
     }
   }
 );
-export const changeAvatar = createAsyncThunk(
-  "auth/changeAvatar",
-  async (formData: any) => {
-    const response = await axiosInstance.post(
-      `/account/profile/changeAvatar`,
-      formData
-    );
-    let data = response.data;
-    return data;
+interface ChangeInfo {
+  user: {
+    id: number;
+    name: string;
+    nickName: string;
+    story: String;
+    birthDay: string;
+    avatar: string;
+  };
+  file: any;
+}
+export const changeInfo = createAsyncThunk(
+  "auth/changeInfo",
+  async ({ user, file }: any) => {
+    const formData = new FormData();
+    if (file) {
+      formData.append("file", {
+        uri: file,
+        name: Math.random().toString(36).substring(7) + ".jpg",
+        type: "image/jpeg",
+      });
+    }
+    formData.append("user", JSON.stringify(user));
+    try {
+      const response = await axios.post(
+        `${process.env.HOST_SERVER}/api/users/profile`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+      let data = response.data;
+      return {
+        user: data,
+      };
+    } catch (error) {
+      console.log(981);
+
+      console.log(error);
+      throw error;
+    }
   }
 );
 
-export const changeInfo = createAsyncThunk(
-  "auth/changeInfo",
-  async ({
-    id,
-    fullName,
-    phone,
-    address,
-  }: {
-    id: Number;
-    fullName: String;
-    phone: String;
-    address: String;
-  }) => {
-    const response = await axiosInstance.post(
-      `http://localhost:3006/account/profile/changeInfoAccount`,
-      { id, fullName, phone, address }
-    );
-    let data = response.data;
-    return data;
-  }
-);
 export const getInfoUser = createAsyncThunk(
   "auth/changeInfo",
   async ({ id }: { id: Number }) => {
@@ -96,19 +103,14 @@ const profileSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // logout: async (state: any, action: any) => {
-    //   state.user = null;
-    //   state.status = "logout";
-    //   // localStorage.setItem("user", null);
-    //   // localStorage.setItem("accessToken", null);
-    //   await AsyncStorage.setItem("key", "value");
-    // },
+    logout: (state: any, action: any) => {
+      state.user = null;
+      state.status = "logout";
+      DelAccessTokenToAsyncStorage();
+    },
     setLinkTo: (state: any, action: any) => {
       state.linkTo = action.payload;
     },
-    // setError: (state: any, action: any) => {
-    //   state.error = action.payload;
-    // },
   },
   extraReducers: (builder: any) => {
     builder
@@ -120,61 +122,36 @@ const profileSlice = createSlice({
         state.status = "succeeded";
         state.user = action.payload.user;
         state.error = null;
-        ToastAndroid.show("Login success!", ToastAndroid.SHORT);
+        Toast.show("Login Successfully", Toast.LONG, {
+          backgroundColor: "white",
+          textColor: "black",
+        });
       })
       .addCase(login.rejected, (state: any, action: any) => {
         state.status = "failed";
         state.user = null;
         state.error = action.error.message;
+      })
+      .addCase(changeInfo.pending, (state: any) => {
+        state.status = "loading";
+        state.status = "";
+        state.error = "";
+      })
+      .addCase(changeInfo.fulfilled, (state: any, action: any) => {
+        state.status = "changeInfoSucceeded";
+        state.user = action.payload.user;
+        Toast.show("Change Profile Successfully", Toast.LONG, {
+          backgroundColor: "white",
+          textColor: "black",
+        });
+
+        state.error = null;
+      })
+      .addCase(changeInfo.rejected, (state: any, action: any) => {
+        state.status = "changeInfoFailed";
+        state.user = null;
+        state.error = action.error.message;
       });
-    // .addCase(changeAvatar.pending, (state: any, action: any) => {
-    //   state.status = "loading";
-    //   state.status = "";
-    //   state.error = "";
-    // })
-    // .addCase(changeAvatar.fulfilled, (state: any, action: any) => {
-    //   state.status = "changeAvatarSucceeded";
-    //   state.user.avatar = action.payload.pathAvatar;
-    //   // localStorage.setItem(
-    //   //   "user",
-    //   //   JSON.stringify({
-    //   //     ...state.user,
-    //   //     avatar: action.payload.pathAvatar,
-    //   //   })
-    //   // );
-    //   state.error = null;
-    // })
-    // .addCase(changeAvatar.rejected, (state: any, action: any) => {
-    //   state.status = "changeAvatarFailed";
-    //   state.user = null;
-    //   state.error = action.error.message;
-    // })
-    // .addCase(changeInfo.pending, (state: any) => {
-    //   state.status = "loading";
-    //   state.status = "";
-    //   state.error = "";
-    // })
-    // .addCase(changeInfo.fulfilled, (state: any, action: any) => {
-    //   state.status = "changeInfoSucceeded";
-    //   state.user = {
-    //     ...state.user,
-    //     ...action.payload.user,
-    //   };
-    //   AsyncStorage.setItem("key", "value");
-    //   // localStorage.setItem(
-    //   //   "user",
-    //   //   JSON.stringify({
-    //   //     ...state.user,
-    //   //     ...action.payload.user,
-    //   //   })
-    //   // );
-    //   state.error = null;
-    // })
-    // .addCase(changeInfo.rejected, (state: any, action: any) => {
-    //   state.status = "changeInfoFailed";
-    //   state.user = null;
-    //   state.error = action.error.message;
-    // });
   },
 });
 
@@ -182,6 +159,13 @@ const profileSlice = createSlice({
 const saveAccessTokenToAsyncStorage = async (accessToken: string) => {
   try {
     await AsyncStorage.setItem("accessToken", accessToken);
+  } catch (error) {
+    console.error("Error saving accessToken to AsyncStorage:", error);
+  }
+};
+const DelAccessTokenToAsyncStorage = async () => {
+  try {
+    await AsyncStorage.setItem("accessToken", "");
   } catch (error) {
     console.error("Error saving accessToken to AsyncStorage:", error);
   }

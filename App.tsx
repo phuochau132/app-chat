@@ -13,6 +13,8 @@ import { store } from "./src/redux";
 import { TextEncoder, TextDecoder } from "fast-text-encoding";
 import { loadAllUser } from "./src/redux/slice/userSlice";
 import { TextInput } from "react-native-paper";
+import { AppRegistry } from "react-native";
+import ToastProvider from "react-native-toast-message";
 
 const styles = StyleSheet.create({
   container: { paddingTop: 30, backgroundColor: "white" },

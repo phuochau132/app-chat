@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { global_styles } from "../../../style";
 import { Image } from "react-native-elements";
+import { useSelector } from "react-redux";
 
 const styles = StyleSheet.create({
   header: {
@@ -24,6 +25,12 @@ const styles = StyleSheet.create({
 const Index: React.FC = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
+  const user = useSelector((state: any) => {
+    return state.auth.user;
+  });
+  console.log(1978123);
+  console.log(process.env.HOST_SERVER + user.avatar);
+
   return (
     <View style={global_styles.wrapper}>
       {/* {loading && (
@@ -33,7 +40,9 @@ const Index: React.FC = () => {
       )} */}
       <View style={global_styles.rowCenterBetween}>
         <View style={global_styles.rowCenter}>
-          <Text style={{ fontSize: 20, fontWeight: "bold" }}>PH_hau56</Text>
+          <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+            {user.nickName}
+          </Text>
           <Ionicons name="chevron-down-outline" size={30} color="black" />
         </View>
         <View style={global_styles.rowCenterBetween}>
@@ -51,11 +60,11 @@ const Index: React.FC = () => {
         <View style={global_styles.ColumnCenter}>
           <Image
             source={{
-              uri: "https://scontent.fsgn19-1.fna.fbcdn.net/v/t1.6435-1/141995787_512358293071430_1466381692630381917_n.jpg?stp=dst-jpg_s320x320&_nc_cat=111&ccb=1-7&_nc_sid=7206a8&_nc_ohc=9JU-HVeBW-YAX_Uinm_&_nc_ht=scontent.fsgn19-1.fna&oh=00_AfDDgoNUaoowtfVmK9nM693BZ7rkzQhYTCkvgFigIV9R7Q&oe=64D81B8D",
+              uri: process.env.HOST_SERVER + user.avatar,
             }}
             style={styles.img}
           />
-          <Text style={{ fontWeight: "bold", marginTop: 5 }}>Phước hậu</Text>
+          <Text style={{ fontWeight: "bold", marginTop: 5 }}>{user.name}</Text>
         </View>
         <View style={[global_styles.ColumnCenter]}>
           <Text

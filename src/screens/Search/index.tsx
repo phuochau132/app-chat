@@ -10,7 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Item from "./Item";
 import SearchBar from "../../Component/SearchBar";
 import { useDispatch, useSelector } from "react-redux";
-import { changeStatus, filter } from "../../redux/slice/userSlice";
+import { filter } from "../../redux/slice/userSlice";
 import Loading from "../../Component/Loading";
 
 const styles = StyleSheet.create({
@@ -68,8 +68,8 @@ const Index: React.FC = () => {
   return (
     <View style={global_styles.wrapper}>
       {isLoading == "loading" && <Loading />}
-      <View style={global_styles.rowCenter}>
-        <Ionicons name="arrow-back-outline" size={30} color="black" />
+      <View style={[global_styles.rowCenter]}>
+        <Ionicons name="arrow-back-outline" size={25} color="black" />
         <SearchBar setSearchPhrase={handleSearch} />
       </View>
       <View style={styles.items}>

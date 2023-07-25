@@ -1,7 +1,6 @@
 import {
   Login,
   Register,
-  Profile,
   Home,
   ChatListFriend,
   Chat,
@@ -20,17 +19,8 @@ const publicRoutes = [
   // { name: "chat", component: Profile, layout: MenuLayout },
 ];
 const tabRoutes = [
-  { name: "tabHome", component: Home, iconName: "home" },
+  { name: "tabHome", component: Home, iconName: "home-outline" },
   { name: "tabSearch", component: Search, iconName: "search-outline" },
-  {
-    name: "tabProfile",
-    component: Profile,
-    iconName: "search-outline",
-    type: 1,
-  },
-  // { name: "chat", component: Profile, layout: MenuLayout },
 ];
-//  const authRoutes = [];
-//  const privateRoutes = [{ path: "/profile", component: Profile }];
 
 export { publicRoutes, tabRoutes };
