@@ -1,15 +1,19 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Button } from "@rneui/themed";
-import { StyleSheet, Text, View, KeyboardAvoidingView } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  KeyboardAvoidingView,
+  TextInput,
+} from "react-native";
 import { Image } from "@rneui/themed";
 import { Input } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../../redux/slice/authSlice";
-import { ActivityIndicator } from "react-native-paper";
 
-import { global_styles } from "../../../style";
+import { login } from "../../redux/slice/authSlice";
 import Loading from "../../Component/Loading";
 
 const styles = StyleSheet.create({
@@ -49,6 +53,29 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     justifyContent: "center",
   },
+  inputContainer: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: "#3797EF",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    backgroundColor: "white",
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  input: {
+    flex: 1,
+    marginLeft: 10,
+    fontSize: 16,
+  },
+  iconContainer: {
+    borderRightWidth: 1,
+    borderColor: "#3797EF",
+    paddingRight: 10,
+    marginRight: 10,
+  },
 });
 
 const Index: React.FC = () => {
@@ -84,22 +111,44 @@ const Index: React.FC = () => {
         style={{ width: "100%", height: 200 }}
       />
       <View style={styles.col_center}>
-        <Input
+        <View style={styles.inputContainer}>
+          <View style={styles.iconContainer}>
+            <Ionicons name="person-circle" size={20} color="#3797EF" />
+          </View>
+          <TextInput
+            style={styles.input}
+            onChangeText={(text) => {
+              setData((prev) => ({
+                ...prev,
+                email: text,
+              }));
+            }}
+            value={data.email}
+            placeholder="UserName"
+            placeholderTextColor="#3797EF"
+          />
+        </View>
+        <View style={[styles.inputContainer]}>
+          <View style={styles.iconContainer}>
+            <Ionicons name="key" size={20} color="#3797EF" />
+          </View>
+          <TextInput
+            style={styles.input}
+            onChangeText={(text) => {
+              setData((prev) => ({
+                ...prev,
+                password: text,
+              }));
+            }}
+            value={data.password}
+            placeholder="Password"
+            placeholderTextColor="#3797EF"
+          />
+        </View>
+
+        {/* <Input
           onChangeText={(text) => {
-            setData((prev) => ({
-              ...prev,
-              email: text,
-            }));
-          }}
-          placeholder="UserName"
-          leftIcon={<Ionicons name="person-circle" size={20} color="#3797EF" />}
-        />
-        <Input
-          onChangeText={(text) => {
-            setData((prev) => ({
-              ...prev,
-              password: text,
-            }));
+            
           }}
           secureTextEntry={securePass}
           placeholder="Password"
@@ -125,8 +174,8 @@ const Index: React.FC = () => {
               />
             )
           }
-        />
-        <View style={styles.login_btn_wrapper}>
+        /> */}
+        <View style={[styles.login_btn_wrapper, { marginTop: 20 }]}>
           <Button onPress={handleLogin} title="Login" />
         </View>
         <View style={[styles.float_right, { marginTop: 20 }]}>

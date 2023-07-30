@@ -1,9 +1,16 @@
 import { Avatar, Button } from "@rneui/themed";
 import React, { useState } from "react";
-import { StyleSheet, Text, View, KeyboardAvoidingView } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  KeyboardAvoidingView,
+  TouchableOpacity,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Searchbar } from "react-native-paper";
+import FlipCard from "react-native-flip-card";
 import { ScrollView } from "react-native";
+import { createContext } from "react";
 
 import { global_styles } from "../../../style";
 import { Ionicons } from "@expo/vector-icons";
@@ -12,6 +19,7 @@ import SearchBar from "../../Component/SearchBar";
 import { useDispatch, useSelector } from "react-redux";
 import { filter } from "../../redux/slice/userSlice";
 import Loading from "../../Component/Loading";
+import OtherUserProfile from "./../OtherUserProfile";
 
 const styles = StyleSheet.create({
   header: {
@@ -31,7 +39,6 @@ const styles = StyleSheet.create({
     color: "#3C3C43",
   },
   items: {
-    flex: 1,
     marginTop: 20,
   },
 });
@@ -64,24 +71,53 @@ const Index: React.FC = () => {
       dispatch(filter(filteredItems));
     }
   };
+  const [showSearch, setShowSearch] = useState(false);
+  const [userPressed, setUserPressed] = useState(null);
 
+  const updateUser = (item: any) => {
+    setShowSearch(!showSearch);
+    if (item) {
+      setUserPressed(item);
+    }
+  };
   return (
     <View style={global_styles.wrapper}>
       {isLoading == "loading" && <Loading />}
-      <View style={[global_styles.rowCenter]}>
-        <Ionicons name="arrow-back-outline" size={25} color="black" />
-        <SearchBar setSearchPhrase={handleSearch} />
-      </View>
-      <View style={styles.items}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {listFilter &&
-            listFilter.map((item: any, index: any) => {
-              return <Item key={index} item={item} />;
-            })}
-        </ScrollView>
-      </View>
+      <FlipCard
+        friction={6}
+        perspective={1000}
+        flipHorizontal={true}
+        flipVertical={false}
+        flip={showSearch}
+        clickable={false}
+      >
+        <>
+          <View style={[global_styles.rowCenter]}>
+            <Ionicons name="arrow-back-outline" size={25} color="black" />
+            <SearchBar setSearchPhrase={handleSearch} />
+          </View>
+          <View style={styles.items}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {listFilter &&
+                listFilter.map((item: any, index: any) => {
+                  return (
+                    <Item
+                      onPress={() => {
+                        updateUser(item);
+                      }}
+                      key={index}
+                      item={item}
+                    />
+                  );
+                })}
+            </ScrollView>
+          </View>
+        </>
+
+        {/* Mặt sau (màn hình profile) */}
+        <OtherUserProfile eventOnClose={updateUser} item={userPressed} />
+      </FlipCard>
     </View>
   );
 };
-
 export default Index;

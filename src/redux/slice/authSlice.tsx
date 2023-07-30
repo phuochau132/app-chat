@@ -7,9 +7,7 @@ import axiosInstance from "../../config/axiosConfig";
 import Toast from "react-native-simple-toast";
 
 //"accountNonExpired": true, "accountNonLocked": true, "authorities": [{"authority": "[]"}], "credentialsNonExpired": true, "email": "hau", "enabled": true, "full_name": "nguyenhau", "id": 1, "name": "hau", "roles": [], "username": "hau"}
-interface User {
-  accountNonExpired: boolean;
-}
+
 const initialState = {
   user: null,
   error: null,
@@ -19,9 +17,9 @@ const initialState = {
 export const login = createAsyncThunk(
   "auth/login",
   async ({ email, password }: { email: string; password: string }) => {
+    console.log();
+
     try {
-      console.log(123);
-      console.log(`${process.env.HOST_SERVER}/api/users/profile`);
       const response = await axios.post(
         `${process.env.HOST_SERVER}/api/auth/login`,
         {
@@ -29,6 +27,8 @@ export const login = createAsyncThunk(
           password: password,
         }
       );
+      const hau = await AsyncStorage.getItem("accessToken");
+      console.log(hau);
       await AsyncStorage.setItem("accessToken", response.data.accessToken);
       return response.data;
     } catch (error) {
@@ -51,6 +51,7 @@ interface ChangeInfo {
 export const changeInfo = createAsyncThunk(
   "auth/changeInfo",
   async ({ user, file }: any) => {
+    console.log();
     const formData = new FormData();
     if (file) {
       formData.append("file", {
@@ -71,9 +72,6 @@ export const changeInfo = createAsyncThunk(
         user: data,
       };
     } catch (error) {
-      console.log(981);
-
-      console.log(error);
       throw error;
     }
   }
@@ -82,6 +80,7 @@ export const changeInfo = createAsyncThunk(
 export const getInfoUser = createAsyncThunk(
   "auth/changeInfo",
   async ({ id }: { id: Number }) => {
+    console.log();
     try {
       const response = await axiosInstance.get(
         `http://localhost:3006/account/getAllUser`,
@@ -130,6 +129,10 @@ const profileSlice = createSlice({
       .addCase(login.rejected, (state: any, action: any) => {
         state.status = "failed";
         state.user = null;
+        Toast.show(action.error.message, Toast.LONG, {
+          backgroundColor: "white",
+          textColor: "black",
+        });
         state.error = action.error.message;
       })
       .addCase(changeInfo.pending, (state: any) => {

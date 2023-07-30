@@ -6,6 +6,7 @@ import {
   Chat,
   Search,
   EditProfile,
+  RequestAddFriend,
 } from "../screens";
 import { MenuLayout, MainLayout } from "../layout";
 
@@ -16,11 +17,15 @@ const publicRoutes = [
   { name: "chatListFriend", component: ChatListFriend, layout: MainLayout },
   { name: "chat", component: Chat, layout: MainLayout },
   { name: "editProfile", component: EditProfile, layout: MainLayout },
-  // { name: "chat", component: Profile, layout: MenuLayout },
 ];
 const tabRoutes = [
   { name: "tabHome", component: Home, iconName: "home-outline" },
   { name: "tabSearch", component: Search, iconName: "search-outline" },
+  {
+    name: "requestAddFriend",
+    component: RequestAddFriend,
+    iconName: "people-outline",
+  },
 ];
 
 export { publicRoutes, tabRoutes };

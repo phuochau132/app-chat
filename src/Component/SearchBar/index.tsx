@@ -99,6 +99,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginLeft: 10,
     width: "90%",
-    caretColor: "black",
   },
 });

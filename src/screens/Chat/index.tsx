@@ -28,6 +28,7 @@ import {
 } from "react-native-gifted-chat";
 import * as ImagePicker from "expo-image-picker";
 import { useSelector } from "react-redux";
+import { stompClient } from "../../../index";
 const styles = StyleSheet.create({
   container: {
     height: "100%",
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-var stompClient: any = null;
+
 export const Index: React.FC<{}> = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [videoUri, setVideoUri] = useState<string | null>(null);
@@ -138,12 +139,7 @@ export const Index: React.FC<{}> = () => {
     connected: false,
     message: "",
   });
-  const connect = () => {
-    let Sock = new SockJS(`${process.env.HOST_SERVER}/gs-guide-websocket`);
-    stompClient = over(Sock);
-    stompClient.connect({}, onConnected, onError);
-  };
-  const onConnected = () => {
+  useEffect(() => {
     stompClient.subscribe(`/topic/rooms`, (message: any) => {
       const bodyData = JSON.parse(message.body);
       const formattedMessage: IMessage = {
@@ -159,13 +155,6 @@ export const Index: React.FC<{}> = () => {
         setMessages((prevMessages) => [formattedMessage, ...prevMessages]);
       }
     });
-  };
-  const onError = () => {
-    console.log("err");
-  };
-
-  useEffect(() => {
-    connect();
   }, []);
   const handleSend = useCallback(
     (newMessages: IMessage[]) => {

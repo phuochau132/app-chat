@@ -1,5 +1,6 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-simple-toast";
 
 const axiosInstance = axios.create({});
 const api = axios.create({
@@ -49,7 +50,6 @@ axiosInstance.interceptors.response.use(
         throw refreshError;
       }
     }
-
     return Promise.reject(error);
   }
 );

@@ -2,6 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const greyColor = "#ebedf0";
 export const blueColor = "#1877F2";
+export const greyColorBtn = "#b1b2b4";
 export const global_styles = StyleSheet.create({
   wrapper: {
     width: "100%",
@@ -21,6 +22,10 @@ export const global_styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
+  },
+  textTitle: {
+    fontSize: 25,
+    fontWeight: "bold",
   },
   rowCenterBetween: {
     display: "flex",

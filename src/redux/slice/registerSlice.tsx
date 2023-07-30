@@ -12,8 +12,6 @@ export const register = createAsyncThunk(
   async ({ email, password }: { email: string; password: string }) => {
     try {
       console.log();
-      console.log();
-      console.log(123);
       const response = await axios.post(
         `${process.env.HOST_SERVER}/api/auth/register`,
         {
@@ -43,7 +41,6 @@ const registerSlice = createSlice({
         state.status = "loading";
       })
       .addCase(register.fulfilled, (state: any, action: any) => {
-        console.log(123);
         state.status = "succeeded";
         Toast.show("Register Successfully", Toast.LONG, {
           backgroundColor: "white",

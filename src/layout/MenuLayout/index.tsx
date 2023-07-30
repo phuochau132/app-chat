@@ -8,7 +8,7 @@ import { StyleSheet, View } from "react-native";
 
 import { global_styles } from "../../../style";
 import { useDispatch, useSelector } from "react-redux";
-import { loadAllUser } from "../../redux/slice/userSlice";
+import { getAllFriend, loadAllUser } from "../../redux/slice/userSlice";
 import { tabRoutes } from "../../route";
 
 const Tab = createBottomTabNavigator();
@@ -26,9 +26,8 @@ const Index: React.FC = () => {
   });
   useEffect(() => {
     dispatch(loadAllUser());
+    dispatch(getAllFriend(user.id));
   }, []);
-  console.log();
-
   return (
     <Tab.Navigator>
       {tabRoutes.map((item, index) => {

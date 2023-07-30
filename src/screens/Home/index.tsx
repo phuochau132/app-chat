@@ -12,10 +12,6 @@ import { ActivityIndicator } from "react-native-paper";
 import { global_styles } from "../../../style";
 
 const styles = StyleSheet.create({
-  header: {
-    paddingLeft: 10,
-    paddingRight: 10,
-  },
   item: {
     width: 100,
     display: "flex",

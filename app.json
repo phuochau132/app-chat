@@ -22,7 +22,7 @@
         "backgroundColor": "#ffffff",
         "softwareKeyboardLayoutMode": "pan"
       },
-      "permissions": ["INTERNET"]
+      "permissions": ["INTERNET", "NOTIFICATIONS"]
     },
     "web": {
       "favicon": "./assets/favicon.png"

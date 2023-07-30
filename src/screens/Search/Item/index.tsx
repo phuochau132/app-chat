@@ -9,6 +9,9 @@ import {
 } from "react-native";
 import { Image } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { changeProfileChosen } from "../../../redux/slice/userSlice";
+import { useContext } from "react";
 
 const styles = StyleSheet.create({
   container: {
@@ -52,22 +55,12 @@ const styles = StyleSheet.create({
     right: 2,
   },
 });
-interface User {
-  fullName: string;
-  avatar: string | null;
-  email: string | null;
-}
-const Item: React.FC<{ item: User }> = ({ item }) => {
-  const navigation = useNavigation();
-  console.log(`${process.env.HOST_SERVER}+${item.avatar}`);
 
+const Item: React.FC<{ item: any; onPress: any }> = ({ item, onPress }) => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
   return (
-    <TouchableOpacity
-      onPress={() => {
-        navigation.navigate("chat");
-      }}
-      style={styles.container}
-    >
+    <TouchableOpacity onPress={onPress} style={styles.container}>
       <View>
         <Image
           source={{
@@ -79,13 +72,13 @@ const Item: React.FC<{ item: User }> = ({ item }) => {
         </Image>
       </View>
       <View style={styles.info}>
-        <Text style={styles.name}>{item.fullName} </Text>
+        <Text style={styles.name}>{item.nickName} </Text>
         <Text
           numberOfLines={1}
           ellipsizeMode="tail"
           style={styles.content_message}
         >
-          Have a nice new dayaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          {item.fullName}
         </Text>
       </View>
       <Text style={styles.status}>now </Text>

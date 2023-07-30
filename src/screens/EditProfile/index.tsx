@@ -35,7 +35,7 @@ const Index: React.FC = () => {
   const [imageUri, setImageUri] = useState(null);
   const [data, setData] = useState({
     id: Number(auth.user.id),
-    name: auth.user.name,
+    fullName: auth.user.fullName,
     birthDay: auth.user.birthDay,
     nickName: auth.user.nickName,
     story: auth.user.story,
@@ -50,7 +50,7 @@ const Index: React.FC = () => {
   const toggleOverlay = () => {
     if (modal.type == 0) {
       setData((prev) => {
-        return { ...prev, name: inputValue };
+        return { ...prev, fullName: inputValue };
       });
     }
     if (modal.type == 1) {
@@ -92,6 +92,7 @@ const Index: React.FC = () => {
   const handleChangeProfile = () => {
     dispatch(changeInfo({ user: data, file: imageUri }));
   };
+  console.log(198);
   console.log(198);
   console.log(process.env.HOST_SERVER + auth.user.avatar);
 
@@ -166,10 +167,10 @@ const Index: React.FC = () => {
                 specificName: "Tên người dùng",
                 type: 0,
               });
-              setModalInputValue(data.name);
+              setModalInputValue(data.fullName);
               setVisible(!visible);
             }}
-            value={data.name}
+            value={data.fullName}
             style={{ fontSize: 15 }}
             placeholder="Tên người dùng"
           />
