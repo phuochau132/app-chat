@@ -32,6 +32,7 @@ import { stompClient } from "../../../index";
 import { blueColor, global_styles } from "../../../style";
 import Item from "./Item";
 import { getAllFriend } from "../../redux/slice/userSlice";
+import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
 const styles = StyleSheet.create({
   container: {
     height: "100%",
@@ -138,27 +139,42 @@ export const Index: React.FC<{}> = () => {
     (state: any) => state.user.listRequestAddFriend
   );
   return (
-    <View style={global_styles.wrapper}>
-      <Text style={global_styles.textTitle}>Bạn bè</Text>
-      <View style={[global_styles.rowCenterBetween, { marginTop: 15 }]}>
-        <View style={global_styles.rowCenter}>
-          <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-            Lời mời kết bạn
-          </Text>
-          <Text style={{ marginLeft: 5, fontSize: 18, fontWeight: "bold" }}>
-            {listRequestAddFriend.length}
+    <LinearGradientWrapper>
+      <View style={global_styles.wrapper}>
+        <Text style={[global_styles.text, global_styles.textTitle]}>
+          Bạn bè
+        </Text>
+        <View style={[global_styles.rowCenterBetween, { marginTop: 15 }]}>
+          <View style={global_styles.rowCenter}>
+            <Text
+              style={[global_styles.text, { fontSize: 18, fontWeight: "bold" }]}
+            >
+              Lời mời kết bạn
+            </Text>
+            <Text
+              style={[
+                global_styles.text,
+                { marginLeft: 5, fontSize: 18, fontWeight: "bold" },
+              ]}
+            >
+              {listRequestAddFriend.length}
+            </Text>
+          </View>
+          <Text
+            style={[global_styles.text, { fontSize: 16, color: blueColor }]}
+          >
+            Xem tất cả
           </Text>
         </View>
-        <Text style={{ fontSize: 16, color: blueColor }}>Xem tất cả</Text>
+        <View style={styles.items}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {listRequestAddFriend.map((item: any, index: number) => {
+              return <Item key={index} item={item} />;
+            })}
+          </ScrollView>
+        </View>
       </View>
-      <View style={styles.items}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {listRequestAddFriend.map((item: any, index: number) => {
-            return <Item key={index} item={item} />;
-          })}
-        </ScrollView>
-      </View>
-    </View>
+    </LinearGradientWrapper>
   );
 };
 

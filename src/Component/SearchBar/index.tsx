@@ -2,6 +2,7 @@
 import React, { FC, useState } from "react";
 import { StyleSheet, TextInput, View, Keyboard, Button } from "react-native";
 import { Feather, Entypo, Ionicons } from "@expo/vector-icons";
+import { itemColor } from "../../../style";
 
 interface Type {
   clicked?: boolean | undefined;
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
 
     width: "80%",
-    backgroundColor: "#d9dbda",
+    backgroundColor: itemColor,
     borderRadius: 15,
     alignItems: "center",
     justifyContent: "space-evenly",

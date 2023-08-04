@@ -4,13 +4,16 @@ import React, { useEffect, useRef, useState } from "react";
 import { Platform, StyleSheet } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { publicRoutes } from "./src/route";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { LinearGradient } from "expo-linear-gradient";
 
 import { TextEncoder, TextDecoder } from "fast-text-encoding";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getInfoUserFToken } from "./src/redux/slice/authSlice";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -20,9 +23,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const styles = StyleSheet.create({
-  container: { paddingTop: 30, backgroundColor: "white" },
-});
+const styles = StyleSheet.create({});
 
 const Stack = createStackNavigator();
 
@@ -35,17 +36,11 @@ if (typeof global.TextDecoder === "undefined") {
 }
 export var stompClient: any = null;
 const Index: React.FC = () => {
-  console.log();
-
+  const dispatch = useDispatch();
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef<any>();
   const responseListener = useRef<any>();
-  const navigator = useNavigation();
-  const user = useSelector((state: any) => {
-    return state.auth.user;
-  });
-  console.log();
   const connect = () => {
     let Sock = new SockJS(`${process.env.HOST_SERVER}/gs-guide-websocket`);
     stompClient = over(Sock);
@@ -57,9 +52,15 @@ const Index: React.FC = () => {
   const onError = () => {
     console.log("err");
   };
-
+  const checkToken = async () => {
+    const accessToken: any = await AsyncStorage.getItem("accessToken");
+    if (accessToken) {
+      dispatch(getInfoUserFToken(accessToken));
+    }
+  };
   useEffect(() => {
     connect();
+    checkToken();
   }, []);
   useEffect(() => {
     registerForPushNotificationsAsync().then((token: any) =>

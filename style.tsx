@@ -1,13 +1,21 @@
 import { StyleSheet } from "react-native";
 
-export const greyColor = "#ebedf0";
+export const greyColor = "rgba(190,194,197,255)";
 export const blueColor = "#1877F2";
 export const greyColorBtn = "#b1b2b4";
+
+export const backgroundColor = "white";
+export const itemColor = "rgba(133,126,117,255)";
+export const fontColor = "white";
+export const btnBgr = "black";
+export const btnColor = "white";
+export const fontColorItem = "white";
+
 export const global_styles = StyleSheet.create({
   wrapper: {
     width: "100%",
     height: "100%",
-    backgroundColor: "white",
+    paddingTop: 40,
     padding: 10,
   },
   loadingContainer: {
@@ -40,9 +48,18 @@ export const global_styles = StyleSheet.create({
     justifyContent: "center",
   },
   touchBtn: {
-    backgroundColor: greyColor,
-    padding: 5,
+    padding: 12,
     marginRight: 5,
     borderRadius: 5,
+    borderWidth: 1,
+    borderColor: fontColor,
+  },
+  text: {
+    color: fontColor,
+  },
+  icon: {
+    color: fontColor,
+    marginRight: 2,
+    fontSize: 25,
   },
 });

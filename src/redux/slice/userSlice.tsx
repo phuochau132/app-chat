@@ -12,26 +12,28 @@ const initialState = {
   status: "",
   linkTo: "/",
 };
-export const loadAllUser: any = createAsyncThunk("auth/loadUser", async () => {
-  console.log();
+export const loadAllUser: any = createAsyncThunk("user/loadUser", async () => {
+  console.log(123);
   try {
-    const response = await axios.get(`${process.env.HOST_SERVER}/api/users`);
+    const response = await axiosInstance.get(
+      `${process.env.HOST_SERVER}/api/users`
+    );
     return response.data;
   } catch (error) {
+    console.log(error);
     return error;
   }
 });
 export const addFriend: any = createAsyncThunk(
-  "auth/addFriend",
+  "user/addFriend",
   async ({ userSend, userReceive }: { userSend: any; userReceive: any }) => {
-    console.log();
+    console.log(123);
     try {
       const response = await axios.post(
         `${process.env.HOST_SERVER}/api/users/friend`,
         { userSend, userReceive }
       );
       const user = response.data;
-      console.log(user);
       const response1 = await axios.post(
         `https://exp.host/--/api/v2/push/send`,
         JSON.stringify({
@@ -51,20 +53,19 @@ export const addFriend: any = createAsyncThunk(
       return { type: 1 };
     } catch (error) {
       console.log(error);
-
       return { type: 0 };
     }
   }
 );
 
 export const getAllFriend: any = createAsyncThunk(
-  "auth/getAllFriend",
+  "user/getAllFriend",
   async (id: number) => {
-    console.log();
     try {
       const response = await axios.get(
         `${process.env.HOST_SERVER}/api/users/friend/${id}`
       );
+
       return {
         type: 1,
         listRequestAddFriend: response.data,
@@ -78,7 +79,7 @@ export const getAllFriend: any = createAsyncThunk(
   }
 );
 export const acceptRequestAF: any = createAsyncThunk(
-  "auth/acceptRequestAF",
+  "user/acceptRequestAF",
   async (id: number) => {
     console.log();
     try {
@@ -93,6 +94,7 @@ export const acceptRequestAF: any = createAsyncThunk(
         data: response.data,
       };
     } catch (error) {
+      console.log(error);
       return {
         type: 0,
       };
@@ -100,7 +102,7 @@ export const acceptRequestAF: any = createAsyncThunk(
   }
 );
 export const delRequestAF: any = createAsyncThunk(
-  "auth/delRequestAF",
+  "user/delRequestAF",
   async (id: number) => {
     console.log();
     try {

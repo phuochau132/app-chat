@@ -1,22 +1,43 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Button } from "@rneui/themed";
-import { StyleSheet, Text, View, KeyboardAvoidingView } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  KeyboardAvoidingView,
+  TouchableOpacity,
+} from "react-native";
 import { Image } from "@rneui/themed";
 import { Icon, Input } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { register } from "../../redux/slice/registerSlice";
-import { ActivityIndicator } from "react-native-paper";
+import { TextInput } from "react-native";
+import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
+import { btnBgr, btnColor, fontColor, global_styles } from "../../../style";
+import Loading from "../../Component/Loading";
+import logo from "../../img/logo.png";
 
 const styles = StyleSheet.create({
   container: {
     display: "flex",
     justifyContent: "center",
   },
-  center: {
+  nameBrand: {
+    fontSize: 50,
+    fontWeight: "bold",
+  },
+  col_center: {
     display: "flex",
     alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+  },
+  row_center: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
     justifyContent: "center",
     padding: 10,
   },
@@ -31,25 +52,38 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   text: {
-    color: "#1877F2",
+    color: "black",
     fontWeight: "bold",
   },
-  row_center: {
-    marginTop: 20,
+  float_right: {
     display: "flex",
-    alignItems: "center",
+    alignItems: "flex-end",
     justifyContent: "center",
-    flexDirection: "row",
   },
-  loadingContainer: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: [{ translateX: -25 }],
-    zIndex: 1,
+  inputContainer: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    backgroundColor: "white",
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  input: {
+    flex: 1,
+    marginLeft: 10,
+    fontSize: 16,
+  },
+  iconContainer: {
+    borderRightWidth: 1,
+    borderColor: "black",
+    paddingRight: 10,
+    marginRight: 10,
   },
 });
-
 const Index: React.FC = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -64,63 +98,83 @@ const Index: React.FC = () => {
   }, [data]);
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior="padding"
-      keyboardVerticalOffset={100}
-    >
-      {isLoading == "loading" && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="blue" />
-        </View>
-      )}
-      <Image
-        source={{
-          uri: "https://media0.giphy.com/media/BHNfhgU63qrks/giphy.gif?cid=ecf05e476tqqs0mfvcdqrspikz6sfigfo0h9p02ft1z1pu8y&ep=v1_gifs_search&rid=giphy.gif&ct=g",
-        }}
-        style={{ width: "100%", height: 200 }}
-      />
-      <View style={styles.center}>
-        <Input
-          onChangeText={(text) => {
-            setData((prev) => ({
-              ...prev,
-              email: text,
-            }));
-          }}
-          placeholder="UserName"
-          leftIcon={<Ionicons name="person-circle" size={20} color="#1877F2" />}
-        />
-        <Input
-          onChangeText={(text) => {
-            setData((prev) => ({
-              ...prev,
-              password: text,
-            }));
-          }}
-          placeholder="Password"
-          leftIcon={<Ionicons name="key" size={20} color="#1877F2" />}
-        />
-        <Input
-          onChangeText={(text) => {
-            setData((prev) => ({
-              ...prev,
-              rpPassWord: text,
-            }));
-          }}
-          placeholder="Repeat Password"
-          leftIcon={<Ionicons name="key" size={20} color="#1877F2" />}
-        />
-        <View style={styles.login_btn_wrapper}>
-          <Button
-            onPress={() => {
-              handleRegister();
+    <LinearGradientWrapper>
+      {isLoading == "loading" && <Loading />}
+      <View style={[global_styles.rowCenter, { paddingTop: 50 }]}>
+        <Image source={logo} style={{ width: 250, height: 200 }} />
+      </View>
+
+      <View style={styles.col_center}>
+        <View style={styles.inputContainer}>
+          <View style={styles.iconContainer}>
+            <Ionicons name="person-circle" size={20} color="black" />
+          </View>
+          <TextInput
+            style={styles.input}
+            onChangeText={(text) => {
+              setData((prev) => ({
+                ...prev,
+                email: text,
+              }));
             }}
-            title="Register"
+            value={data.email}
+            placeholder="UserName"
+            placeholderTextColor="gray"
           />
         </View>
+        <View style={[styles.inputContainer]}>
+          <View style={styles.iconContainer}>
+            <Ionicons name="key" size={20} color="black" />
+          </View>
+          <TextInput
+            style={styles.input}
+            onChangeText={(text) => {
+              setData((prev) => ({
+                ...prev,
+                password: text,
+              }));
+            }}
+            value={data.password}
+            placeholder="Password"
+            placeholderTextColor="gray"
+          />
+        </View>
+        <View style={[styles.inputContainer]}>
+          <View style={styles.iconContainer}>
+            <Ionicons name="key" size={20} color="black" />
+          </View>
+          <TextInput
+            style={styles.input}
+            onChangeText={(text) => {
+              setData((prev) => ({
+                ...prev,
+                rpPassword: text,
+              }));
+            }}
+            value={data.rpPassword}
+            placeholder="Repeat Password"
+            placeholderTextColor="gray"
+          />
+        </View>
+        <View style={[styles.login_btn_wrapper, { marginTop: 20 }]}>
+          <TouchableOpacity
+            style={{ padding: 10, backgroundColor: btnBgr }}
+            onPress={handleRegister}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+                textAlign: "center",
+                color: btnColor,
+              }}
+            >
+              Register
+            </Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.row_center}>
-          <Ionicons name="arrow-back" size={20} color="#1877F2" />
+          <Ionicons name="arrow-back" size={20} color={fontColor} />
           <Text
             onPress={() => {
               navigation.goBack();
@@ -131,7 +185,7 @@ const Index: React.FC = () => {
           </Text>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </LinearGradientWrapper>
   );
 };
 

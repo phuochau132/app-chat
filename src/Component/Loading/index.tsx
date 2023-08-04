@@ -6,8 +6,8 @@ import { View } from "react-native";
 
 const Loading: React.FC = () => {
   return (
-    <View style={global_styles.loadingContainer}>
-      <ActivityIndicator size="large" color="blue" />
+    <View style={[global_styles.loadingContainer, { zIndex: 1000 }]}>
+      <ActivityIndicator size="large" color="black" />
     </View>
   );
 };

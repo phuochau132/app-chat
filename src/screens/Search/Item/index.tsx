@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import { changeProfileChosen } from "../../../redux/slice/userSlice";
 import { useContext } from "react";
+import { fontColor, itemColor } from "../../../../style";
 
 const styles = StyleSheet.create({
   container: {
@@ -19,6 +20,9 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     flexDirection: "row",
+    backgroundColor: itemColor,
+    padding: 10,
+    borderRadius: 20,
   },
   center: {
     display: "flex",
@@ -35,10 +39,10 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 10,
   },
-  name: {},
+  name: { color: fontColor },
   content_message: {
     opacity: 0.6,
-
+    color: fontColor,
     overflow: "hidden",
   },
   status: {

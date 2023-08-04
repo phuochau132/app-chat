@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { blueColor, global_styles } from "../../../style";
+import { blueColor, fontColor, global_styles } from "../../../style";
 import { Image } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
 import PushNotification from "react-native-push-notification";
@@ -25,6 +25,7 @@ Notifications.setNotificationHandler({
 
 import { stompClient } from "../../../index";
 import { addFriend } from "../../redux/slice/userSlice";
+import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
 
 const styles = StyleSheet.create({
   header: {
@@ -39,6 +40,7 @@ const styles = StyleSheet.create({
   text: {
     width: 60,
     textAlign: "center",
+    color: fontColor,
   },
 });
 const Index: React.FC<{ item: any; eventOnClose: any }> = ({
@@ -64,177 +66,204 @@ const Index: React.FC<{ item: any; eventOnClose: any }> = ({
     });
   }, [userRequestAddFriend]);
   const userFriend = check();
-  console.log(userRequestAddFriend);
-  console.log(userFriend);
-  console.log(12398);
 
   return (
-    <View style={global_styles.wrapper}>
-      {/* {loading && (
+    <LinearGradientWrapper>
+      <View style={[global_styles.wrapper, { paddingTop: 0 }]}>
+        {/* {loading && (
         <View style={global_styles.loadingContainer}>
           <ActivityIndicator size="large" color="blue" />
         </View>
       )} */}
-      <View style={global_styles.rowCenterBetween}>
-        <View style={global_styles.rowCenter}>
-          <Ionicons
-            onPress={eventOnClose}
-            name="arrow-back-outline"
-            size={25}
-            color="black"
-          />
-          <Text style={{ fontSize: 20, fontWeight: "bold", marginLeft: 30 }}>
-            {item.nickName}
-          </Text>
-        </View>
-        <Ionicons
-          style={{ marginRight: 10 }}
-          name="grid-outline"
-          size={30}
-          color="black"
-        />
-      </View>
-      <View style={[global_styles.rowCenterBetween, { marginTop: 20 }]}>
-        <View style={global_styles.ColumnCenter}>
-          <Image
-            source={{
-              uri: process.env.HOST_SERVER + item.avatar,
-            }}
-            style={styles.img}
-          />
-          <Text style={{ fontWeight: "bold", marginTop: 5 }}>
-            {item.fullName}
-          </Text>
-        </View>
-        <View style={[global_styles.ColumnCenter]}>
-          <Text
-            style={{ fontWeight: "bold", textAlign: "center", fontSize: 16 }}
-          >
-            2
-          </Text>
-          <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
-            Bài viết
-          </Text>
-        </View>
-        <View style={[global_styles.ColumnCenter]}>
-          <Text
-            style={[
-              styles.text,
-              { fontWeight: "bold", textAlign: "center", fontSize: 16 },
-            ]}
-          >
-            2
-          </Text>
-          <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
-            Người theo giỏi
-          </Text>
-        </View>
-        <View style={[global_styles.ColumnCenter]}>
-          <Text
-            style={{ fontWeight: "bold", textAlign: "center", fontSize: 16 }}
-          >
-            2
-          </Text>
-          <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
-            Đang theo dõi
-          </Text>
-        </View>
-      </View>
-      <View style={[global_styles.rowCenterBetween, { marginTop: 20 }]}>
-        {!userFriend && (
-          <TouchableOpacity
-            onPress={() => {
-              handleAddFriend();
-            }}
-            style={[global_styles.touchBtn, { backgroundColor: blueColor }]}
-          >
-            <View style={[{ width: 140 }, global_styles.rowCenter]}>
-              <Ionicons name="person-add-outline" color="white" size={17} />
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  color: "white",
-                  marginLeft: 5,
-                }}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                Thêm bạn bè
-              </Text>
-            </View>
-          </TouchableOpacity>
-        )}
-        {userFriend && userFriend[0].status == 1 && (
-          <TouchableOpacity
-            onPress={() => {
-              setIsFriend(!isFriend);
-            }}
-            style={[global_styles.touchBtn]}
-          >
-            <View style={[{ width: 140 }, global_styles.rowCenter]}>
-              <Ionicons name="person-add-outline" color="black" size={17} />
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  color: "black",
-                  marginLeft: 5,
-                }}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                Bạn bè
-              </Text>
-            </View>
-          </TouchableOpacity>
-        )}
-        {userFriend && userFriend[0].status == 0 && (
-          <TouchableOpacity
-            onPress={() => {
-              setIsFriend(!isFriend);
-            }}
-            style={[global_styles.touchBtn]}
-          >
-            <View style={[{ width: 140 }, global_styles.rowCenter]}>
-              <Ionicons name="person-add-outline" color="black" size={17} />
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  color: "black",
-                  marginLeft: 5,
-                }}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                Hủy kết bạn
-              </Text>
-            </View>
-          </TouchableOpacity>
-        )}
-        <TouchableOpacity
-          style={[global_styles.touchBtn, global_styles.rowCenter]}
-        >
-          <View style={{ width: 140, alignItems: "center" }}>
+        <View style={global_styles.rowCenterBetween}>
+          <View style={global_styles.rowCenter}>
+            <Ionicons
+              onPress={eventOnClose}
+              name="arrow-back-outline"
+              size={25}
+              color={fontColor}
+            />
             <Text
               style={{
+                color: fontColor,
+                fontSize: 20,
                 fontWeight: "bold",
-                textAlign: "center",
-                // Add any other styles you need
+                marginLeft: 30,
               }}
-              numberOfLines={1}
-              ellipsizeMode="tail"
             >
-              Nhắn tin
+              {item.nickName}
             </Text>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={[global_styles.touchBtn]}>
-          <Ionicons name="person-add-outline" size={17} />
-        </TouchableOpacity>
+          <Ionicons
+            style={{ marginRight: 10 }}
+            name="grid-outline"
+            size={30}
+            color={fontColor}
+          />
+        </View>
+        <View style={[global_styles.rowCenterBetween, { marginTop: 20 }]}>
+          <View style={global_styles.ColumnCenter}>
+            <Image
+              source={{
+                uri: process.env.HOST_SERVER + item.avatar,
+              }}
+              style={styles.img}
+            />
+            <Text
+              style={{ color: fontColor, fontWeight: "bold", marginTop: 5 }}
+            >
+              {item.fullName}
+            </Text>
+          </View>
+          <View style={[global_styles.ColumnCenter]}>
+            <Text
+              style={{
+                color: fontColor,
+                fontWeight: "bold",
+                textAlign: "center",
+                fontSize: 16,
+              }}
+            >
+              2
+            </Text>
+            <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
+              Bài viết
+            </Text>
+          </View>
+          <View style={[global_styles.ColumnCenter]}>
+            <Text
+              style={[
+                styles.text,
+                { fontWeight: "bold", textAlign: "center", fontSize: 16 },
+              ]}
+            >
+              2
+            </Text>
+            <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
+              Người theo giỏi
+            </Text>
+          </View>
+          <View style={[global_styles.ColumnCenter]}>
+            <Text
+              style={{
+                color: fontColor,
+                fontWeight: "bold",
+                textAlign: "center",
+                fontSize: 16,
+              }}
+            >
+              2
+            </Text>
+            <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
+              Đang theo dõi
+            </Text>
+          </View>
+        </View>
+        <View style={[global_styles.rowCenterBetween, { marginTop: 20 }]}>
+          {!userFriend && (
+            <TouchableOpacity
+              onPress={() => {
+                handleAddFriend();
+              }}
+              style={[global_styles.touchBtn, { backgroundColor: "black" }]}
+            >
+              <View style={[{ width: 140 }, global_styles.rowCenter]}>
+                <Ionicons name="person-add-outline" color="white" size={17} />
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    color: "white",
+                    marginLeft: 5,
+                  }}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  Thêm bạn bè
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
+          {userFriend && userFriend[0].status == 1 && (
+            <TouchableOpacity
+              onPress={() => {
+                setIsFriend(!isFriend);
+              }}
+              style={[global_styles.touchBtn]}
+            >
+              <View style={[{ width: 140 }, global_styles.rowCenter]}>
+                <Ionicons
+                  name="person-add-outline"
+                  color={fontColor}
+                  size={17}
+                />
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    color: { fontColor },
+                    marginLeft: 5,
+                  }}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  Bạn bè
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
+          {userFriend && userFriend[0].status == 0 && (
+            <TouchableOpacity
+              onPress={() => {
+                setIsFriend(!isFriend);
+              }}
+              style={[global_styles.touchBtn]}
+            >
+              <View style={[{ width: 140 }, global_styles.rowCenter]}>
+                <Ionicons
+                  name="person-add-outline"
+                  color={fontColor}
+                  size={17}
+                />
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    color: { fontColor },
+                    marginLeft: 5,
+                  }}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  Hủy kết bạn
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            style={[global_styles.touchBtn, global_styles.rowCenter]}
+          >
+            <View style={{ width: 140, alignItems: "center" }}>
+              <Text
+                style={{
+                  color: fontColor,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  // Add any other styles you need
+                }}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                Nhắn tin
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={[global_styles.touchBtn]}>
+            <Ionicons name="person-add-outline" size={17} />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </LinearGradientWrapper>
   );
 };
 async function sendPushNotification(user: any) {

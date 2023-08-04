@@ -6,7 +6,7 @@ import { Avatar } from "@rneui/themed";
 import { Image } from "react-native-elements";
 import { StyleSheet, View } from "react-native";
 
-import { global_styles } from "../../../style";
+import { global_styles, itemColor } from "../../../style";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllFriend, loadAllUser } from "../../redux/slice/userSlice";
 import { tabRoutes } from "../../route";
@@ -29,49 +29,70 @@ const Index: React.FC = () => {
     dispatch(getAllFriend(user.id));
   }, []);
   return (
-    <Tab.Navigator>
-      {tabRoutes.map((item, index) => {
-        const Page = item.component;
-        return (
-          <Tab.Screen
-            key={index}
-            name={item.name}
-            options={{
-              headerShown: false,
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name={item.iconName} size={size} color={color} />
-              ),
-              tabBarLabel: "",
-            }}
-          >
-            {(props) => <Page />}
-          </Tab.Screen>
-        );
-      })}
-      <Tab.Screen
-        name="tabProfile"
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <View
-              style={[
-                { padding: 1.5, backgroundColor: color, borderRadius: 50 },
-              ]}
-            >
-              <Image
-                source={{
-                  uri: process.env.HOST_SERVER + user.avatar,
-                }}
-                style={[styles.img]}
-              />
-            </View>
-          ),
-          tabBarLabel: "",
+    <View
+      style={{
+        width: "100%",
+        height: "100%",
+      }}
+    >
+      <Tab.Navigator
+        screenOptions={{
+          tabBarHideOnKeyboard: true,
+          tabBarShowLabel: false,
+          tabBarStyle: [{ display: "flex", backgroundColor: "#5A544A" }, null],
         }}
       >
-        {(props) => <Profile />}
-      </Tab.Screen>
-    </Tab.Navigator>
+        {tabRoutes.map((item, index) => {
+          const Page = item.component;
+          return (
+            <Tab.Screen
+              key={index}
+              name={item.name}
+              options={{
+                headerShown: false,
+                tabBarIcon: ({ size, focused }) => (
+                  <Ionicons
+                    key={index}
+                    name={item.iconName}
+                    size={size}
+                    color={focused ? "white" : "gray"}
+                  />
+                ),
+              }}
+            >
+              {(props) => <Page />}
+            </Tab.Screen>
+          );
+        })}
+        <Tab.Screen
+          name="tabProfile"
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ color, size, focused }) => (
+              <View
+                style={[
+                  {
+                    padding: 1.5,
+                    backgroundColor: focused ? "white" : "gray",
+                    borderRadius: 50,
+                  },
+                ]}
+              >
+                <Image
+                  source={{
+                    uri: user && process.env.HOST_SERVER + user.avatar,
+                  }}
+                  style={[styles.img]}
+                />
+              </View>
+            ),
+            tabBarLabel: "",
+          }}
+        >
+          {(props) => <Profile />}
+        </Tab.Screen>
+      </Tab.Navigator>
+    </View>
   );
 };
 

@@ -6,20 +6,28 @@ import {
   View,
   KeyboardAvoidingView,
   TextInput,
+  TouchableOpacity,
 } from "react-native";
 import { Image } from "@rneui/themed";
 import { Input } from "react-native-elements";
-import { useNavigation } from "@react-navigation/native";
+import { StackActions, useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { login } from "../../redux/slice/authSlice";
 import Loading from "../../Component/Loading";
+import { btnBgr, btnColor, global_styles, itemColor } from "../../../style";
+import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
+import logo from "../../img/logo.png";
 
 const styles = StyleSheet.create({
   container: {
     display: "flex",
     justifyContent: "center",
+  },
+  nameBrand: {
+    fontSize: 50,
+    fontWeight: "bold",
   },
   col_center: {
     display: "flex",
@@ -45,7 +53,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   text: {
-    color: "#3797EF",
+    color: "black",
     fontWeight: "bold",
   },
   float_right: {
@@ -56,7 +64,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     height: 50,
     borderWidth: 1,
-    borderColor: "#3797EF",
+    borderColor: "black",
     borderRadius: 10,
     paddingHorizontal: 10,
     backgroundColor: "white",
@@ -72,7 +80,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     borderRightWidth: 1,
-    borderColor: "#3797EF",
+    borderColor: "black",
     paddingRight: 10,
     marginRight: 10,
   },
@@ -83,9 +91,10 @@ const Index: React.FC = () => {
   const navigation = useNavigation();
   const isLoading = useSelector((state: any) => state.auth.status);
   const user = useSelector((state: any) => state.auth.user);
+
   useEffect(() => {
     if (user != null) {
-      navigation.navigate("home");
+      navigation.dispatch(StackActions.replace("home"));
     }
   }, [user]);
   const [data, setData] = useState({
@@ -98,22 +107,16 @@ const Index: React.FC = () => {
   }, [data]);
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior="padding"
-      keyboardVerticalOffset={100}
-    >
+    <LinearGradientWrapper>
       {isLoading == "loading" && <Loading />}
-      <Image
-        source={{
-          uri: "https://media0.giphy.com/media/BHNfhgU63qrks/giphy.gif?cid=ecf05e476tqqs0mfvcdqrspikz6sfigfo0h9p02ft1z1pu8y&ep=v1_gifs_search&rid=giphy.gif&ct=g",
-        }}
-        style={{ width: "100%", height: 200 }}
-      />
+      <View style={[global_styles.rowCenter, { paddingTop: 50 }]}>
+        <Image source={logo} style={{ width: 250, height: 200 }} />
+      </View>
+
       <View style={styles.col_center}>
         <View style={styles.inputContainer}>
           <View style={styles.iconContainer}>
-            <Ionicons name="person-circle" size={20} color="#3797EF" />
+            <Ionicons name="person-circle" size={20} color="black" />
           </View>
           <TextInput
             style={styles.input}
@@ -125,12 +128,12 @@ const Index: React.FC = () => {
             }}
             value={data.email}
             placeholder="UserName"
-            placeholderTextColor="#3797EF"
+            placeholderTextColor="gray"
           />
         </View>
         <View style={[styles.inputContainer]}>
           <View style={styles.iconContainer}>
-            <Ionicons name="key" size={20} color="#3797EF" />
+            <Ionicons name="key" size={20} color="black" />
           </View>
           <TextInput
             style={styles.input}
@@ -142,7 +145,7 @@ const Index: React.FC = () => {
             }}
             value={data.password}
             placeholder="Password"
-            placeholderTextColor="#3797EF"
+            placeholderTextColor="gray"
           />
         </View>
 
@@ -176,27 +179,41 @@ const Index: React.FC = () => {
           }
         /> */}
         <View style={[styles.login_btn_wrapper, { marginTop: 20 }]}>
-          <Button onPress={handleLogin} title="Login" />
+          <TouchableOpacity
+            style={{ padding: 10, backgroundColor: btnBgr }}
+            onPress={handleLogin}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+                textAlign: "center",
+                color: btnColor,
+              }}
+            >
+              Login
+            </Text>
+          </TouchableOpacity>
         </View>
         <View style={[styles.float_right, { marginTop: 20 }]}>
           <Text style={styles.text}>Forgot Password</Text>
         </View>
+        <View style={styles.row_center}>
+          <Text style={{ color: "#000000", opacity: 0.6 }}>
+            Don't have an account?
+          </Text>
+          <Text
+            onPress={() => {
+              navigation.navigate("register");
+            }}
+            style={styles.text}
+          >
+            {" "}
+            Sign up
+          </Text>
+        </View>
       </View>
-      <View style={styles.row_center}>
-        <Text style={{ color: "#000000", opacity: 0.6 }}>
-          Don't have an account?
-        </Text>
-        <Text
-          onPress={() => {
-            navigation.navigate("register");
-          }}
-          style={styles.text}
-        >
-          {" "}
-          Sign up
-        </Text>
-      </View>
-    </KeyboardAvoidingView>
+    </LinearGradientWrapper>
   );
 };
 

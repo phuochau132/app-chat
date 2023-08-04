@@ -77,10 +77,14 @@ const Item: React.FC<{ item: any }> = ({ item }) => {
       </View>
       <View style={[global_styles.ColumnCenter, { flex: 1, padding: 10 }]}>
         <View style={[global_styles.rowCenterBetween, { width: "100%" }]}>
-          <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+          <Text
+            style={[global_styles.text, { fontSize: 18, fontWeight: "bold" }]}
+          >
             {user.fullName}
           </Text>
-          <Text style={{ fontSize: 14, opacity: 0.6 }}>{showDayAgo}</Text>
+          <Text style={[global_styles.text, { fontSize: 14, opacity: 0.6 }]}>
+            {showDayAgo}
+          </Text>
         </View>
         <View
           style={[
@@ -94,7 +98,7 @@ const Item: React.FC<{ item: any }> = ({ item }) => {
             }}
             style={[styles.btn, { backgroundColor: blueColor }]}
           >
-            <Text style={styles.text}>Chấp Nhận</Text>
+            <Text style={[global_styles.text, styles.text]}>Chấp Nhận</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
@@ -102,7 +106,7 @@ const Item: React.FC<{ item: any }> = ({ item }) => {
             }}
             style={[styles.btn, { backgroundColor: greyColorBtn }]}
           >
-            <Text style={styles.text}>Xóa</Text>
+            <Text style={[global_styles.text, styles.text]}>Xóa</Text>
           </TouchableOpacity>
         </View>
       </View>
