@@ -13,7 +13,6 @@ const initialState = {
   linkTo: "/",
 };
 export const loadAllUser: any = createAsyncThunk("user/loadUser", async () => {
-  console.log(123);
   try {
     const response = await axiosInstance.get(
       `${process.env.HOST_SERVER}/api/users`
@@ -27,7 +26,7 @@ export const loadAllUser: any = createAsyncThunk("user/loadUser", async () => {
 export const addFriend: any = createAsyncThunk(
   "user/addFriend",
   async ({ userSend, userReceive }: { userSend: any; userReceive: any }) => {
-    console.log(123);
+    console.log();
     try {
       const response = await axios.post(
         `${process.env.HOST_SERVER}/api/users/friend`,
@@ -61,6 +60,7 @@ export const addFriend: any = createAsyncThunk(
 export const getAllFriend: any = createAsyncThunk(
   "user/getAllFriend",
   async (id: number) => {
+    console.log();
     try {
       const response = await axios.get(
         `${process.env.HOST_SERVER}/api/users/friend/${id}`
@@ -81,7 +81,6 @@ export const getAllFriend: any = createAsyncThunk(
 export const acceptRequestAF: any = createAsyncThunk(
   "user/acceptRequestAF",
   async (id: number) => {
-    console.log();
     try {
       const response = await axios.post(
         `${process.env.HOST_SERVER}/api/users/friend/accept`,

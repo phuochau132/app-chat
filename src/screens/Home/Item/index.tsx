@@ -19,6 +19,8 @@ import {
   itemColor,
 } from "../../../../style";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { dislikePost, likePost } from "../../../redux/slice/postSlice";
 
 const styles = StyleSheet.create({
   icon: {
@@ -28,19 +30,17 @@ const styles = StyleSheet.create({
   },
 });
 
-const height = 130;
+const height = 100;
 const width = 100;
 const Item: React.FC<{
-  event: any;
+  eventOnLikesModal: any;
   item: any;
-}> = ({ item, event }) => {
-  console.log(98123);
-
-  console.log(item);
-
-  const navigation = useNavigation();
+}> = ({ item, eventOnLikesModal }) => {
   const listImg = item.imgPosts;
   const [index, setIndex] = useState(1);
+  const user = useSelector((state: any) => state.auth.user);
+  const posts = useSelector((state: any) => state.post.posts);
+  const dispatch = useDispatch();
   const getLengthWidth = () => {
     if (listImg.length == 1) {
       return width;
@@ -55,6 +55,13 @@ const Item: React.FC<{
       return height / Math.ceil(listImg.length / 2);
     }
   };
+  const handleLike = () => {
+    dispatch(likePost({ idPost: item.id, idUser: user.id }));
+  };
+  const handleDisLike = () => {
+    dispatch(dislikePost({ idPost: item.id, idUser: user.id }));
+  };
+
   const toggleIndex = (index: Number) => [setIndex(Number)];
   return (
     <View
@@ -70,7 +77,7 @@ const Item: React.FC<{
         },
       ]}
     >
-      <View style={[global_styles.rowCenter]}>
+      <View style={[global_styles.rowCenter, { marginBottom: 5 }]}>
         <View style={[global_styles.rowCenter]}>
           <Image
             source={{
@@ -93,20 +100,34 @@ const Item: React.FC<{
           </Text>
         </View>
       </View>
+      <Text
+        style={[
+          global_styles.text,
+          {
+            fontSize: 15,
+            marginTop: 10,
+            textAlign: "left",
+            width: "100%",
+          },
+        ]}
+      >
+        {item.text}
+      </Text>
       <View
         style={[
           global_styles.rowCenter,
           {
             marginTop: 20,
             flexWrap: "wrap",
-            height: 300,
+            height: 320,
           },
         ]}
       >
-        {listImg.map((item, index) => {
+        {listImg.map((item: any, index: number) => {
           if (index < 3) {
             return (
               <View
+                key={index}
                 style={{
                   marginTop: 30,
                   width: `${getLengthWidth() - 2}%`,
@@ -137,6 +158,7 @@ const Item: React.FC<{
           if (index == 3) {
             return (
               <View
+                key={index}
                 style={{
                   position: "relative",
                   width: `${getLengthWidth() - 2}%`,
@@ -179,21 +201,41 @@ const Item: React.FC<{
       <View
         style={[
           global_styles.rowCenterBetween,
-          { width: "95%", marginTop: 20 },
+          { width: "95%", marginTop: 40 },
         ]}
       >
         <View style={[global_styles.rowCenter]}>
-          <View style={[global_styles.rowCenter, { marginRight: 10 }]}>
-            <Ionicons
-              onPress={event}
-              style={styles.icon}
-              name="heart-outline"
-            />
-            <Text style={[global_styles.text]}>0</Text>
+          <View style={[global_styles.rowCenter, { marginRight: 20 }]}>
+            {posts.find((item: any) => {
+              return item.likedUsers.some((e: any) => e.id === user.id);
+            }) ? (
+              <Ionicons
+                onPress={handleDisLike}
+                style={[styles.icon, { color: "#f84f6b" }]}
+                name="heart-circle-outline"
+              />
+            ) : (
+              <Ionicons
+                onPress={handleLike}
+                style={styles.icon}
+                name="heart-outline"
+              />
+            )}
+            <View>
+              <TouchableOpacity
+                onPress={() => {
+                  eventOnLikesModal(item.id);
+                }}
+              >
+                <Text style={[global_styles.text, { marginLeft: 10 }]}>
+                  {item.likedUsers.length}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          <View style={[global_styles.rowCenter, { marginRight: 10 }]}>
+          <View style={[global_styles.rowCenter, { marginRight: 20 }]}>
             <Ionicons name="chatbubble-ellipses-outline" style={styles.icon} />
-            <Text style={[global_styles.text]}>0</Text>
+            <Text style={[global_styles.text, { marginLeft: 10 }]}>0</Text>
           </View>
         </View>
         <View style={[global_styles.rowCenter]}>

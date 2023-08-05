@@ -17,7 +17,7 @@ const initialState = {
 export const login = createAsyncThunk(
   "auth/login",
   async ({ email, password }: { email: string; password: string }) => {
-    console.log(98123);
+    console.log();
     try {
       const response = await axios.post(
         `${process.env.HOST_SERVER}/api/auth/login`,
@@ -49,6 +49,7 @@ export const changeInfo = createAsyncThunk(
   "auth/changeInfo",
   async ({ user, file }: any) => {
     const formData = new FormData();
+    console.log();
     if (file) {
       formData.append("file", {
         uri: file,
@@ -77,8 +78,7 @@ export const getInfoUserFToken = createAsyncThunk(
   "auth/getInfoUserFToken",
   async (accessToken: string) => {
     try {
-      console.log();
-
+      console.log(123);
       const response = await axios.post(
         `${process.env.HOST_SERVER}/api/users`,
         {

@@ -36,6 +36,7 @@ if (typeof global.TextDecoder === "undefined") {
 }
 export var stompClient: any = null;
 const Index: React.FC = () => {
+  console.log();
   const dispatch = useDispatch();
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);

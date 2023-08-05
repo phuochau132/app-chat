@@ -28,6 +28,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useDispatch, useSelector } from "react-redux";
 import { addPost } from "../../redux/slice/postSlice";
 import Loading from "../../Component/Loading";
+import ModalLike from "./ModalLike";
 
 let ScreenHeight = Dimensions.get("window").height;
 let ScreenWidth = Dimensions.get("window").width;
@@ -93,13 +94,14 @@ const Index: React.FC = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
+  const [isModalLikesVisible, setModalLikesVisible] = useState<boolean>(false);
+  const [idPost, setIdPost] = useState<number>();
   const [textContent, setTextContent] = useState<string>("");
   const [statusModalPost, setStatusModalPost] = useState<boolean>(false);
   const [images, setImages] = useState<string[] | undefined>([]);
   const auth = useSelector((state: any) => {
     return state.auth;
   });
-
   const status = useSelector((state: any) => {
     return state.post.status;
   });
@@ -147,6 +149,7 @@ const Index: React.FC = () => {
     }
   };
   const handleAddPost = () => {
+    console.log(auth.user);
     if (auth.user) {
       dispatch(
         addPost({
@@ -279,8 +282,9 @@ const Index: React.FC = () => {
                 <Item
                   key={index}
                   item={item}
-                  event={() => {
-                    setModalVisible(!isModalVisible);
+                  eventOnLikesModal={(id: number) => {
+                    setIdPost(id);
+                    setModalLikesVisible(!isModalLikesVisible);
                   }}
                 />
               );
@@ -448,12 +452,17 @@ const Index: React.FC = () => {
                     Tạo bài viết
                   </Text>
                 </View>
-                <Text
-                  onPress={handleAddPost}
-                  style={{ color: blueColor, fontSize: 17, fontWeight: "bold" }}
-                >
-                  Chia sẻ
-                </Text>
+                <TouchableOpacity onPress={handleAddPost}>
+                  <Text
+                    style={{
+                      color: blueColor,
+                      fontSize: 17,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Chia sẻ
+                  </Text>
+                </TouchableOpacity>
               </View>
               <View
                 style={[
@@ -563,8 +572,15 @@ const Index: React.FC = () => {
               </View>
             </View>
           </LinearGradientWrapper>
+
           {/* Modal heart */}
-          <LinearGradientWrapper></LinearGradientWrapper>
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isModalLikesVisible}
+        >
+          <ModalLike idPost={idPost} />
         </Modal>
       </View>
     </LinearGradientWrapper>
