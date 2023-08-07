@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import Toast from "react-native-simple-toast";
+import Constants from "expo-constants";
 
 const initialState = {
   error: null,
@@ -10,10 +11,10 @@ const initialState = {
 export const register = createAsyncThunk(
   "auth/register",
   async ({ email, password }: { email: string; password: string }) => {
-    console.log();
+    console.log(123);
     try {
       const response = await axios.post(
-        `${process.env.HOST_SERVER}/api/auth/register`,
+        `${Constants.manifest.extra.HOST_SERVER}/api/auth/register`,
         {
           email: email,
           password: password,

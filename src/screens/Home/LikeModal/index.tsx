@@ -32,14 +32,26 @@ const styles = StyleSheet.create({
   },
 });
 
-const ModalLike: React.FC<{ idPost: number }> = ({ idPost }) => {
+const LikesModal: React.FC<{ idPost: number; event: any }> = ({
+  idPost,
+  event,
+}) => {
   const posts = useSelector((state: any) => state.post.posts);
+  const navigation = useNavigation();
   const post = posts.filter((item: any) => {
     return item.id === idPost;
   });
 
   return (
     <LinearGradientWrapper>
+      <View>
+        <Ionicons
+          onPress={event}
+          name="arrow-back-outline"
+          size={25}
+          color={fontColor}
+        />
+      </View>
       <View>
         {post[0].likedUsers.map((item: any) => {
           return <Item item={item} />;
@@ -49,4 +61,4 @@ const ModalLike: React.FC<{ idPost: number }> = ({ idPost }) => {
   );
 };
 
-export default ModalLike;
+export default LikesModal;

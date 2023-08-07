@@ -11,7 +11,7 @@ const LinearGradientWrapper: React.FC<{ children: any }> = ({ children }) => {
     <View style={{ width: ScreenWidth, height: ScreenHeight }}>
       <LinearGradient
         colors={["#6A6257", "#5A544A", "#302D28"]}
-        style={{ width: "100%", height: "100%", padding: 10 }}
+        style={{ width: "100%", height: "100%", padding: 10, zIndex: -100 }}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >

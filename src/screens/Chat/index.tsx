@@ -10,14 +10,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Image } from "@rneui/themed";
-import { Input } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import * as DocumentPicker from "expo-document-picker";
-import { Video } from "expo-av";
-import SockJS from "sockjs-client";
-import { over } from "stompjs";
-
 import {
   Bubble,
   Composer,
@@ -29,13 +24,15 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { useSelector } from "react-redux";
 import { stompClient } from "../../../index";
+import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
+import { fontColor, global_styles, itemColor } from "../../../style";
 const styles = StyleSheet.create({
   container: {
     height: "100%",
     width: "100%",
     paddingLeft: 20,
     paddingRight: 20,
-    color: "black",
+    color: { fontColor },
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-around",
@@ -71,6 +68,9 @@ const styles = StyleSheet.create({
   },
   name: {
     marginLeft: 10,
+    fontSize: 16,
+    fontweight: "bold",
+    color: fontColor,
   },
   img: {
     width: 40,
@@ -98,10 +98,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-    color: "black",
+    color: { fontColor },
   },
   inputToolbarContainer: {
-    borderWidth: 2,
+    borderWidth: 1,
     paddingHorizontal: 10,
     paddingVertical: 5,
     height: 50,
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
     flexDirection: "row",
-    backgroundColor: "#f9f8f8",
+    backgroundColor: itemColor,
     borderColor: "#e8e8e8",
   },
   inputToolbarPrimary: {
@@ -235,7 +235,7 @@ export const Index: React.FC<{}> = () => {
         <Ionicons
           name="image-outline"
           size={24}
-          color="black"
+          color={fontColor}
           onPress={handleImageUpload}
         />
       </View>
@@ -245,18 +245,18 @@ export const Index: React.FC<{}> = () => {
   const navigation = useNavigation();
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[global_styles.wrapper, { backgroundColor: "#5A544A" }]}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
-      <View style={styles.row_center}>
+      <View style={global_styles.rowCenter}>
         <Ionicons
           onPress={() => {
             navigation.goBack();
           }}
           name="arrow-back"
           size={20}
-          color="black"
+          color={fontColor}
         />
         <View style={styles.info}>
           <Image
@@ -265,16 +265,16 @@ export const Index: React.FC<{}> = () => {
             }}
             style={styles.img}
           />
-          <Text style={styles.name}>Riven</Text>
+          <Text style={styles.name}>{auth.user.nickName}</Text>
         </View>
         <View style={styles.row_center}>
           <Ionicons
             style={{ marginRight: 15 }}
             name="call-outline"
             size={20}
-            color="black"
+            color={fontColor}
           />
-          <Ionicons name="videocam-outline" size={20} color="black" />
+          <Ionicons name="videocam-outline" size={20} color={fontColor} />
         </View>
       </View>
       <View style={styles.items}>
@@ -294,7 +294,7 @@ export const Index: React.FC<{}> = () => {
           )}
           renderSend={(props) => (
             <Send {...props}>
-              <Ionicons name="send-outline" size={24} color="black" />
+              <Ionicons name="send-outline" size={24} color={fontColor} />
             </Send>
           )}
           renderBubble={(props) => (
@@ -321,7 +321,7 @@ export const Index: React.FC<{}> = () => {
                       {...otherSendProps}
                     >
                       <View>
-                        <Ionicons name="send" size={24} color="black" />
+                        <Ionicons name="send" size={24} color={fontColor} />
                       </View>
                     </Send>
                   );

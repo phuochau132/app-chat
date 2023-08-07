@@ -1,6 +1,7 @@
-import React, { SetStateAction, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import {
   Dimensions,
+  KeyboardAvoidingView,
   Modal,
   ScrollView,
   StyleSheet,
@@ -12,6 +13,7 @@ import {
 import { Image } from "@rneui/themed";
 import { Ionicons } from "@expo/vector-icons";
 import { StackActions, useNavigation } from "@react-navigation/native";
+import Constants from "expo-constants";
 
 import {
   blueColor,
@@ -26,9 +28,10 @@ import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
 import { Button } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { useDispatch, useSelector } from "react-redux";
-import { addPost } from "../../redux/slice/postSlice";
+import { addPost, getPosts } from "../../redux/slice/postSlice";
 import Loading from "../../Component/Loading";
-import ModalLike from "./ModalLike";
+import LikesModal from "./LikeModal";
+import CommentModal from "./CommentModal";
 
 let ScreenHeight = Dimensions.get("window").height;
 let ScreenWidth = Dimensions.get("window").width;
@@ -69,16 +72,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
   },
-  textInput: {
-    padding: 5,
-    paddingLeft: 20,
-    paddingRight: 20,
-    marginLeft: 20,
-    borderRadius: 20,
-    backgroundColor: "rgba(133,126,117,255)",
-    color: fontColor,
-    flex: 1,
-  },
+
   inputPost: {
     color: "white",
     fontSize: 18,
@@ -95,6 +89,8 @@ const Index: React.FC = () => {
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
   const [isModalLikesVisible, setModalLikesVisible] = useState<boolean>(false);
+  const [isCommentModalVisible, setCommentModalVisible] =
+    useState<boolean>(false);
   const [idPost, setIdPost] = useState<number>();
   const [textContent, setTextContent] = useState<string>("");
   const [statusModalPost, setStatusModalPost] = useState<boolean>(false);
@@ -105,9 +101,13 @@ const Index: React.FC = () => {
   const status = useSelector((state: any) => {
     return state.post.status;
   });
+  useEffect(() => {
+    dispatch(getPosts(0));
+  }, []);
   const posts = useSelector((state: any) => {
     return state.post.posts;
   });
+
   const [statusPostCurrent, setStatusPostCurrent] = useState({
     index: 0,
     label: "Công khai",
@@ -162,6 +162,20 @@ const Index: React.FC = () => {
       navigation.dispatch(StackActions.replace("home"));
     }
   };
+  const handleScroll = (event: any) => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    const isBottom =
+      contentOffset.y + layoutMeasurement.height >= contentSize.height - 20;
+    if (isBottom && contentOffset.y > 0) {
+      const maxId = posts.reduce(
+        (max: any, post: any) => (post.id > max ? post.id : max),
+        0
+      );
+      console.log(maxId);
+      dispatch(getPosts(maxId));
+    }
+  };
+
   return (
     <LinearGradientWrapper>
       <View style={[global_styles.wrapper]}>
@@ -180,7 +194,10 @@ const Index: React.FC = () => {
             />
           </View>
         </View>
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          onScroll={handleScroll}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={[global_styles.ColumnCenter, { marginTop: 30 }]}>
             {/* //123 */}
             <View
@@ -208,7 +225,7 @@ const Index: React.FC = () => {
                   caretHidden={true}
                   placeholderTextColor={fontColorItem}
                   focusable={false}
-                  style={styles.textInput}
+                  style={global_styles.textInput}
                   selectionColor={fontColorItem}
                   placeholder="Bạn đang nghĩ gì?"
                 />
@@ -285,6 +302,10 @@ const Index: React.FC = () => {
                   eventOnLikesModal={(id: number) => {
                     setIdPost(id);
                     setModalLikesVisible(!isModalLikesVisible);
+                  }}
+                  eventOnCommentModal={(id: number) => {
+                    setIdPost(id);
+                    setCommentModalVisible(!isCommentModalVisible);
                   }}
                 />
               );
@@ -580,7 +601,24 @@ const Index: React.FC = () => {
           transparent={true}
           visible={isModalLikesVisible}
         >
-          <ModalLike idPost={idPost} />
+          <LikesModal
+            idPost={idPost}
+            event={() => {
+              setModalLikesVisible(!isModalLikesVisible);
+            }}
+          />
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isCommentModalVisible}
+        >
+          <CommentModal
+            idPost={idPost}
+            event={() => {
+              setCommentModalVisible(!isCommentModalVisible);
+            }}
+          />
         </Modal>
       </View>
     </LinearGradientWrapper>

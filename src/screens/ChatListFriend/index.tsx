@@ -14,32 +14,12 @@ import { Searchbar } from "react-native-paper";
 import { useState } from "react";
 
 import Item from "./Item";
+import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
+import SearchBar from "../../Component/SearchBar";
+import { fontColor, global_styles } from "../../../style";
+import { useSelector } from "react-redux";
 
 const styles = StyleSheet.create({
-  container: {
-    height: "100%",
-    width: "100%",
-    paddingLeft: 20,
-    paddingRight: 20,
-    color: "black",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-  },
-  row_center: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 10,
-  },
-  search_bar: {
-    backgroundColor: "#D4D4DA",
-    opacity: 0.4,
-    display: "flex",
-    borderRadius: 30,
-    color: "#3C3C43",
-  },
   text: {
     fontWeight: "bold",
     marginTop: 20,
@@ -56,28 +36,23 @@ const styles = StyleSheet.create({
 const Index: React.FC = () => {
   const navigation = useNavigation();
   const [valueSearch, setValueSearch] = useState("");
+  const user = useSelector((state: any) => state.auth.user);
   const handleTextSearch = (text: string) => {
+    console.log(text);
     setValueSearch(text);
   };
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior="padding"
-      keyboardVerticalOffset={100}
-    >
-      <View style={styles.row_center}>
-        <Ionicons name="chevron-back" size={30} color="black" />
-        <Text style={{ fontSize: 20 }}>Riven</Text>
-        <Ionicons name="add" size={30} color="black" />
+    <LinearGradientWrapper>
+      <View style={[global_styles.rowCenterBetween, { marginTop: 20 }]}>
+        <Ionicons name="chevron-back" size={30} color={fontColor} />
+        <Text style={[global_styles.title, { fontSize: 24 }]}>
+          {user.nickName}
+        </Text>
+        <Ionicons name="add" size={30} color={fontColor} />
       </View>
-      <Searchbar
-        style={styles.search_bar}
-        onChangeText={(text) => {
-          handleTextSearch(text);
-        }}
-        value={valueSearch}
-        placeholder="Search"
-      />
+      <View style={{ height: "10%" }}>
+        <SearchBar setSearchPhrase={handleTextSearch} />
+      </View>
       <View style={styles.items}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <Item></Item>
@@ -94,7 +69,7 @@ const Index: React.FC = () => {
           <Item></Item>
         </ScrollView>
       </View>
-    </KeyboardAvoidingView>
+    </LinearGradientWrapper>
   );
 };
 

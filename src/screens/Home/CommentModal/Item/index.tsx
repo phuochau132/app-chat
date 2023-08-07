@@ -7,14 +7,10 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
 } from "react-native";
+import moment from "moment";
 import { Image } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
-import Constants from "expo-constants";
-
-import { changeProfileChosen } from "../../../redux/slice/userSlice";
-import { useContext } from "react";
-import { fontColor, itemColor } from "../../../../style";
+import { fontColor, itemColor } from "../../../../../style";
 
 const styles = StyleSheet.create({
   container: {
@@ -22,9 +18,6 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     flexDirection: "row",
-    backgroundColor: itemColor,
-    padding: 10,
-    borderRadius: 20,
   },
   center: {
     display: "flex",
@@ -41,8 +34,8 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 10,
   },
-  name: { color: fontColor },
-  content_message: {
+
+  nickName: {
     opacity: 0.6,
     color: fontColor,
     overflow: "hidden",
@@ -50,6 +43,7 @@ const styles = StyleSheet.create({
   status: {
     opacity: 0.6,
     marginLeft: 15,
+    color: fontColor,
   },
   span: {
     width: 10,
@@ -60,17 +54,32 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 2,
   },
+  name: {
+    color: fontColor,
+  },
 });
 
-const Item: React.FC<{ item: any; onPress: any }> = ({ item, onPress }) => {
+const Item: React.FC<{ item: any; margin: any | undefined }> = ({
+  item,
+  margin,
+}) => {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: itemColor,
+          borderRadius: 10,
+          padding: 5,
+          marginLeft: margin,
+        },
+      ]}
+    >
       <View>
         <Image
           source={{
-            uri: Constants.manifest.extra.HOST_SERVER + item.avatar,
+            uri: process.env.HOST_SERVER + item.user.avatar,
           }}
           style={styles.img}
         >
@@ -78,17 +87,13 @@ const Item: React.FC<{ item: any; onPress: any }> = ({ item, onPress }) => {
         </Image>
       </View>
       <View style={styles.info}>
-        <Text style={styles.name}>{item.nickName} </Text>
-        <Text
-          numberOfLines={1}
-          ellipsizeMode="tail"
-          style={styles.content_message}
-        >
-          {item.fullName}
+        <Text style={styles.name}>{item.user.fullName} </Text>
+        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nickName}>
+          {item.text}
         </Text>
       </View>
-      <Text style={styles.status}>now </Text>
-    </TouchableOpacity>
+      <Text style={styles.status}>{moment(item.createAt).fromNow()} </Text>
+    </View>
   );
 };
 

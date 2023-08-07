@@ -9,6 +9,7 @@ import {
   RequestAddFriend,
 } from "../screens";
 import { MenuLayout, MainLayout } from "../layout";
+import UserProfile from "../screens/OtherUserProfile";
 
 const publicRoutes = [
   { name: "login", component: Login, layout: MainLayout },
@@ -17,10 +18,16 @@ const publicRoutes = [
   { name: "chatListFriend", component: ChatListFriend, layout: MainLayout },
   { name: "chat", component: Chat, layout: MainLayout },
   { name: "editProfile", component: EditProfile, layout: MainLayout },
+  { name: "userProfile", component: UserProfile, layout: MainLayout },
 ];
 const tabRoutes = [
   { name: "tabHome", component: Home, iconName: "home-outline" },
   { name: "tabSearch", component: Search, iconName: "search-outline" },
+  {
+    name: "listFriend",
+    component: ChatListFriend,
+    iconName: "chatbubble-ellipses-outline",
+  },
   {
     name: "requestAddFriend",
     component: RequestAddFriend,

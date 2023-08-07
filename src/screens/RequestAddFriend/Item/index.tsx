@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Image } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
+import Constants from "expo-constants";
 
 import { blueColor, global_styles, greyColorBtn } from "../../../../style";
 import { acceptRequestAF, delRequestAF } from "../../../redux/slice/userSlice";
@@ -68,7 +69,7 @@ const Item: React.FC<{ item: any }> = ({ item }) => {
       <View>
         <Image
           source={{
-            uri: process.env.HOST_SERVER + user.avatar,
+            uri: Constants.manifest.extra.HOST_SERVER + user.avatar,
           }}
           style={styles.img}
         >

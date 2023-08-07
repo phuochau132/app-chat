@@ -14,6 +14,7 @@ import { Image } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
 import PushNotification from "react-native-push-notification";
 import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -23,15 +24,10 @@ Notifications.setNotificationHandler({
   }),
 });
 
-import { stompClient } from "../../../index";
 import { addFriend } from "../../redux/slice/userSlice";
 import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
 
 const styles = StyleSheet.create({
-  header: {
-    paddingLeft: 10,
-    paddingRight: 10,
-  },
   img: {
     width: 60,
     height: 60,
@@ -43,12 +39,14 @@ const styles = StyleSheet.create({
     color: fontColor,
   },
 });
-const Index: React.FC<{ item: any; eventOnClose: any }> = ({
+const UserProfile: React.FC<{ item: any; eventOnClose: any }> = ({
   item,
   eventOnClose,
 }) => {
-  const navigation = useNavigation();
+  const navigator = useNavigation();
   const dispatch = useDispatch();
+  console.log(item);
+
   const [loading, setLoading] = useState(false);
   const [isFriend, setIsFriend] = useState(false);
   const user = useSelector((state: any) => {
@@ -66,10 +64,9 @@ const Index: React.FC<{ item: any; eventOnClose: any }> = ({
     });
   }, [userRequestAddFriend]);
   const userFriend = check();
-
   return (
     <LinearGradientWrapper>
-      <View style={[global_styles.wrapper, { paddingTop: 0 }]}>
+      <View>
         {/* {loading && (
         <View style={global_styles.loadingContainer}>
           <ActivityIndicator size="large" color="blue" />
@@ -105,7 +102,7 @@ const Index: React.FC<{ item: any; eventOnClose: any }> = ({
           <View style={global_styles.ColumnCenter}>
             <Image
               source={{
-                uri: process.env.HOST_SERVER + item.avatar,
+                uri: Constants.manifest.extra.HOST_SERVER + item.avatar,
               }}
               style={styles.img}
             />
@@ -241,6 +238,9 @@ const Index: React.FC<{ item: any; eventOnClose: any }> = ({
             </TouchableOpacity>
           )}
           <TouchableOpacity
+            onPress={() => {
+              navigator.navigate("chat");
+            }}
             style={[global_styles.touchBtn, global_styles.rowCenter]}
           >
             <View style={{ width: 140, alignItems: "center" }}>
@@ -282,4 +282,4 @@ async function sendPushNotification(user: any) {
     }),
   });
 }
-export default Index;
+export default UserProfile;

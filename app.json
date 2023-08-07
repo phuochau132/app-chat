@@ -26,6 +26,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "HOST_SERVER": "https://91ec-113-162-148-232.ngrok-free.app"
     }
   }
 }

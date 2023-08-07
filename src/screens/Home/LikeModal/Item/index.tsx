@@ -10,6 +10,7 @@ import {
 import { Image } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { fontColor, itemColor } from "../../../../../style";
+import Constants from "expo-constants";
 
 const styles = StyleSheet.create({
   container: {
@@ -59,13 +60,11 @@ const styles = StyleSheet.create({
 
 const Item: React.FC<{ item: any }> = ({ item }) => {
   const navigation = useNavigation();
-  console.log(12398);
-  console.log(item);
   return (
     <TouchableOpacity
-      onPress={() => {
-        navigation.navigate("chat");
-      }}
+      onPress={() =>
+        navigation.navigate("userProfile", { item: JSON.stringify(item) })
+      }
       style={[
         styles.container,
         { backgroundColor: itemColor, borderRadius: 10, padding: 5 },
@@ -74,7 +73,7 @@ const Item: React.FC<{ item: any }> = ({ item }) => {
       <View>
         <Image
           source={{
-            uri: process.env.HOST_SERVER + item.avatar,
+            uri: Constants.manifest.extra.HOST_SERVER + item.avatar,
           }}
           style={styles.img}
         >

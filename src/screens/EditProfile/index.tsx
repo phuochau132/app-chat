@@ -9,6 +9,7 @@ import { TextInput } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { useDispatch, useSelector } from "react-redux";
 import { changeInfo } from "../../redux/slice/authSlice";
+import Constants from "expo-constants";
 
 const styles = StyleSheet.create({
   header: {
@@ -94,7 +95,7 @@ const Index: React.FC = () => {
   };
   console.log(198);
   console.log(198);
-  console.log(process.env.HOST_SERVER + auth.user.avatar);
+  console.log(Constants.manifest.extra.HOST_SERVER + auth.user.avatar);
 
   return (
     <View style={global_styles.wrapper}>
@@ -123,7 +124,7 @@ const Index: React.FC = () => {
           <View style={[global_styles.rowCenter, { width: "100%" }]}>
             <Image
               source={{
-                uri: process.env.HOST_SERVER + auth.user.avatar,
+                uri: Constants.manifest.extra.HOST_SERVER + auth.user.avatar,
               }}
               style={[styles.img, { marginRight: 5 }]}
             />

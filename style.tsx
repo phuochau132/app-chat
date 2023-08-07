@@ -6,16 +6,18 @@ export const greyColorBtn = "#b1b2b4";
 
 export const backgroundColor = "white";
 export const itemColor = "rgba(133,126,117,255)";
+export const itemSubColor = "rgba(100, 95, 90, 255)";
 export const fontColor = "white";
 export const btnBgr = "black";
 export const btnColor = "white";
 export const fontColorItem = "white";
+export const placeholderTextColor = "#c0c3c9";
 
 export const global_styles = StyleSheet.create({
   wrapper: {
     width: "100%",
     height: "100%",
-    paddingTop: 40,
+    paddingTop: 30,
     padding: 10,
   },
   loadingContainer: {
@@ -31,9 +33,12 @@ export const global_styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-  textTitle: {
-    fontSize: 25,
+  title: {
+    color: fontColor,
+    fontSize: 30,
+    flex: 1,
     fontWeight: "bold",
+    textAlign: "center",
   },
   rowCenterBetween: {
     display: "flex",
@@ -61,5 +66,15 @@ export const global_styles = StyleSheet.create({
     color: fontColor,
     marginRight: 2,
     fontSize: 25,
+  },
+  textInput: {
+    padding: 5,
+    paddingLeft: 20,
+    paddingRight: 20,
+    marginLeft: 20,
+    borderRadius: 20,
+    backgroundColor: "rgba(133,126,117,255)",
+    color: fontColor,
+    flex: 1,
   },
 });

@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { HOST_SERVER } from "@env";
 import axiosInstance from "../../config/axiosConfig";
 import Toast from "react-native-simple-toast";
+import Constants from "expo-constants";
 
 //"accountNonExpired": true, "accountNonLocked": true, "authorities": [{"authority": "[]"}], "credentialsNonExpired": true, "email": "hau", "enabled": true, "full_name": "nguyenhau", "id": 1, "name": "hau", "roles": [], "username": "hau"}
 
@@ -17,10 +18,12 @@ const initialState = {
 export const login = createAsyncThunk(
   "auth/login",
   async ({ email, password }: { email: string; password: string }) => {
-    console.log();
+    console.log(2335);
+    console.log(Constants.manifest.extra.HOST_SERVER);
+
     try {
       const response = await axios.post(
-        `${process.env.HOST_SERVER}/api/auth/login`,
+        `${Constants.manifest.extra.HOST_SERVER}/api/auth/login`,
         {
           userName: email,
           password: password,
@@ -48,8 +51,9 @@ interface ChangeInfo {
 export const changeInfo = createAsyncThunk(
   "auth/changeInfo",
   async ({ user, file }: any) => {
+    console.log(2335);
+
     const formData = new FormData();
-    console.log();
     if (file) {
       formData.append("file", {
         uri: file,
@@ -60,7 +64,7 @@ export const changeInfo = createAsyncThunk(
     formData.append("user", JSON.stringify(user));
     try {
       const response = await axios.post(
-        `${process.env.HOST_SERVER}/api/users/profile`,
+        `${Constants.manifest.extra.HOST_SERVER}/api/users/profile`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -78,9 +82,8 @@ export const getInfoUserFToken = createAsyncThunk(
   "auth/getInfoUserFToken",
   async (accessToken: string) => {
     try {
-      console.log(123);
       const response = await axios.post(
-        `${process.env.HOST_SERVER}/api/users`,
+        `${Constants.manifest.extra.HOST_SERVER}/api/users`,
         {
           token: accessToken,
         }

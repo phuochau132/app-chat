@@ -83,8 +83,8 @@ const Index: React.FC = () => {
   };
   return (
     <LinearGradientWrapper>
-      <View style={[global_styles.wrapper, { paddingTop: 40 }]}>
-        {isLoading == "loading" && <Loading />}
+      {isLoading == "loading" && <Loading />}
+      <View style={global_styles.wrapper}>
         <FlipCard
           friction={6}
           perspective={1000}
@@ -115,8 +115,6 @@ const Index: React.FC = () => {
               </ScrollView>
             </View>
           </>
-
-          {/* Mặt sau (màn hình profile) */}
           <OtherUserProfile eventOnClose={updateUser} item={userPressed} />
         </FlipCard>
       </View>

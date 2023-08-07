@@ -5,6 +5,7 @@ import { Home, Profile } from "../../screens";
 import { Avatar } from "@rneui/themed";
 import { Image } from "react-native-elements";
 import { StyleSheet, View } from "react-native";
+import Constants from "expo-constants";
 
 import { global_styles, itemColor } from "../../../style";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,6 +22,8 @@ const styles = StyleSheet.create({
 });
 const Index: React.FC = () => {
   const dispatch = useDispatch();
+  console.log(123);
+
   const user = useSelector((state: any) => {
     return state.auth.user;
   });
@@ -80,7 +83,9 @@ const Index: React.FC = () => {
               >
                 <Image
                   source={{
-                    uri: user && process.env.HOST_SERVER + user.avatar,
+                    uri:
+                      user &&
+                      Constants.manifest.extra.HOST_SERVER + user.avatar,
                   }}
                   style={[styles.img]}
                 />

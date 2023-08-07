@@ -9,20 +9,16 @@ import {
 } from "react-native";
 import { Image } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
+import { fontColor, global_styles, itemColor } from "../../../../style";
 
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
     marginTop: 10,
-    display: "flex",
-    alignItems: "center",
-    flexDirection: "row",
-  },
-  center: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: itemColor,
     padding: 10,
+    borderRadius: 20,
   },
+
   img: {
     width: 50,
     height: 50,
@@ -32,17 +28,19 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 10,
   },
-  name: {},
+  name: { fontWeight: "bold", fontSize: 16, color: fontColor },
   content_message: {
     opacity: 0.6,
-
+    color: fontColor,
     overflow: "hidden",
   },
   status: {
+    color: fontColor,
     opacity: 0.6,
     marginLeft: 15,
   },
   span: {
+    color: fontColor,
     width: 10,
     height: 10,
     backgroundColor: "green",
@@ -64,7 +62,7 @@ const Item: React.FC<{ avt: string; name: string; message: string }> = ({
       onPress={() => {
         navigation.navigate("chat");
       }}
-      style={styles.container}
+      style={[global_styles.rowCenter, styles.wrapper]}
     >
       <View>
         <Image

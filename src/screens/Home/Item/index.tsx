@@ -1,26 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Button } from "@rneui/themed";
-import {
-  StyleSheet,
-  Text,
-  View,
-  KeyboardAvoidingView,
-  TouchableOpacity,
-  ScrollView,
-  Modal,
-} from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Image } from "@rneui/themed";
-import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
-import {
-  backgroundColor,
-  fontColor,
-  global_styles,
-  itemColor,
-} from "../../../../style";
+import { fontColor, global_styles, itemColor } from "../../../../style";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { dislikePost, likePost } from "../../../redux/slice/postSlice";
+import Avatar from "../../../Component/Avatar";
 
 const styles = StyleSheet.create({
   icon: {
@@ -35,10 +21,16 @@ const width = 100;
 const Item: React.FC<{
   eventOnLikesModal: any;
   item: any;
-}> = ({ item, eventOnLikesModal }) => {
-  const listImg = item.imgPosts;
+  eventOnCommentModal: any;
+}> = ({ item, eventOnLikesModal, eventOnCommentModal }) => {
+  console.log(process.env.HOST_SERVER + item.user.avatar);
+  const [listImg, setListImg] = useState(item.imgPosts);
+  const [comment, setListComment] = useState(item.comments);
+  console.log(123);
   const [index, setIndex] = useState(1);
   const user = useSelector((state: any) => state.auth.user);
+  console.log(user);
+
   const posts = useSelector((state: any) => state.post.posts);
   const dispatch = useDispatch();
   const getLengthWidth = () => {
@@ -79,12 +71,10 @@ const Item: React.FC<{
     >
       <View style={[global_styles.rowCenter, { marginBottom: 5 }]}>
         <View style={[global_styles.rowCenter]}>
-          <Image
-            source={{
-              uri: process.env.HOST_SERVER + item.user.avatar,
-            }}
-            style={{ width: 40, height: 40, borderRadius: 50 }}
-          ></Image>
+          <Avatar
+            avatar={process.env.HOST_SERVER + item.user.avatar}
+            isActive={false}
+          />
         </View>
         <View
           style={[
@@ -235,12 +225,18 @@ const Item: React.FC<{
           </View>
           <View style={[global_styles.rowCenter, { marginRight: 20 }]}>
             <Ionicons name="chatbubble-ellipses-outline" style={styles.icon} />
-            <Text style={[global_styles.text, { marginLeft: 10 }]}>0</Text>
+            <TouchableOpacity
+              onPress={() => {
+                eventOnCommentModal(item.id);
+              }}
+            >
+              <Text style={[global_styles.text, { marginLeft: 10 }]}>
+                {comment.length}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
-        <View style={[global_styles.rowCenter]}>
-          <Ionicons name="return-up-forward" style={styles.icon} />
-        </View>
+        <Ionicons name="return-up-forward" style={styles.icon} />
       </View>
     </View>
   );

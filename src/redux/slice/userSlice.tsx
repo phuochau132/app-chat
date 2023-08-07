@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import axiosInstance from "../../config/axiosConfig";
 import Toast from "react-native-simple-toast";
+import Constants from "expo-constants";
 const initialState = {
   listUser: [],
   profileChosen: null,
@@ -14,8 +15,9 @@ const initialState = {
 };
 export const loadAllUser: any = createAsyncThunk("user/loadUser", async () => {
   try {
+    console.log(123);
     const response = await axiosInstance.get(
-      `${process.env.HOST_SERVER}/api/users`
+      `${Constants.manifest.extra.HOST_SERVER}/api/users`
     );
     return response.data;
   } catch (error) {
@@ -26,10 +28,9 @@ export const loadAllUser: any = createAsyncThunk("user/loadUser", async () => {
 export const addFriend: any = createAsyncThunk(
   "user/addFriend",
   async ({ userSend, userReceive }: { userSend: any; userReceive: any }) => {
-    console.log();
     try {
       const response = await axios.post(
-        `${process.env.HOST_SERVER}/api/users/friend`,
+        `${Constants.manifest.extra.HOST_SERVER}/api/users/friend`,
         { userSend, userReceive }
       );
       const user = response.data;
@@ -60,10 +61,9 @@ export const addFriend: any = createAsyncThunk(
 export const getAllFriend: any = createAsyncThunk(
   "user/getAllFriend",
   async (id: number) => {
-    console.log();
     try {
       const response = await axios.get(
-        `${process.env.HOST_SERVER}/api/users/friend/${id}`
+        `${Constants.manifest.extra.HOST_SERVER}/api/users/friend/${id}`
       );
 
       return {
@@ -83,7 +83,7 @@ export const acceptRequestAF: any = createAsyncThunk(
   async (id: number) => {
     try {
       const response = await axios.post(
-        `${process.env.HOST_SERVER}/api/users/friend/accept`,
+        `${Constants.manifest.extra.HOST_SERVER}/api/users/friend/accept`,
         {
           id,
         }
@@ -106,7 +106,7 @@ export const delRequestAF: any = createAsyncThunk(
     console.log();
     try {
       const response = await axios.post(
-        `${process.env.HOST_SERVER}/api/users/friend/delete`,
+        `${Constants.manifest.extra.HOST_SERVER}/api/users/friend/delete`,
         {
           id,
         }

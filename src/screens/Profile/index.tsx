@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slice/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
+import Constants from "expo-constants";
 
 const styles = StyleSheet.create({
   header: {
@@ -28,6 +29,7 @@ const styles = StyleSheet.create({
 });
 const Index: React.FC = () => {
   const navigation = useNavigation();
+  console.log(123);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const user = useSelector((state: any) => {
@@ -64,7 +66,7 @@ const Index: React.FC = () => {
           <View style={global_styles.ColumnCenter}>
             <Image
               source={{
-                uri: user && process.env.HOST_SERVER + user.avatar,
+                uri: user && Constants.manifest.extra.HOST_SERVER + user.avatar,
               }}
               style={styles.img}
             />

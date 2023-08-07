@@ -141,9 +141,7 @@ export const Index: React.FC<{}> = () => {
   return (
     <LinearGradientWrapper>
       <View style={global_styles.wrapper}>
-        <Text style={[global_styles.text, global_styles.textTitle]}>
-          Bạn bè
-        </Text>
+        <Text style={[global_styles.text]}>Bạn bè</Text>
         <View style={[global_styles.rowCenterBetween, { marginTop: 15 }]}>
           <View style={global_styles.rowCenter}>
             <Text
