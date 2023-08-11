@@ -1,7 +1,7 @@
 // SearchBar.js
 import React, { FC, useState } from "react";
 import { StyleSheet, TextInput, View, Keyboard, Button } from "react-native";
-import { Feather, Entypo, Ionicons } from "@expo/vector-icons";
+import { Entypo, Ionicons } from "@expo/vector-icons";
 import { itemColor } from "../../../style";
 
 interface Type {

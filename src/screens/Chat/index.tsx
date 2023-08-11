@@ -4,14 +4,11 @@ import {
   Text,
   View,
   KeyboardAvoidingView,
-  ScrollView,
-  Dimensions,
   Platform,
-  TouchableOpacity,
 } from "react-native";
 import { Image } from "@rneui/themed";
-import { useNavigation } from "@react-navigation/native";
-import { useCallback, useEffect, useState } from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useCallback, useEffect, seState, useState } from "react";
 import * as DocumentPicker from "expo-document-picker";
 import {
   Bubble,
@@ -21,11 +18,13 @@ import {
   InputToolbar,
   Send,
 } from "react-native-gifted-chat";
+import Constants from "expo-constants";
+
 import * as ImagePicker from "expo-image-picker";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { stompClient } from "../../../index";
-import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
 import { fontColor, global_styles, itemColor } from "../../../style";
+import { sendMessage } from "../../redux/slice/userSlice";
 const styles = StyleSheet.create({
   container: {
     height: "100%",
@@ -69,7 +68,7 @@ const styles = StyleSheet.create({
   name: {
     marginLeft: 10,
     fontSize: 16,
-    fontweight: "bold",
+    fontWeight: "bold",
     color: fontColor,
   },
   img: {
@@ -114,13 +113,7 @@ const styles = StyleSheet.create({
     backgroundColor: itemColor,
     borderColor: "#e8e8e8",
   },
-  inputToolbarPrimary: {
-    display: "flex",
-    alignItems: "center",
-    borderRadius: 30,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-  },
+
   sendContainer: {
     justifyContent: "space-around",
     alignItems: "center",
@@ -128,33 +121,71 @@ const styles = StyleSheet.create({
 });
 
 export const Index: React.FC<{}> = () => {
+  const route = useRoute();
+  const { item } = route.params;
+  const friendShip = JSON.parse(item);
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [videoUri, setVideoUri] = useState<string | null>(null);
+  const dispatch = useDispatch();
   const auth = useSelector((state: any) => {
     return state.auth;
   });
-  const [userData, setUserData] = useState({
-    username: "",
-    receivername: "",
-    connected: false,
-    message: "",
-  });
-  useEffect(() => {
-    stompClient.subscribe(`/topic/rooms`, (message: any) => {
-      const bodyData = JSON.parse(message.body);
-      const formattedMessage: IMessage = {
-        _id: bodyData.body._id,
-        text: bodyData.body.text,
-        createdAt: new Date(bodyData.body.createdAt),
-        user: {
-          _id: bodyData.body.user.id,
-          name: bodyData.body.user.name,
-        },
-      };
-      if (bodyData.body.user._id != auth.user.id) {
-        setMessages((prevMessages) => [formattedMessage, ...prevMessages]);
+
+  const filterMessage = useCallback(() => {
+    friendShip.room.message.forEach((item: any) => {
+      if (auth.user.id != item.sender.id) {
+        const message = {
+          _id: item._id,
+          text: item.text,
+          createdAt: item.createAt,
+          user: {
+            _id: item.sender.id,
+            name: item.sender.fullName,
+            avatar: Constants.manifest.extra.HOST_SERVER + item.sender.avatar,
+          },
+        };
+        setMessages((previousMessages) =>
+          GiftedChat.append(previousMessages, message)
+        );
+      } else {
+        const message = {
+          _id: item._id,
+          text: item.text,
+          createdAt: item.createAt,
+          user: {
+            _id: auth.user.id,
+            name: auth.user.fullName,
+            avatar: Constants.manifest.extra.HOST_SERVER + auth.user.avatar,
+          },
+        };
+        setMessages((prevMessages) => [message, ...prevMessages]);
       }
     });
+  }, []);
+  useEffect(() => {
+    filterMessage();
+    stompClient.subscribe(
+      `/topic/rooms/${friendShip.room.id}`,
+      (message: any) => {
+        console.log(98123);
+        console.log(friendShip.room.id);
+        const bodyData = JSON.parse(message.body);
+        const formattedMessage: IMessage = {
+          _id: bodyData.body._id,
+          text: bodyData.body.text,
+          createdAt: new Date(bodyData.body.createdAt),
+          user: {
+            _id: bodyData.body.user.id,
+            name: bodyData.body.user.name,
+            avatar: bodyData.body.user.avatar,
+          },
+        };
+
+        if (bodyData.body.user._id != auth.user.id) {
+          setMessages((prevMessages) => [formattedMessage, ...prevMessages]);
+        }
+      }
+    );
   }, []);
   const handleSend = useCallback(
     (newMessages: IMessage[]) => {
@@ -164,13 +195,33 @@ export const Index: React.FC<{}> = () => {
         createdAt: newMessages[0].createdAt,
         user: {
           _id: auth.user.id,
-          name: auth.user.name,
+          name: auth.user.fullName,
+          avatar: Constants.manifest.extra.HOST_SERVER + auth.user.avatar,
         },
       };
+      dispatch(
+        sendMessage({
+          data: {
+            senderId: auth.user.id,
+            receiverId: friendShip.user.id,
+            roomId: friendShip.room.id,
+            text: newMessages[0].text,
+          },
+          notificationData: {
+            to: friendShip.user.expoPushToken,
+            title: `Bạn có tin nhắn đến từ: ${auth.user.fullName}`,
+            body: newMessages[0].text,
+          },
+        })
+      );
       setMessages((previousMessages) =>
         GiftedChat.append(previousMessages, newMessages)
       );
-      stompClient.send("/app/chat", {}, JSON.stringify(formattedMessage));
+      stompClient.send(
+        `/app/chat/${friendShip.room.id}`,
+        {},
+        JSON.stringify(formattedMessage)
+      );
     },
     [messages]
   );
@@ -198,6 +249,7 @@ export const Index: React.FC<{}> = () => {
           user: {
             _id: auth.user.id,
             name: auth.user.name,
+            avatar: Constants.manifest.extra.HOST_SERVER + auth.user.avatar,
           },
           text: "",
         },
@@ -282,9 +334,7 @@ export const Index: React.FC<{}> = () => {
           messages={messages}
           showAvatarForEveryMessage={true}
           onSend={(messages) => handleSend(messages)}
-          user={{
-            _id: 1,
-          }}
+          user={{ ...auth.user, _id: auth.user.id }}
           listViewProps={{
             showsVerticalScrollIndicator: false,
           }}
@@ -311,7 +361,7 @@ export const Index: React.FC<{}> = () => {
               <InputToolbar
                 {...otherProps}
                 containerStyle={[styles.inputToolbarContainer]}
-                primaryStyle={styles.inputToolbarPrimary}
+                primaryStyle={global_styles.rowCenter}
                 accessoryStyle={{}}
                 renderSend={(sendProps) => {
                   const { containerStyle, ...otherSendProps } = sendProps;
@@ -328,6 +378,9 @@ export const Index: React.FC<{}> = () => {
                 }}
               />
             );
+          }}
+          textInputProps={{
+            style: { color: "white", flex: 1, marginLeft: 10 },
           }}
           renderActions={renderActions}
         />

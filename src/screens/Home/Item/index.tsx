@@ -2,6 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Image } from "@rneui/themed";
 import moment from "moment";
+import Constants from "expo-constants";
+
 import { fontColor, global_styles, itemColor } from "../../../../style";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,15 +25,12 @@ const Item: React.FC<{
   item: any;
   eventOnCommentModal: any;
 }> = ({ item, eventOnLikesModal, eventOnCommentModal }) => {
-  console.log(process.env.HOST_SERVER + item.user.avatar);
   const [listImg, setListImg] = useState(item.imgPosts);
   const [comment, setListComment] = useState(item.comments);
   console.log(123);
   const [index, setIndex] = useState(1);
   const user = useSelector((state: any) => state.auth.user);
-  console.log(user);
 
-  const posts = useSelector((state: any) => state.post.posts);
   const dispatch = useDispatch();
   const getLengthWidth = () => {
     if (listImg.length == 1) {
@@ -51,6 +50,7 @@ const Item: React.FC<{
     dispatch(likePost({ idPost: item.id, idUser: user.id }));
   };
   const handleDisLike = () => {
+    console.log(981232);
     dispatch(dislikePost({ idPost: item.id, idUser: user.id }));
   };
 
@@ -72,8 +72,9 @@ const Item: React.FC<{
       <View style={[global_styles.rowCenter, { marginBottom: 5 }]}>
         <View style={[global_styles.rowCenter]}>
           <Avatar
-            avatar={process.env.HOST_SERVER + item.user.avatar}
+            avatar={Constants.manifest.extra.HOST_SERVER + item.user.avatar}
             isActive={false}
+            size={{ width: 40, height: 40 }}
           />
         </View>
         <View
@@ -103,91 +104,94 @@ const Item: React.FC<{
       >
         {item.text}
       </Text>
-      <View
-        style={[
-          global_styles.rowCenter,
-          {
-            marginTop: 20,
-            flexWrap: "wrap",
-            height: 320,
-          },
-        ]}
-      >
-        {listImg.map((item: any, index: number) => {
-          if (index < 3) {
-            return (
-              <View
-                key={index}
-                style={{
-                  marginTop: 30,
-                  width: `${getLengthWidth() - 2}%`,
-                  height: `${getLengthHeight() - 2}%`,
-                  marginRight: 2,
-                  marginLeft: 2,
-                  overflow: "hidden",
-                }}
-              >
-                <Image
-                  onPress={() => {
-                    toggleIndex(index);
-                  }}
-                  source={{
-                    uri: process.env.HOST_SERVER + item.urlImg,
-                  }}
+      {listImg.length > 0 && (
+        <View
+          style={[
+            global_styles.rowCenter,
+            {
+              marginTop: 20,
+              flexWrap: "wrap",
+              height: 320,
+            },
+          ]}
+        >
+          {listImg.map((item: any, index: number) => {
+            if (index < 3) {
+              return (
+                <View
+                  key={index}
                   style={{
-                    borderRadius: 10,
-                    width: `100%`,
-                    height: `100%`,
+                    marginTop: 30,
+                    width: `${getLengthWidth() - 2}%`,
+                    height: `${getLengthHeight() - 2}%`,
+                    marginRight: 2,
+                    marginLeft: 2,
+                    overflow: "hidden",
+                  }}
+                >
+                  <Image
+                    onPress={() => {
+                      toggleIndex(index);
+                    }}
+                    source={{
+                      uri: Constants.manifest.extra.HOST_SERVER + item.urlImg,
+                    }}
+                    style={{
+                      borderRadius: 10,
+                      width: `100%`,
+                      height: `100%`,
+                      marginRight: 2,
+                      marginLeft: 2,
+                    }}
+                  ></Image>
+                </View>
+              );
+            }
+            if (index == 3) {
+              return (
+                <View
+                  key={index}
+                  style={{
+                    position: "relative",
+                    width: `${getLengthWidth() - 2}%`,
+                    height: `${getLengthHeight() - 2}%`,
                     marginRight: 2,
                     marginLeft: 2,
                   }}
-                ></Image>
-              </View>
-            );
-          }
-          if (index == 3) {
-            return (
-              <View
-                key={index}
-                style={{
-                  position: "relative",
-                  width: `${getLengthWidth() - 2}%`,
-                  height: `${getLengthHeight() - 2}%`,
-                  marginRight: 2,
-                  marginLeft: 2,
-                }}
-              >
-                <Image
-                  onPress={() => {
-                    toggleIndex(index);
-                  }}
-                  source={{
-                    uri: item,
-                  }}
-                  style={{
-                    borderRadius: 10,
-                    width: `100%`,
-                    height: `100%`,
-                  }}
                 >
-                  <Text
+                  <Image
+                    onPress={() => {
+                      toggleIndex(index);
+                    }}
+                    source={{
+                      uri: item,
+                    }}
                     style={{
-                      position: "absolute",
-                      color: "white",
-                      top: 44,
-                      left: 55,
-                      fontSize: 20,
-                      fontWeight: "bold",
+                      borderRadius: 10,
+                      width: `100%`,
+                      height: `100%`,
                     }}
                   >
-                    {listImg.length - 4}
-                  </Text>
-                </Image>
-              </View>
-            );
-          }
-        })}
-      </View>
+                    <Text
+                      style={{
+                        position: "absolute",
+                        color: "white",
+                        top: 44,
+                        left: 55,
+                        fontSize: 20,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {listImg.length - 4}
+                    </Text>
+                  </Image>
+                </View>
+              );
+            }
+          })}
+        </View>
+      )}
+
       <View
         style={[
           global_styles.rowCenterBetween,
@@ -196,9 +200,7 @@ const Item: React.FC<{
       >
         <View style={[global_styles.rowCenter]}>
           <View style={[global_styles.rowCenter, { marginRight: 20 }]}>
-            {posts.find((item: any) => {
-              return item.likedUsers.some((e: any) => e.id === user.id);
-            }) ? (
+            {item.likedUsers.some((e: any) => e.id === user.id) ? (
               <Ionicons
                 onPress={handleDisLike}
                 style={[styles.icon, { color: "#f84f6b" }]}

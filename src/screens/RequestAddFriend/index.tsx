@@ -1,37 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
-import {
-  StyleSheet,
-  Text,
-  View,
-  KeyboardAvoidingView,
-  ScrollView,
-  Dimensions,
-  Platform,
-  TouchableOpacity,
-} from "react-native";
-import { Image } from "@rneui/themed";
-import { Input } from "react-native-elements";
-import { useNavigation } from "@react-navigation/native";
-import { useCallback, useEffect, useState } from "react";
-import * as DocumentPicker from "expo-document-picker";
-import { Video } from "expo-av";
-import SockJS from "sockjs-client";
-import { over } from "stompjs";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
 
-import {
-  Bubble,
-  Composer,
-  GiftedChat,
-  IMessage,
-  InputToolbar,
-  Send,
-} from "react-native-gifted-chat";
-import * as ImagePicker from "expo-image-picker";
 import { useDispatch, useSelector } from "react-redux";
-import { stompClient } from "../../../index";
 import { blueColor, global_styles } from "../../../style";
 import Item from "./Item";
-import { getAllFriend } from "../../redux/slice/userSlice";
 import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
 const styles = StyleSheet.create({
   container: {
@@ -132,9 +103,6 @@ const styles = StyleSheet.create({
 });
 
 export const Index: React.FC<{}> = () => {
-  const navigation = useNavigation();
-  const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.auth.user);
   const listRequestAddFriend = useSelector(
     (state: any) => state.user.listRequestAddFriend
   );

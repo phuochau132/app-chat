@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Image } from "@rneui/themed";
-import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import Constants from "expo-constants";
 
@@ -32,7 +31,6 @@ const styles = StyleSheet.create({
   },
 });
 const Item: React.FC<{ item: any }> = ({ item }) => {
-  const navigation = useNavigation();
   const dispatch = useDispatch();
   console.log(9871);
 

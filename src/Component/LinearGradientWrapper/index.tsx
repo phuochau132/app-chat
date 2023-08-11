@@ -1,7 +1,5 @@
 // SearchBar.js
 import React from "react";
-import { global_styles } from "../../../style";
-import { ActivityIndicator } from "react-native-paper";
 import { Dimensions, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 let ScreenHeight = Dimensions.get("window").height;

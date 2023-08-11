@@ -9,6 +9,7 @@ import { LinearGradient } from "expo-linear-gradient";
 
 import { TextEncoder, TextDecoder } from "fast-text-encoding";
 import SockJS from "sockjs-client";
+import Constants from "expo-constants";
 import { over } from "stompjs";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
@@ -42,7 +43,9 @@ const Index: React.FC = () => {
   const notificationListener = useRef<any>();
   const responseListener = useRef<any>();
   const connect = () => {
-    let Sock = new SockJS(`${process.env.HOST_SERVER}/gs-guide-websocket`);
+    let Sock = new SockJS(
+      `${Constants.manifest.extra.HOST_SERVER}/gs-guide-websocket`
+    );
     stompClient = over(Sock);
     stompClient.connect({}, onConnected, onError);
   };
@@ -58,6 +61,7 @@ const Index: React.FC = () => {
       dispatch(getInfoUserFToken(accessToken));
     }
   };
+  const navigation = useNavigation();
   useEffect(() => {
     connect();
     checkToken();
@@ -73,7 +77,9 @@ const Index: React.FC = () => {
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
+        navigation.navigate("chatListFriend");
+        console.log(response.notification.request.content.data);
+        console.log(123123123);
       });
 
     return () => {

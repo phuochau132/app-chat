@@ -1,25 +1,15 @@
-import { Avatar, Button } from "@rneui/themed";
-import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  KeyboardAvoidingView,
-  TouchableOpacity,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import FlipCard from "react-native-flip-card";
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import { StackActions, useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native";
-import { createContext } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
 
 import { fontColor, global_styles } from "../../../style";
-import { Ionicons } from "@expo/vector-icons";
 import Item from "./Item";
 import SearchBar from "../../Component/SearchBar";
-import { useDispatch, useSelector } from "react-redux";
 import { filter } from "../../redux/slice/userSlice";
 import Loading from "../../Component/Loading";
-import OtherUserProfile from "./../OtherUserProfile";
 import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
 
 const styles = StyleSheet.create({
@@ -35,7 +25,6 @@ const styles = StyleSheet.create({
   search_bar: {
     backgroundColor: "#f0f0f0",
     flex: 1,
-    height: undefined,
     borderRadius: 30,
     color: "#3C3C43",
   },
@@ -72,51 +61,40 @@ const Index: React.FC = () => {
       dispatch(filter(filteredItems));
     }
   };
-  const [showSearch, setShowSearch] = useState(false);
-  const [userPressed, setUserPressed] = useState(null);
-
-  const updateUser = (item: any) => {
-    setShowSearch(!showSearch);
-    if (item) {
-      setUserPressed(item);
-    }
+  const changeScreen = (item: any) => {
+    navigation.navigate("userProfile", { item: JSON.stringify(item) });
   };
   return (
     <LinearGradientWrapper>
       {isLoading == "loading" && <Loading />}
       <View style={global_styles.wrapper}>
-        <FlipCard
-          friction={6}
-          perspective={1000}
-          flipHorizontal={true}
-          flipVertical={false}
-          flip={showSearch}
-          clickable={false}
-        >
-          <>
-            <View style={[global_styles.rowCenter]}>
-              <Ionicons name="arrow-back-outline" size={25} color={fontColor} />
-              <SearchBar setSearchPhrase={handleSearch} />
-            </View>
-            <View style={styles.items}>
-              <ScrollView showsVerticalScrollIndicator={false}>
-                {listFilter &&
-                  listFilter.map((item: any, index: any) => {
-                    return (
-                      <Item
-                        onPress={() => {
-                          updateUser(item);
-                        }}
-                        key={index}
-                        item={item}
-                      />
-                    );
-                  })}
-              </ScrollView>
-            </View>
-          </>
-          <OtherUserProfile eventOnClose={updateUser} item={userPressed} />
-        </FlipCard>
+        <View style={[global_styles.rowCenter]}>
+          <Ionicons
+            onPress={() => {
+              navigation.dispatch(StackActions.replace("tabHome"));
+            }}
+            name="arrow-back-outline"
+            size={25}
+            color={fontColor}
+          />
+          <SearchBar setSearchPhrase={handleSearch} />
+        </View>
+        <View style={styles.items}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {listFilter &&
+              listFilter.map((item: any, index: any) => {
+                return (
+                  <Item
+                    onPress={() => {
+                      changeScreen(item);
+                    }}
+                    key={index}
+                    item={item}
+                  />
+                );
+              })}
+          </ScrollView>
+        </View>
       </View>
     </LinearGradientWrapper>
   );

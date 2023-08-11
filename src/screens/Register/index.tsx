@@ -1,14 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Button } from "@rneui/themed";
 import {
   StyleSheet,
   Text,
   View,
-  KeyboardAvoidingView,
   TouchableOpacity,
 } from "react-native";
 import { Image } from "@rneui/themed";
-import { Icon, Input } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";

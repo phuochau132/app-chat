@@ -1,9 +1,5 @@
-import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, Text, View } from "react-native";
-import { Input } from "react-native-elements";
+import { View } from "react-native";
 import { ReactNode } from "react";
-import { LinearGradient } from "expo-linear-gradient";
-
 interface IndexProps {
   children?: ReactNode;
 }

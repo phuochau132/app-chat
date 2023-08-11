@@ -11,12 +11,11 @@ const initialState = {
 export const register = createAsyncThunk(
   "auth/register",
   async ({ email, password }: { email: string; password: string }) => {
-    console.log(123);
     try {
       const response = await axios.post(
         `${Constants.manifest.extra.HOST_SERVER}/api/auth/register`,
         {
-          email: email,
+          userName: email,
           password: password,
         }
       );

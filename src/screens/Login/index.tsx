@@ -1,22 +1,19 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Button } from "@rneui/themed";
 import {
   StyleSheet,
   Text,
   View,
-  KeyboardAvoidingView,
   TextInput,
   TouchableOpacity,
 } from "react-native";
 import { Image } from "@rneui/themed";
-import { Input } from "react-native-elements";
 import { StackActions, useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { login } from "../../redux/slice/authSlice";
 import Loading from "../../Component/Loading";
-import { btnBgr, btnColor, global_styles, itemColor } from "../../../style";
+import { btnBgr, btnColor, global_styles } from "../../../style";
 import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
 import logo from "../../img/logo.png";
 
@@ -91,9 +88,8 @@ const Index: React.FC = () => {
   const navigation = useNavigation();
   const isLoading = useSelector((state: any) => state.auth.status);
   const user = useSelector((state: any) => state.auth.user);
-
   useEffect(() => {
-    if (user != null) {
+    if (user) {
       navigation.dispatch(StackActions.replace("home"));
     }
   }, [user]);
@@ -208,7 +204,6 @@ const Index: React.FC = () => {
             }}
             style={styles.text}
           >
-            {" "}
             Sign up
           </Text>
         </View>

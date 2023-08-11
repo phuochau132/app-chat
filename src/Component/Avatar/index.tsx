@@ -1,23 +1,20 @@
 // SearchBar.js
 import React from "react";
 import { global_styles } from "../../../style";
-import { ActivityIndicator, Text } from "react-native-paper";
 import { Dimensions, View } from "react-native";
-import Constants from "expo-constants";
 import { Image } from "react-native-elements";
-let ScreenHeight = Dimensions.get("window").height;
-let ScreenWidth = Dimensions.get("window").width;
 const Avatar: React.FC<{
   avatar: string;
   isActive: boolean;
-}> = ({ avatar, isActive }) => {
+  size: any;
+}> = ({ avatar, isActive, size }) => {
   return (
     <View style={[global_styles.rowCenter]}>
       <Image
         source={{
           uri: avatar,
         }}
-        style={{ width: 40, height: 40, borderRadius: 50 }}
+        style={{ borderRadius: 50, ...size }}
       ></Image>
       {isActive && (
         <Text

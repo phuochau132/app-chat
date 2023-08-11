@@ -1,22 +1,15 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Button } from "@rneui/themed";
-import {
-  StyleSheet,
-  Text,
-  View,
-  KeyboardAvoidingView,
-  TouchableOpacity,
-} from "react-native";
-import { Image } from "@rneui/themed";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import Constants from "expo-constants";
 import { useNavigation } from "@react-navigation/native";
 import { fontColor, global_styles, itemColor } from "../../../../style";
+import Avatar from "../../../Component/Avatar";
 
 const styles = StyleSheet.create({
   wrapper: {
-    marginTop: 10,
+    marginTop: 15,
     backgroundColor: itemColor,
-    padding: 10,
-    borderRadius: 20,
+    padding: 5,
+    borderRadius: 10,
   },
 
   img: {
@@ -51,40 +44,36 @@ const styles = StyleSheet.create({
   },
 });
 
-const Item: React.FC<{ avt: string; name: string; message: string }> = ({
-  avt,
-  name,
-  message,
-}) => {
+const Item: React.FC<{ item: any }> = ({ item }) => {
   const navigation = useNavigation();
+  console.log(12398);
+  console.log(item);
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate("chat");
+        navigation.navigate("chat", { item: JSON.stringify(item) });
       }}
       style={[global_styles.rowCenter, styles.wrapper]}
     >
       <View>
-        <Image
-          source={{
-            uri: "https://scontent.fsgn19-1.fna.fbcdn.net/v/t1.6435-1/141995787_512358293071430_1466381692630381917_n.jpg?stp=dst-jpg_s320x320&_nc_cat=111&ccb=1-7&_nc_sid=7206a8&_nc_ohc=9JU-HVeBW-YAX_Uinm_&_nc_ht=scontent.fsgn19-1.fna&oh=00_AfDDgoNUaoowtfVmK9nM693BZ7rkzQhYTCkvgFigIV9R7Q&oe=64D81B8D",
-          }}
-          style={styles.img}
-        >
-          {/* <View style={styles.span}></View> */}
-        </Image>
+        <Avatar
+          avatar={Constants.manifest.extra.HOST_SERVER + item.user.avatar}
+          isActive={false}
+          size={{ width: 50, height: 50 }}
+        />
       </View>
       <View style={styles.info}>
-        <Text style={styles.name}>Riven </Text>
+        <Text style={styles.name}>{item.user.nickName} </Text>
         <Text
           numberOfLines={1}
           ellipsizeMode="tail"
           style={styles.content_message}
         >
-          Have a nice new dayaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          {item.room.message.length > 0
+            ? item.room.message[0].content
+            : "Gửi lời chào!"}
         </Text>
       </View>
-      <Text style={styles.status}>now </Text>
     </TouchableOpacity>
   );
 };

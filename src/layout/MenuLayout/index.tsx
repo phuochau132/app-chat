@@ -1,16 +1,19 @@
 import React, { FC, useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import { Home, Profile } from "../../screens";
-import { Avatar } from "@rneui/themed";
+import { Profile } from "../../screens";
 import { Image } from "react-native-elements";
-import { StyleSheet, View } from "react-native";
+import { Linking, StyleSheet, View } from "react-native";
 import Constants from "expo-constants";
-
-import { global_styles, itemColor } from "../../../style";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllFriend, loadAllUser } from "../../redux/slice/userSlice";
+
+import {
+  getFriends,
+  getRequestAddFriend,
+  loadAllUser,
+} from "../../redux/slice/userSlice";
 import { tabRoutes } from "../../route";
+import { useNavigation } from "@react-navigation/native";
 
 const Tab = createBottomTabNavigator();
 const styles = StyleSheet.create({
@@ -22,15 +25,42 @@ const styles = StyleSheet.create({
 });
 const Index: React.FC = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   console.log(123);
 
   const user = useSelector((state: any) => {
     return state.auth.user;
   });
+  const friends = useSelector((state: any) => {
+    return state.user.friends;
+  });
   useEffect(() => {
     dispatch(loadAllUser());
-    dispatch(getAllFriend(user.id));
+    dispatch(getRequestAddFriend(user.id));
+    if (friends.length == 0) {
+      dispatch(getFriends(user.id));
+    }
   }, []);
+
+  useEffect(() => {
+    const handleNotification = async () => {
+      const initialUrl = await Linking.getInitialURL();
+      if (initialUrl) {
+        const url = initialUrl.split("://")[1];
+
+        if (url === "YOUR_CLICK_ACTION") {
+          navigation.navigate("home");
+        }
+      }
+    };
+
+    handleNotification();
+    Linking.addEventListener("url", handleNotification);
+    return () => {
+      Linking.removeEventListener("url", handleNotification);
+    };
+  }, []);
+
   return (
     <View
       style={{

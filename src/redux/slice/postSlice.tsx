@@ -19,9 +19,7 @@ export const getPosts: any = createAsyncThunk(
   async (idPost: number) => {
     console.log(idPost);
     try {
-      const response = await axiosInstance.get(
-        `${Constants.manifest.extra.HOST_SERVER}/api/posts/${idPost}`
-      );
+      const response = await axiosInstance.get(`api/posts/${idPost}`);
       console.log(response.data);
       return {
         type: 1,
@@ -45,11 +43,9 @@ export const addPost: any = createAsyncThunk("addPost", async (data: Post) => {
         type: "image/jpeg",
       });
     });
-    const response = await axiosInstance.post(
-      `${Constants.manifest.extra.HOST_SERVER}/api/posts`,
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
+    const response = await axiosInstance.post(`api/posts`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return {
       type: 1,
       data: response.data,
@@ -66,12 +62,9 @@ export const likePost: any = createAsyncThunk(
   "likePost",
   async (data: PostLikes) => {
     try {
-      const response = await axios.post(
-        `${Constants.manifest.extra.HOST_SERVER}/api/posts/like`,
-        {
-          ...data,
-        }
-      );
+      const response = await axiosInstance.post(`api/posts/like`, {
+        ...data,
+      });
       return {
         type: 1,
         data: response.data,
@@ -87,12 +80,9 @@ export const dislikePost: any = createAsyncThunk(
   async (data: PostLikes) => {
     console.log(123);
     try {
-      const response = await axios.post(
-        `${Constants.manifest.extra.HOST_SERVER}/api/posts/dislike`,
-        {
-          ...data,
-        }
-      );
+      const response = await axiosInstance.post(`api/posts/dislike`, {
+        ...data,
+      });
       return {
         type: 1,
         data: response.data,
@@ -115,10 +105,7 @@ export const addComment: any = createAsyncThunk(
     console.log(981328);
     console.log(data);
     try {
-      const response = await axiosInstance.post(
-        `${Constants.manifest.extra.HOST_SERVER}/api/comments`,
-        data
-      );
+      const response = await axiosInstance.post(`api/comments`, data);
       return {
         type: 1,
         data: response.data,
@@ -148,6 +135,7 @@ const postSlice = createSlice({
         newData.forEach((item: any) => {
           item.comments = item.comments.reverse();
         });
+
         const updatedPosts = [...statePosts, ...newData];
         state.posts = updatedPosts;
       })

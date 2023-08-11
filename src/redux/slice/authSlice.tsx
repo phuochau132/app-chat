@@ -1,9 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useDispatch } from "react-redux";
-import { HOST_SERVER } from "@env";
-import axiosInstance from "../../config/axiosConfig";
 import Toast from "react-native-simple-toast";
 import Constants from "expo-constants";
 
@@ -18,9 +15,6 @@ const initialState = {
 export const login = createAsyncThunk(
   "auth/login",
   async ({ email, password }: { email: string; password: string }) => {
-    console.log(2335);
-    console.log(Constants.manifest.extra.HOST_SERVER);
-
     try {
       const response = await axios.post(
         `${Constants.manifest.extra.HOST_SERVER}/api/auth/login`,
@@ -63,11 +57,9 @@ export const changeInfo = createAsyncThunk(
     }
     formData.append("user", JSON.stringify(user));
     try {
-      const response = await axios.post(
-        `${Constants.manifest.extra.HOST_SERVER}/api/users/profile`,
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+      const response = await axios.post(`api/users/profile`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       let data = response.data;
       return {
         user: data,
@@ -82,12 +74,9 @@ export const getInfoUserFToken = createAsyncThunk(
   "auth/getInfoUserFToken",
   async (accessToken: string) => {
     try {
-      const response = await axios.post(
-        `${Constants.manifest.extra.HOST_SERVER}/api/users`,
-        {
-          token: accessToken,
-        }
-      );
+      const response = await axios.post(`api/users`, {
+        token: accessToken,
+      });
       const data = response.data;
       return {
         type: 1,

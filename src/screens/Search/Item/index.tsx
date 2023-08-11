@@ -1,10 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Button } from "@rneui/themed";
 import {
   StyleSheet,
   Text,
   View,
-  KeyboardAvoidingView,
   TouchableOpacity,
 } from "react-native";
 import { Image } from "@rneui/themed";
@@ -12,8 +9,6 @@ import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import Constants from "expo-constants";
 
-import { changeProfileChosen } from "../../../redux/slice/userSlice";
-import { useContext } from "react";
 import { fontColor, itemColor } from "../../../../style";
 
 const styles = StyleSheet.create({

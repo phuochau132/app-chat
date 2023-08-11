@@ -1,7 +1,6 @@
-import React, { SetStateAction, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dimensions,
-  KeyboardAvoidingView,
   Modal,
   ScrollView,
   StyleSheet,
@@ -33,7 +32,6 @@ import Loading from "../../Component/Loading";
 import LikesModal from "./LikeModal";
 import CommentModal from "./CommentModal";
 
-let ScreenHeight = Dimensions.get("window").height;
 let ScreenWidth = Dimensions.get("window").width;
 const styles = StyleSheet.create({
   title: {
@@ -102,7 +100,7 @@ const Index: React.FC = () => {
     return state.post.status;
   });
   useEffect(() => {
-    dispatch(getPosts(0));
+    dispatch(getPosts(Number.MAX_SAFE_INTEGER));
   }, []);
   const posts = useSelector((state: any) => {
     return state.post.posts;
@@ -167,15 +165,16 @@ const Index: React.FC = () => {
     const isBottom =
       contentOffset.y + layoutMeasurement.height >= contentSize.height - 20;
     if (isBottom && contentOffset.y > 0) {
-      const maxId = posts.reduce(
-        (max: any, post: any) => (post.id > max ? post.id : max),
-        0
+      const minId = posts.reduce(
+        (min: any, post: any) => (post.id < min ? post.id : min),
+        Number.MAX_SAFE_INTEGER
       );
-      console.log(maxId);
-      dispatch(getPosts(maxId));
+      console.log("hậu đẹp trai");
+
+      console.log(minId);
+      dispatch(getPosts(minId));
     }
   };
-
   return (
     <LinearGradientWrapper>
       <View style={[global_styles.wrapper]}>
@@ -186,7 +185,7 @@ const Index: React.FC = () => {
             <Text style={styles.title}>Home</Text>
             <Ionicons
               onPress={() => {
-                navigation.goBack();
+                navigation.goBack;
               }}
               name="logo-twitch"
               size={25}
@@ -214,7 +213,8 @@ const Index: React.FC = () => {
               >
                 <Image
                   source={{
-                    uri: "https://scontent.fsgn19-1.fna.fbcdn.net/v/t1.6435-1/141995787_512358293071430_1466381692630381917_n.jpg?stp=dst-jpg_s320x320&_nc_cat=111&ccb=1-7&_nc_sid=7206a8&_nc_ohc=9JU-HVeBW-YAX_Uinm_&_nc_ht=scontent.fsgn19-1.fna&oh=00_AfDDgoNUaoowtfVmK9nM693BZ7rkzQhYTCkvgFigIV9R7Q&oe=64D81B8D",
+                    uri:
+                      Constants.manifest.extra.HOST_SERVER + auth.user.avatar,
                   }}
                   style={{ width: 40, height: 40, borderRadius: 50 }}
                 ></Image>

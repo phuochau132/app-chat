@@ -1,23 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Button } from "@rneui/themed";
-import {
-  StyleSheet,
-  Text,
-  View,
-  KeyboardAvoidingView,
-  ScrollView,
-} from "react-native";
-import { Image } from "@rneui/themed";
-import { Input } from "react-native-elements";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Searchbar } from "react-native-paper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Item from "./Item";
 import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
 import SearchBar from "../../Component/SearchBar";
 import { fontColor, global_styles } from "../../../style";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getFriends } from "../../redux/slice/userSlice";
 
 const styles = StyleSheet.create({
   text: {
@@ -29,7 +20,6 @@ const styles = StyleSheet.create({
   },
   items: {
     flex: 1,
-    marginTop: 20,
   },
 });
 
@@ -37,14 +27,21 @@ const Index: React.FC = () => {
   const navigation = useNavigation();
   const [valueSearch, setValueSearch] = useState("");
   const user = useSelector((state: any) => state.auth.user);
+  const friends = useSelector((state: any) => state.user.friends);
+  const dispatch = useDispatch();
   const handleTextSearch = (text: string) => {
-    console.log(text);
     setValueSearch(text);
   };
+
   return (
     <LinearGradientWrapper>
       <View style={[global_styles.rowCenterBetween, { marginTop: 20 }]}>
-        <Ionicons name="chevron-back" size={30} color={fontColor} />
+        <Ionicons
+          onPress={navigation.goBack}
+          name="arrow-back-outline"
+          size={30}
+          color={fontColor}
+        />
         <Text style={[global_styles.title, { fontSize: 24 }]}>
           {user.nickName}
         </Text>
@@ -55,18 +52,9 @@ const Index: React.FC = () => {
       </View>
       <View style={styles.items}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Item></Item>
-          <Item></Item>
-          <Item></Item>
-          <Item></Item>
-          <Item></Item>
-          <Item></Item>
-          <Item></Item>
-          <Item></Item>
-          <Item></Item>
-          <Item></Item>
-          <Item></Item>
-          <Item></Item>
+          {friends.map((item: any, index: number) => {
+            return <Item key={index} item={item} />;
+          })}
         </ScrollView>
       </View>
     </LinearGradientWrapper>

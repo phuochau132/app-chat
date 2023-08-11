@@ -1,31 +1,20 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Button } from "@rneui/themed";
 import {
   StyleSheet,
   Text,
   View,
-  KeyboardAvoidingView,
   TouchableOpacity,
   ScrollView,
-  Modal,
 } from "react-native";
-import { Image } from "@rneui/themed";
-import { useNavigation } from "@react-navigation/native";
-import moment from "moment";
 import {
   fontColor,
   fontColorItem,
   global_styles,
-  greyColor,
   placeholderTextColor,
 } from "../../../../style";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  addComment,
-  dislikePost,
-  likePost,
-} from "../../../redux/slice/postSlice";
+import { addComment, dislikePost } from "../../../redux/slice/postSlice";
 import LinearGradientWrapper from "../../../Component/LinearGradientWrapper";
 import Item from "./Item";
 import { TextInput } from "react-native-paper";

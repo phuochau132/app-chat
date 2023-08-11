@@ -1,9 +1,8 @@
-import { Avatar, Button } from "@rneui/themed";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { StackActions, useNavigation } from "@react-navigation/native";
-import { blueColor, btnBgr, fontColor, global_styles } from "../../../style";
+import { btnBgr, fontColor, global_styles } from "../../../style";
 import { Image } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slice/authSlice";
@@ -29,18 +28,23 @@ const styles = StyleSheet.create({
 });
 const Index: React.FC = () => {
   const navigation = useNavigation();
-  console.log(123);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const user = useSelector((state: any) => {
     return state.auth.user;
   });
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+  });
+  const [securePass, setSecurePass] = useState(false);
 
   const handleLogout = async () => {
     navigation.dispatch(StackActions.replace("login"));
     dispatch(logout());
     await AsyncStorage.removeItem("accessToken");
   };
+
   return (
     <LinearGradientWrapper>
       <View style={[global_styles.wrapper]}>

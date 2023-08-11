@@ -1,11 +1,10 @@
-import { Avatar, Button } from "@rneui/themed";
-import React, { useRef, useState } from "react";
+import { Button } from "@rneui/themed";
+import React, { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { blueColor, global_styles, greyColor } from "../../../style";
-import { Icon, Image, Input, Overlay } from "react-native-elements";
-import { TextInput } from "react-native-paper";
+import { Image, Input, Overlay } from "react-native-elements";
 import * as ImagePicker from "expo-image-picker";
 import { useDispatch, useSelector } from "react-redux";
 import { changeInfo } from "../../redux/slice/authSlice";
