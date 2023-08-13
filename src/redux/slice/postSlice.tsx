@@ -43,9 +43,13 @@ export const addPost: any = createAsyncThunk("addPost", async (data: Post) => {
         type: "image/jpeg",
       });
     });
-    const response = await axiosInstance.post(`api/posts`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const response = await axios.post(
+      `${Constants.manifest.extra.HOST_SERVER}/api/posts`,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
     return {
       type: 1,
       data: response.data,
@@ -55,8 +59,8 @@ export const addPost: any = createAsyncThunk("addPost", async (data: Post) => {
   }
 });
 interface PostLikes {
-  idPost: number;
-  idUser: number;
+  postId: number;
+  userId: number;
 }
 export const likePost: any = createAsyncThunk(
   "likePost",
@@ -67,7 +71,10 @@ export const likePost: any = createAsyncThunk(
       });
       return {
         type: 1,
-        data: response.data,
+        data: {
+          postId: data.postId,
+          ...response.data,
+        },
       };
     } catch (error) {
       console.log(error);
@@ -78,14 +85,17 @@ export const likePost: any = createAsyncThunk(
 export const dislikePost: any = createAsyncThunk(
   "dislikePost",
   async (data: PostLikes) => {
-    console.log(123);
     try {
       const response = await axiosInstance.post(`api/posts/dislike`, {
         ...data,
       });
       return {
         type: 1,
-        data: response.data,
+
+        data: {
+          postId: data.postId,
+          ...response.data,
+        },
       };
     } catch (error) {
       console.log(error);
@@ -179,12 +189,12 @@ const postSlice = createSlice({
       .addCase(likePost.fulfilled, (state: any, action: any) => {
         state.status = "succeeded";
         state.error = null;
-        console.log(action.payload.data);
         if (action.payload.type) {
           for (let index = 0; index < state.posts.length; index++) {
             const post = state.posts[index];
-            if (post.id === action.payload.data.id) {
-              state.posts[index] = action.payload.data;
+            if (post.id === action.payload.data.postId) {
+              console.log(action.payload.data.id);
+              post.likedUsers = [action.payload.data, ...post.likedUsers];
               break;
             }
           }
@@ -206,12 +216,17 @@ const postSlice = createSlice({
       .addCase(dislikePost.fulfilled, (state: any, action: any) => {
         state.status = "succeeded";
         state.error = null;
-        console.log(action.payload.data);
         if (action.payload.type) {
           for (let index = 0; index < state.posts.length; index++) {
             const post = state.posts[index];
-            if (post.id === action.payload.data.id) {
-              state.posts[index] = action.payload.data;
+            if (post.id === action.payload.data.postId) {
+              console.log(action.payload.data.id);
+              const updatedLikedUsers = post.likedUsers.filter((item: any) => {
+                return item.id !== action.payload.data.id;
+              });
+              console.log(updatedLikedUsers);
+
+              post.likedUsers = updatedLikedUsers;
               break;
             }
           }

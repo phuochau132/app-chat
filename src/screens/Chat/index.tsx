@@ -5,10 +5,11 @@ import {
   View,
   KeyboardAvoidingView,
   Platform,
+  FlatList,
 } from "react-native";
 import { Image } from "@rneui/themed";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useCallback, useEffect, seState, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import * as DocumentPicker from "expo-document-picker";
 import {
   Bubble,
@@ -24,7 +25,9 @@ import * as ImagePicker from "expo-image-picker";
 import { useDispatch, useSelector } from "react-redux";
 import { stompClient } from "../../../index";
 import { fontColor, global_styles, itemColor } from "../../../style";
-import { sendMessage } from "../../redux/slice/userSlice";
+import { addMessage, sendMessage } from "../../redux/slice/userSlice";
+import Avatar from "../../Component/Avatar";
+import { getFriends } from "../../api/notificationSlice";
 const styles = StyleSheet.create({
   container: {
     height: "100%",
@@ -119,7 +122,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-
+let check = false;
 export const Index: React.FC<{}> = () => {
   const route = useRoute();
   const { item } = route.params;
@@ -130,7 +133,6 @@ export const Index: React.FC<{}> = () => {
   const auth = useSelector((state: any) => {
     return state.auth;
   });
-
   const filterMessage = useCallback(() => {
     friendShip.room.message.forEach((item: any) => {
       if (auth.user.id != item.sender.id) {
@@ -164,29 +166,67 @@ export const Index: React.FC<{}> = () => {
   }, []);
   useEffect(() => {
     filterMessage();
-    stompClient.subscribe(
-      `/topic/rooms/${friendShip.room.id}`,
-      (message: any) => {
-        console.log(98123);
-        console.log(friendShip.room.id);
-        const bodyData = JSON.parse(message.body);
-        const formattedMessage: IMessage = {
-          _id: bodyData.body._id,
-          text: bodyData.body.text,
-          createdAt: new Date(bodyData.body.createdAt),
-          user: {
-            _id: bodyData.body.user.id,
-            name: bodyData.body.user.name,
-            avatar: bodyData.body.user.avatar,
-          },
-        };
+    if (!check) {
+      stompClient.subscribe(
+        `/topic/rooms/${friendShip.room.id}`,
+        (message: any) => {
+          const bodyData = JSON.parse(message.body);
+          const formattedMessage: IMessage = {
+            _id: bodyData.body._id,
+            text: bodyData.body.text,
+            createdAt: new Date(bodyData.body.createdAt),
+            user: {
+              _id: bodyData.body.user.id,
+              name: bodyData.body.user.name,
+              avatar: bodyData.body.user.avatar,
+            },
+          };
 
-        if (bodyData.body.user._id != auth.user.id) {
-          setMessages((prevMessages) => [formattedMessage, ...prevMessages]);
+          if (bodyData.body.user._id != auth.user.id) {
+            dispatch(
+              addMessage({
+                roomId: friendShip.room.id,
+                message: {
+                  _id: bodyData.body._id,
+                  sender: {
+                    id: bodyData.body.user.id,
+                    avatar: bodyData.body.user.avatar,
+                  },
+                  receiver: { id: auth.user.id },
+                  roomId: friendShip.room.id,
+                  text: bodyData.body.text,
+                  createAt: bodyData.body.createdAt,
+                },
+              })
+            );
+            setMessages((prevMessages) => [formattedMessage, ...prevMessages]);
+          } else {
+            dispatch(
+              addMessage({
+                roomId: friendShip.room.id,
+                message: {
+                  _id: bodyData.body._id,
+                  sender: {
+                    id: auth.user.id,
+                    avatar: auth.user.avatar,
+                  },
+                  receiver: {
+                    id: bodyData.body.user.id,
+                    avatar: bodyData.body.user.avatar,
+                  },
+                  roomId: friendShip.room.id,
+                  text: bodyData.body.text,
+                  createAt: bodyData.body.createdAt,
+                },
+              })
+            );
+          }
         }
-      }
-    );
+      );
+    }
+    check = true;
   }, []);
+
   const handleSend = useCallback(
     (newMessages: IMessage[]) => {
       const formattedMessage: IMessage = {
@@ -293,7 +333,6 @@ export const Index: React.FC<{}> = () => {
       </View>
     );
   };
-
   const navigation = useNavigation();
   return (
     <KeyboardAvoidingView
@@ -311,12 +350,7 @@ export const Index: React.FC<{}> = () => {
           color={fontColor}
         />
         <View style={styles.info}>
-          <Image
-            source={{
-              uri: "https://scontent.fsgn19-1.fna.fbcdn.net/v/t1.6435-1/141995787_512358293071430_1466381692630381917_n.jpg?stp=dst-jpg_s320x320&_nc_cat=111&ccb=1-7&_nc_sid=7206a8&_nc_ohc=9JU-HVeBW-YAX_Uinm_&_nc_ht=scontent.fsgn19-1.fna&oh=00_AfDDgoNUaoowtfVmK9nM693BZ7rkzQhYTCkvgFigIV9R7Q&oe=64D81B8D",
-            }}
-            style={styles.img}
-          />
+          <Avatar user={friendShip.user} size={{ width: 50, height: 50 }} />
           <Text style={styles.name}>{auth.user.nickName}</Text>
         </View>
         <View style={styles.row_center}>

@@ -25,6 +25,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: fontColor,
   },
+  background: {
+    height: "30%",
+    backgroundColor: "red",
+    width: "100%",
+  },
 });
 const Index: React.FC = () => {
   const navigation = useNavigation();
@@ -38,7 +43,12 @@ const Index: React.FC = () => {
     password: "",
   });
   const [securePass, setSecurePass] = useState(false);
-
+  const friends = useSelector((state: any) => {
+    return state.user.friends;
+  });
+  const posts = useSelector((state: any) => {
+    return state.post.posts;
+  });
   const handleLogout = async () => {
     navigation.dispatch(StackActions.replace("login"));
     dispatch(logout());
@@ -53,7 +63,7 @@ const Index: React.FC = () => {
           <ActivityIndicator size="large" color="blue" />
         </View>
       )} */}
-        <View style={global_styles.rowCenterBetween}>
+        <View style={[global_styles.rowCenterBetween]}>
           <View style={global_styles.rowCenter}>
             <Text
               style={[global_styles.text, { fontSize: 20, fontWeight: "bold" }]}
@@ -87,7 +97,7 @@ const Index: React.FC = () => {
             style={[
               global_styles.rowCenterBetween,
               {
-                width: "100%",
+                width: "70%",
                 paddingLeft: 20,
                 paddingRight: 20,
                 marginTop: 20,
@@ -101,7 +111,11 @@ const Index: React.FC = () => {
                   { fontWeight: "bold", textAlign: "center", fontSize: 16 },
                 ]}
               >
-                2
+                {
+                  posts.filter((item: any) => {
+                    return item.user.id == user.id;
+                  }).length
+                }
               </Text>
               <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
                 Bài viết
@@ -114,23 +128,10 @@ const Index: React.FC = () => {
                   { fontWeight: "bold", textAlign: "center", fontSize: 16 },
                 ]}
               >
-                2
+                {friends.length}
               </Text>
               <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
-                Người theo giỏi
-              </Text>
-            </View>
-            <View style={[global_styles.ColumnCenter]}>
-              <Text
-                style={[
-                  styles.text,
-                  { fontWeight: "bold", textAlign: "center", fontSize: 16 },
-                ]}
-              >
-                2
-              </Text>
-              <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
-                Đang theo dõi
+                Bạn bè
               </Text>
             </View>
           </View>

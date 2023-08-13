@@ -147,7 +147,6 @@ const Index: React.FC = () => {
     }
   };
   const handleAddPost = () => {
-    console.log(auth.user);
     if (auth.user) {
       dispatch(
         addPost({
@@ -169,9 +168,6 @@ const Index: React.FC = () => {
         (min: any, post: any) => (post.id < min ? post.id : min),
         Number.MAX_SAFE_INTEGER
       );
-      console.log("hậu đẹp trai");
-
-      console.log(minId);
       dispatch(getPosts(minId));
     }
   };

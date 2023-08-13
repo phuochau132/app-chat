@@ -3,6 +3,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-simple-toast";
 import Constants from "expo-constants";
+import axiosInstance from "../../config/axiosConfig";
 
 //"accountNonExpired": true, "accountNonLocked": true, "authorities": [{"authority": "[]"}], "credentialsNonExpired": true, "email": "hau", "enabled": true, "full_name": "nguyenhau", "id": 1, "name": "hau", "roles": [], "username": "hau"}
 
@@ -45,8 +46,6 @@ interface ChangeInfo {
 export const changeInfo = createAsyncThunk(
   "auth/changeInfo",
   async ({ user, file }: any) => {
-    console.log(2335);
-
     const formData = new FormData();
     if (file) {
       formData.append("file", {
@@ -57,15 +56,27 @@ export const changeInfo = createAsyncThunk(
     }
     formData.append("user", JSON.stringify(user));
     try {
-      const response = await axios.post(`api/users/profile`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await axios.post(
+        `${Constants.manifest.extra.HOST_SERVER}/api/users/profile`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       let data = response.data;
+
       return {
-        user: data,
+        data: {
+          type: 1,
+          user: data,
+        },
       };
     } catch (error) {
-      throw error;
+      return {
+        data: {
+          type: 0,
+        },
+      };
     }
   }
 );
@@ -74,7 +85,7 @@ export const getInfoUserFToken = createAsyncThunk(
   "auth/getInfoUserFToken",
   async (accessToken: string) => {
     try {
-      const response = await axios.post(`api/users`, {
+      const response = await axiosInstance.post(`api/users`, {
         token: accessToken,
       });
       const data = response.data;
@@ -131,7 +142,11 @@ const profileSlice = createSlice({
       })
       .addCase(changeInfo.fulfilled, (state: any, action: any) => {
         state.status = "succeeded";
-        state.user = action.payload.user;
+        console.log(action.payload.data);
+        console.log(98123);
+        if (action.payload.data.type) {
+          state.user = action.payload.data.user;
+        }
         Toast.show("Change Profile Successfully", Toast.LONG, {
           backgroundColor: "white",
           textColor: "black",
@@ -151,8 +166,8 @@ const profileSlice = createSlice({
       })
       .addCase(getInfoUserFToken.fulfilled, (state: any, action: any) => {
         state.status = "succeeded";
-        console.log(action.payload.user);
-
+        console.log(91823);
+        console.log(action.payload);
         if (action.payload.type) {
           state.user = action.payload.user;
         }

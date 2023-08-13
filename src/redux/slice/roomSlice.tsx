@@ -15,26 +15,7 @@ interface Message {
   roomId: number;
   text: string;
 }
-export const sendMessage: any = createAsyncThunk(
-  "room/message",
-  async (data: Message) => {
-    console.log(1239123);
-    console.log(data);
 
-    try {
-      const response = await axiosInstance.post(`api/messages`, data);
-      console.log(response.data);
-      return {
-        type: 1,
-        data: response.data,
-      };
-    } catch (error) {
-      return {
-        type: 0,
-      };
-    }
-  }
-);
 export const getRoom: any = createAsyncThunk(
   "rooms",
   async (idRoom: number) => {
@@ -59,23 +40,7 @@ const roomSlice = createSlice({
   reducers: {},
   extraReducers: (builder: any) => {
     builder
-      .addCase(sendMessage.pending, (state: any) => {
-        state.status = "loading";
-        state.error = null;
-      })
-      .addCase(sendMessage.fulfilled, (state: any, action: any) => {
-        state.status = "succeeded";
-        state.error = null;
-      })
-      .addCase(sendMessage.rejected, (state: any, action: any) => {
-        state.status = "failed";
-        state.user = null;
-        state.error = action.error.message;
-        Toast.show(action.error.message, Toast.LONG, {
-          backgroundColor: "white",
-          textColor: "black",
-        });
-      })
+
       .addCase(getRoom.pending, (state: any) => {
         state.status = "loading";
         state.error = null;

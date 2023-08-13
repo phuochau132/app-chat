@@ -92,10 +92,6 @@ const Index: React.FC = () => {
   const handleChangeProfile = () => {
     dispatch(changeInfo({ user: data, file: imageUri }));
   };
-  console.log(198);
-  console.log(198);
-  console.log(Constants.manifest.extra.HOST_SERVER + auth.user.avatar);
-
   return (
     <View style={global_styles.wrapper}>
       <View style={global_styles.rowCenterBetween}>
@@ -110,13 +106,15 @@ const Index: React.FC = () => {
         <Text style={{ fontSize: 18, fontWeight: "bold" }}>
           Chỉnh sửa trang cá nhân
         </Text>
-        <Ionicons
-          onPress={handleChangeProfile}
-          style={{ color: blueColor }}
-          name="checkmark-outline"
-          size={30}
-          color="black"
-        />
+        <TouchableOpacity>
+          <Ionicons
+            onPress={handleChangeProfile}
+            style={{ color: blueColor }}
+            name="checkmark-outline"
+            size={30}
+            color="black"
+          />
+        </TouchableOpacity>
       </View>
       <View style={[global_styles.rowCenter, { marginTop: 20 }]}>
         <View style={[global_styles.ColumnCenter, { width: "100%" }]}>

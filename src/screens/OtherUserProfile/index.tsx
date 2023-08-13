@@ -38,14 +38,17 @@ const UserProfile: React.FC = () => {
   const route = useRoute();
   const { item } = route.params;
   const profileUser = JSON.parse(item);
-  const [loading, setLoading] = useState(false);
-  const [isFriend, setIsFriend] = useState(false);
   const user = useSelector((state: any) => {
     return state.auth.user;
   });
   const friends = useSelector((state: any) => {
     return state.user.friends;
   });
+  const friendShip = () => {
+    return friends.filter((tmp: any) => {
+      return tmp.user.id === profileUser.id;
+    });
+  };
   const handleAddFriend = () => {
     dispatch(addFriend({ senderId: user.id, receiverId: profileUser.id }));
   };
@@ -54,11 +57,6 @@ const UserProfile: React.FC = () => {
       return tmp.user.id == profileUser.id;
     });
   }, [friends]);
-  console.log(friends);
-
-  console.log(9812313);
-  console.log(check());
-
   return (
     <LinearGradientWrapper>
       <View style={global_styles.wrapper}>
@@ -195,7 +193,11 @@ const UserProfile: React.FC = () => {
 
           <TouchableOpacity
             onPress={() => {
-              navigator.navigate("chat");
+              if (friendShip()[0]) {
+                navigator.navigate("chat", {
+                  item: JSON.stringify(friendShip()[0]),
+                });
+              }
             }}
             style={[global_styles.touchBtn, global_styles.rowCenter]}
           >
@@ -222,20 +224,5 @@ const UserProfile: React.FC = () => {
     </LinearGradientWrapper>
   );
 };
-async function sendPushNotification(user: any) {
-  await fetch("https://exp.host/--/api/v2/push/send", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      to: user.expoPushToken,
-      sound: "default",
-      title: "You've got mail! 📬",
-      body: "Here is the notification body",
-      data: { data: "goes here" },
-    }),
-  });
-}
+
 export default UserProfile;

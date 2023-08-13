@@ -32,7 +32,12 @@ const Index: React.FC = () => {
   const handleTextSearch = (text: string) => {
     setValueSearch(text);
   };
-
+  useEffect(() => {
+    dispatch(getFriends(user.id));
+  }, []);
+  useEffect(() => {
+    console.log(87123123);
+  }, [friends]);
   return (
     <LinearGradientWrapper>
       <View style={[global_styles.rowCenterBetween, { marginTop: 20 }]}>

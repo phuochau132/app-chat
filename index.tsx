@@ -1,7 +1,7 @@
 // App.tsx
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
-import { Platform, StyleSheet } from "react-native";
+import { AppState, Platform, StyleSheet } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { publicRoutes } from "./src/route";
 import { useDispatch, useSelector } from "react-redux";
@@ -58,6 +58,7 @@ const Index: React.FC = () => {
   const checkToken = async () => {
     const accessToken: any = await AsyncStorage.getItem("accessToken");
     if (accessToken) {
+      console.log("getInfouser");
       dispatch(getInfoUserFToken(accessToken));
     }
   };
@@ -81,7 +82,6 @@ const Index: React.FC = () => {
         console.log(response.notification.request.content.data);
         console.log(123123123);
       });
-
     return () => {
       Notifications.removeNotificationSubscription(
         notificationListener.current

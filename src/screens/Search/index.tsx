@@ -38,6 +38,9 @@ const Index: React.FC = () => {
   const isLoading = useSelector((state: any) => {
     return state.user.status;
   });
+  const user = useSelector((state: any) => {
+    return state.auth.user;
+  });
   const listUser = useSelector((state: any) => {
     return state.user.listUser;
   });
@@ -51,6 +54,7 @@ const Index: React.FC = () => {
         for (let tmp of Object.keys(item)) {
           if (
             typeof item[tmp] === "string" &&
+            item.id != user.id &&
             item[tmp].toLocaleLowerCase().includes(keyword.toLocaleLowerCase())
           ) {
             return true;

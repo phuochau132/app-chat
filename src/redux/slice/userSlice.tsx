@@ -2,8 +2,6 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import axiosInstance from "../../config/axiosConfig";
 import Toast from "react-native-simple-toast";
-import Constants from "expo-constants";
-import { sendPushNotification } from "../../api/notificationSlice";
 const initialState = {
   listUser: [],
   profileChosen: null,
@@ -11,6 +9,7 @@ const initialState = {
   listRequestAddFriend: [],
   userBeInformed: null,
   friends: [],
+  statusUser: [],
   error: null,
   status: "",
   linkTo: "/",
@@ -18,7 +17,6 @@ const initialState = {
 
 export const loadAllUser: any = createAsyncThunk("user/loadUser", async () => {
   try {
-    console.log(123);
     const response = await axiosInstance.get(`api/users`);
     return response.data;
   } catch (error) {
@@ -182,9 +180,12 @@ export const sendMessage: any = createAsyncThunk(
     try {
       const response = await axiosInstance.post(`api/messages`, data);
       await sendNotification(notificationData);
+      console.log(response.data);
       return {
         type: 1,
-        data: response.data,
+        data: {
+          ...response.data,
+        },
       };
     } catch (error) {
       return {
@@ -202,9 +203,31 @@ const userSlice = createSlice({
       state.profileChosen = action.payload.user;
       state.status = "change profile chosen";
     },
+    addMessage: (state: any, action: any) => {
+      console.log("test");
+      console.log(action.payload);
+      const roomId = action.payload.roomId;
+      for (let index = 0; index < state.friends.length; index++) {
+        const friendShip = state.friends[index];
+        if (friendShip.room.id === roomId) {
+          console.log("oki");
+          console.log(friendShip.room.message.length);
+          friendShip.room.message = [
+            ...friendShip.room.message,
+            action.payload.message,
+          ];
+          console.log(friendShip.room.message.length);
+          break;
+        }
+      }
+    },
     filter: (state: any, action: any) => {
       state.listFiltered = action.payload;
       state.status = "filter";
+    },
+    setActiveUser: (state: any, action: any) => {
+      state.statusUser = action.payload;
+      state.status = "status user";
     },
   },
   extraReducers: (builder: any) => {
@@ -367,6 +390,7 @@ const userSlice = createSlice({
   },
 });
 
-export const { filter, changeProfileChosen } = userSlice.actions;
+export const { filter, changeProfileChosen, setActiveUser, addMessage } =
+  userSlice.actions;
 
 export default userSlice.reducer;

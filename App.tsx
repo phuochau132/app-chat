@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Provider } from "react-redux";
 
 import { store } from "./src/redux";
@@ -8,7 +8,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { Linking } from "react-native";
 import * as Notifications from "expo-notifications";
 import { StyleSheet } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import BackgroundTimer from "react-native-background-timer";
+import { AppState } from "react-native";
 const styles = StyleSheet.create({});
 
 const App: React.FC = () => {

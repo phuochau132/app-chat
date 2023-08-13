@@ -27,7 +27,6 @@ const Item: React.FC<{
 }> = ({ item, eventOnLikesModal, eventOnCommentModal }) => {
   const [listImg, setListImg] = useState(item.imgPosts);
   const [comment, setListComment] = useState(item.comments);
-  console.log(123);
   const [index, setIndex] = useState(1);
   const user = useSelector((state: any) => state.auth.user);
 
@@ -47,11 +46,10 @@ const Item: React.FC<{
     }
   };
   const handleLike = () => {
-    dispatch(likePost({ idPost: item.id, idUser: user.id }));
+    dispatch(likePost({ postId: item.id, userId: user.id }));
   };
   const handleDisLike = () => {
-    console.log(981232);
-    dispatch(dislikePost({ idPost: item.id, idUser: user.id }));
+    dispatch(dislikePost({ postId: item.id, userId: user.id }));
   };
 
   const toggleIndex = (index: Number) => [setIndex(Number)];
@@ -71,11 +69,7 @@ const Item: React.FC<{
     >
       <View style={[global_styles.rowCenter, { marginBottom: 5 }]}>
         <View style={[global_styles.rowCenter]}>
-          <Avatar
-            avatar={Constants.manifest.extra.HOST_SERVER + item.user.avatar}
-            isActive={false}
-            size={{ width: 40, height: 40 }}
-          />
+          <Avatar user={item.user} size={{ width: 40, height: 40 }} />
         </View>
         <View
           style={[

@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import Toast from "react-native-simple-toast";
+import axiosInstance from "../config/axiosConfig";
 
 interface Notification {
   to: string;
@@ -36,4 +37,24 @@ const sendPushNotification = createAsyncThunk(
     }
   }
 );
-export { sendPushNotification };
+const getFriends: any = createAsyncThunk(
+  "user/getFriends",
+  async (idUser: number) => {
+    try {
+      const response = await axiosInstance.get(
+        `api/friends/getFriends/${idUser}`
+      );
+      console.log(response.data);
+
+      return {
+        type: 1,
+        data: response.data,
+      };
+    } catch (error) {
+      return {
+        type: 0,
+      };
+    }
+  }
+);
+export { sendPushNotification, getFriends };

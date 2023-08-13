@@ -3,6 +3,9 @@ import Constants from "expo-constants";
 import { useNavigation } from "@react-navigation/native";
 import { fontColor, global_styles, itemColor } from "../../../../style";
 import Avatar from "../../../Component/Avatar";
+import { useSelector } from "react-redux";
+import moment from "moment";
+import { useCallback } from "react";
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -46,8 +49,18 @@ const styles = StyleSheet.create({
 
 const Item: React.FC<{ item: any }> = ({ item }) => {
   const navigation = useNavigation();
-  console.log(12398);
-  console.log(item);
+  const statusUser = useSelector((state: any) => {
+    return state.user.statusUser;
+  });
+  const check = useCallback(() => {
+    return statusUser.filter((tmp: any) => {
+      return tmp.id === item.user.id && tmp.status == "offline";
+    });
+  }, [statusUser]);
+  console.log("length", item.room.message.length);
+  if (item.room.message[item.room.message.length - 1]) {
+    console.log(item.room.message[item.room.message.length - 1].text);
+  }
   return (
     <TouchableOpacity
       onPress={() => {
@@ -56,11 +69,7 @@ const Item: React.FC<{ item: any }> = ({ item }) => {
       style={[global_styles.rowCenter, styles.wrapper]}
     >
       <View>
-        <Avatar
-          avatar={Constants.manifest.extra.HOST_SERVER + item.user.avatar}
-          isActive={false}
-          size={{ width: 50, height: 50 }}
-        />
+        <Avatar user={item.user} size={{ width: 50, height: 50 }} />
       </View>
       <View style={styles.info}>
         <Text style={styles.name}>{item.user.nickName} </Text>
@@ -70,10 +79,17 @@ const Item: React.FC<{ item: any }> = ({ item }) => {
           style={styles.content_message}
         >
           {item.room.message.length > 0
-            ? item.room.message[0].content
+            ? item.room.message[item.room.message.length - 1].text
             : "Gửi lời chào!"}
         </Text>
       </View>
+      {statusUser.some((tmp: any) => {
+        return tmp.id === item.user.id && tmp.status == "offline";
+      }) && (
+        <Text style={styles.content_message}>
+          {moment(check()[0].createAt).fromNow()}
+        </Text>
+      )}
     </TouchableOpacity>
   );
 };

@@ -19,7 +19,17 @@ axiosInstance.interceptors.request.use(
 );
 const refreshAccessToken = async () => {
   try {
-    const response = await axiosInstance.post(`api/auth/refreshToken`);
+    const accessToken = await AsyncStorage.getItem("accessToken");
+    console.log(accessToken);
+    const response = await axios.post(
+      `${Constants.manifest.extra.HOST_SERVER}/api/auth/refreshToken`,
+      null,
+      {
+        headers: {
+          Authorization: `BearerF ${accessToken}`,
+        },
+      }
+    );
     const newAccessToken = response.data.accessToken;
     console.log("refresh Token");
     console.log(newAccessToken);
@@ -45,7 +55,9 @@ axiosInstance.interceptors.response.use(
       try {
         console.log("hậu 1");
         const newAccessToken = await refreshAccessToken();
+        console.log(newAccessToken);
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        console.log(originalRequest);
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         console.log("Lỗi khi refresh token:", refreshError);

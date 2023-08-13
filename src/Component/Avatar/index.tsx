@@ -1,31 +1,39 @@
 // SearchBar.js
-import React from "react";
+import React, { useCallback } from "react";
 import { global_styles } from "../../../style";
 import { Dimensions, View } from "react-native";
-import { Image } from "react-native-elements";
+import { Image, Text } from "react-native-elements";
+import { useSelector } from "react-redux";
+import Constants from "expo-constants";
 const Avatar: React.FC<{
-  avatar: string;
-  isActive: boolean;
+  user: any;
   size: any;
-}> = ({ avatar, isActive, size }) => {
+}> = ({ user, size }) => {
+  const statusUser = useSelector((state: any) => {
+    return state.user.statusUser;
+  });
+  console.log(9781);
+  console.log(statusUser);
   return (
     <View style={[global_styles.rowCenter]}>
       <Image
         source={{
-          uri: avatar,
+          uri: Constants.manifest.extra.HOST_SERVER + user.avatar,
         }}
         style={{ borderRadius: 50, ...size }}
       ></Image>
-      {isActive && (
+      {statusUser.some((item: any) => {
+        return item.id === user.id && item.status == "online";
+      }) && (
         <Text
           style={{
             position: "absolute",
             backgroundColor: "#31A24C",
-            height: "20%",
-            width: "20%",
+            height: 10,
+            width: 10,
             borderRadius: 100,
-            bottom: "0%",
-            right: "5%",
+            bottom: 0,
+            right: 0,
           }}
         ></Text>
       )}

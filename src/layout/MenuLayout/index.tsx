@@ -1,9 +1,9 @@
-import React, { FC, useEffect } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { Profile } from "../../screens";
 import { Image } from "react-native-elements";
-import { Linking, StyleSheet, View } from "react-native";
+import { AppState, Linking, StyleSheet, View } from "react-native";
 import Constants from "expo-constants";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -11,7 +11,9 @@ import {
   getFriends,
   getRequestAddFriend,
   loadAllUser,
+  setActiveUser,
 } from "../../redux/slice/userSlice";
+import { stompClient } from "../../../index";
 import { tabRoutes } from "../../route";
 import { useNavigation } from "@react-navigation/native";
 
@@ -23,6 +25,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
 });
+let check = false;
 const Index: React.FC = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -41,26 +44,57 @@ const Index: React.FC = () => {
       dispatch(getFriends(user.id));
     }
   }, []);
-
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
   useEffect(() => {
-    const handleNotification = async () => {
-      const initialUrl = await Linking.getInitialURL();
-      if (initialUrl) {
-        const url = initialUrl.split("://")[1];
+    let isStompClientConnected = stompClient.connected;
+    if (isStompClientConnected) {
+      console.log(1231239);
+      stompClient.send(
+        `/app/users/status`,
+        {},
+        JSON.stringify({ id: user.id, createAt: null, status: "online" })
+      );
 
-        if (url === "YOUR_CLICK_ACTION") {
-          navigation.navigate("home");
+      stompClient.subscribe(`/topic/users/status`, (data: any) => {
+        dispatch(setActiveUser(JSON.parse(data.body)));
+      });
+
+      const subscription = AppState.addEventListener(
+        "change",
+        (nextAppState) => {
+          if (nextAppState === "active") {
+            stompClient.send(
+              `/app/users/status`,
+              {},
+              JSON.stringify({
+                id: user.id,
+                createAt: null,
+                status: "online",
+              })
+            );
+          } else {
+            stompClient.send(
+              `/app/users/status`,
+              {},
+              JSON.stringify({
+                id: user.id,
+                createAt: null,
+                status: "offline",
+              })
+            );
+          }
+          appState.current = nextAppState;
+          setAppStateVisible(appState.current);
         }
-      }
-    };
-
-    handleNotification();
-    Linking.addEventListener("url", handleNotification);
-    return () => {
-      Linking.removeEventListener("url", handleNotification);
-    };
-  }, []);
-
+      );
+      isStompClientConnected = false;
+      check = true;
+      return () => {
+        subscription.remove();
+      };
+    }
+  }, [stompClient.connected]);
   return (
     <View
       style={{
@@ -101,7 +135,7 @@ const Index: React.FC = () => {
           name="tabProfile"
           options={{
             headerShown: false,
-            tabBarIcon: ({ color, size, focused }) => (
+            tabBarIcon: ({ focused }) => (
               <View
                 style={[
                   {
