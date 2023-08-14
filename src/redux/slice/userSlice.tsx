@@ -204,19 +204,11 @@ const userSlice = createSlice({
       state.status = "change profile chosen";
     },
     addMessage: (state: any, action: any) => {
-      console.log("test");
-      console.log(action.payload);
-      const roomId = action.payload.roomId;
+      const { roomId, message } = action.payload;
       for (let index = 0; index < state.friends.length; index++) {
         const friendShip = state.friends[index];
         if (friendShip.room.id === roomId) {
-          console.log("oki");
-          console.log(friendShip.room.message.length);
-          friendShip.room.message = [
-            ...friendShip.room.message,
-            action.payload.message,
-          ];
-          console.log(friendShip.room.message.length);
+          friendShip.room.message = [...friendShip.room.message, message];
           break;
         }
       }

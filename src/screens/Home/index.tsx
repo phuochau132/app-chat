@@ -32,7 +32,7 @@ import Loading from "../../Component/Loading";
 import LikesModal from "./LikeModal";
 import CommentModal from "./CommentModal";
 
-let ScreenWidth = Dimensions.get("window").width;
+export let ScreenWidth = Dimensions.get("window").width;
 const styles = StyleSheet.create({
   title: {
     color: fontColor,

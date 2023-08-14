@@ -57,10 +57,6 @@ const Item: React.FC<{ item: any }> = ({ item }) => {
       return tmp.id === item.user.id && tmp.status == "offline";
     });
   }, [statusUser]);
-  console.log("length", item.room.message.length);
-  if (item.room.message[item.room.message.length - 1]) {
-    console.log(item.room.message[item.room.message.length - 1].text);
-  }
   return (
     <TouchableOpacity
       onPress={() => {

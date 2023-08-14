@@ -49,17 +49,14 @@ const Index: React.FC = () => {
   useEffect(() => {
     let isStompClientConnected = stompClient.connected;
     if (isStompClientConnected) {
-      console.log(1231239);
       stompClient.send(
         `/app/users/status`,
         {},
         JSON.stringify({ id: user.id, createAt: null, status: "online" })
       );
-
       stompClient.subscribe(`/topic/users/status`, (data: any) => {
         dispatch(setActiveUser(JSON.parse(data.body)));
       });
-
       const subscription = AppState.addEventListener(
         "change",
         (nextAppState) => {

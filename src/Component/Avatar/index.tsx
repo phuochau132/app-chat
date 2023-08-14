@@ -12,8 +12,6 @@ const Avatar: React.FC<{
   const statusUser = useSelector((state: any) => {
     return state.user.statusUser;
   });
-  console.log(9781);
-  console.log(statusUser);
   return (
     <View style={[global_styles.rowCenter]}>
       <Image

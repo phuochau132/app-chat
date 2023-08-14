@@ -5,29 +5,23 @@ import {
   View,
   KeyboardAvoidingView,
   Platform,
-  FlatList,
+  TouchableOpacity,
+  ScrollView,
 } from "react-native";
-import { Image } from "@rneui/themed";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as DocumentPicker from "expo-document-picker";
-import {
-  Bubble,
-  Composer,
-  GiftedChat,
-  IMessage,
-  InputToolbar,
-  Send,
-} from "react-native-gifted-chat";
-import Constants from "expo-constants";
-
+import { IMessage } from "react-native-gifted-chat";
 import * as ImagePicker from "expo-image-picker";
 import { useDispatch, useSelector } from "react-redux";
+
 import { stompClient } from "../../../index";
 import { fontColor, global_styles, itemColor } from "../../../style";
 import { addMessage, sendMessage } from "../../redux/slice/userSlice";
 import Avatar from "../../Component/Avatar";
-import { getFriends } from "../../api/notificationSlice";
+import { TextInput } from "react-native-paper";
+import Bubble from "./Bubble";
+import { Image } from "react-native-elements";
 const styles = StyleSheet.create({
   container: {
     height: "100%",
@@ -91,10 +85,8 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     backgroundColor: "transparent",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    height: "100%",
-    marginRight: 8,
+    marginLeft: 8,
+    borderBottomWidth: 0,
   },
   sendButton: {
     borderRadius: 20,
@@ -103,18 +95,8 @@ const styles = StyleSheet.create({
     color: { fontColor },
   },
   inputToolbarContainer: {
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    height: 50,
-    borderTopColor: "#e8e8e8",
-    borderRadius: 30,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-around",
-    flexDirection: "row",
-    backgroundColor: itemColor,
-    borderColor: "#e8e8e8",
+    width: "100%",
+    borderRadius: 20,
   },
 
   sendContainer: {
@@ -127,42 +109,48 @@ export const Index: React.FC<{}> = () => {
   const route = useRoute();
   const { item } = route.params;
   const friendShip = JSON.parse(item);
+  const dispatch = useDispatch();
+  const scrollViewRef = useRef(null);
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [videoUri, setVideoUri] = useState<string | null>(null);
-  const dispatch = useDispatch();
+  const [images, setImages] = useState<string[]>([]);
+  const navigation = useNavigation();
+  const [inputValue, setInputValue] = useState("");
   const auth = useSelector((state: any) => {
     return state.auth;
   });
   const filterMessage = useCallback(() => {
+    const array: any = [];
     friendShip.room.message.forEach((item: any) => {
       if (auth.user.id != item.sender.id) {
         const message = {
           _id: item._id,
           text: item.text,
+          image: [],
           createdAt: item.createAt,
           user: {
             _id: item.sender.id,
             name: item.sender.fullName,
-            avatar: Constants.manifest.extra.HOST_SERVER + item.sender.avatar,
+            avatar: item.sender.avatar,
           },
         };
-        setMessages((previousMessages) =>
-          GiftedChat.append(previousMessages, message)
-        );
+        array.push(message);
       } else {
         const message = {
           _id: item._id,
           text: item.text,
+          image: [],
           createdAt: item.createAt,
           user: {
             _id: auth.user.id,
             name: auth.user.fullName,
-            avatar: Constants.manifest.extra.HOST_SERVER + auth.user.avatar,
+            avatar: auth.user.avatar,
           },
         };
-        setMessages((prevMessages) => [message, ...prevMessages]);
+        array.push(message);
       }
     });
+    setMessages(array);
   }, []);
   useEffect(() => {
     filterMessage();
@@ -174,14 +162,14 @@ export const Index: React.FC<{}> = () => {
           const formattedMessage: IMessage = {
             _id: bodyData.body._id,
             text: bodyData.body.text,
+            image: bodyData.body.image,
             createdAt: new Date(bodyData.body.createdAt),
             user: {
-              _id: bodyData.body.user.id,
+              _id: bodyData.body.user._id,
               name: bodyData.body.user.name,
               avatar: bodyData.body.user.avatar,
             },
           };
-
           if (bodyData.body.user._id != auth.user.id) {
             dispatch(
               addMessage({
@@ -199,7 +187,7 @@ export const Index: React.FC<{}> = () => {
                 },
               })
             );
-            setMessages((prevMessages) => [formattedMessage, ...prevMessages]);
+            setMessages((prevMessages) => [...prevMessages, formattedMessage]);
           } else {
             dispatch(
               addMessage({
@@ -226,46 +214,51 @@ export const Index: React.FC<{}> = () => {
     }
     check = true;
   }, []);
+  console.log("haudeptrai");
+  console.log(messages);
 
   const handleSend = useCallback(
-    (newMessages: IMessage[]) => {
-      const formattedMessage: IMessage = {
-        _id: newMessages[0]._id,
-        text: newMessages[0].text,
-        createdAt: newMessages[0].createdAt,
-        user: {
-          _id: auth.user.id,
-          name: auth.user.fullName,
-          avatar: Constants.manifest.extra.HOST_SERVER + auth.user.avatar,
-        },
-      };
-      dispatch(
-        sendMessage({
-          data: {
-            senderId: auth.user.id,
-            receiverId: friendShip.user.id,
-            roomId: friendShip.room.id,
-            text: newMessages[0].text,
+    (newMessages: any) => {
+      if (newMessages[0].text.trim() || images.length > 0) {
+        const formattedMessage: IMessage = {
+          _id: newMessages[0]._id,
+          text: newMessages[0].text,
+          image: newMessages[0].images,
+          createdAt: newMessages[0].createdAt,
+          user: {
+            _id: auth.user.id,
+            name: auth.user.fullName,
+            avatar: auth.user.avatar,
           },
-          notificationData: {
-            to: friendShip.user.expoPushToken,
-            title: `Bạn có tin nhắn đến từ: ${auth.user.fullName}`,
-            body: newMessages[0].text,
-          },
-        })
-      );
-      setMessages((previousMessages) =>
-        GiftedChat.append(previousMessages, newMessages)
-      );
-      stompClient.send(
-        `/app/chat/${friendShip.room.id}`,
-        {},
-        JSON.stringify(formattedMessage)
-      );
+        };
+        dispatch(
+          sendMessage({
+            data: {
+              senderId: auth.user.id,
+              receiverId: friendShip.user.id,
+              roomId: friendShip.room.id,
+              text: newMessages[0].text,
+              images: newMessages[0].images,
+            },
+            notificationData: {
+              to: friendShip.user.expoPushToken,
+              title: `Bạn có tin nhắn đến từ: ${auth.user.fullName}`,
+              body: newMessages[0].text,
+            },
+          })
+        );
+        setMessages((prev) => [...prev, formattedMessage]);
+        setInputValue("");
+        stompClient.send(
+          `/app/chat/${friendShip.room.id}`,
+          {},
+          JSON.stringify(formattedMessage)
+        );
+      }
     },
+
     [messages]
   );
-
   const handleImageUpload = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
@@ -281,21 +274,9 @@ export const Index: React.FC<{}> = () => {
 
     if (!result.canceled) {
       const imageUri = result.assets[0].uri;
-      const imageMessage: IMessage[] = [
-        {
-          _id: Math.round(Math.random() * 1000000),
-          image: imageUri,
-          createdAt: new Date(),
-          user: {
-            _id: auth.user.id,
-            name: auth.user.name,
-            avatar: Constants.manifest.extra.HOST_SERVER + auth.user.avatar,
-          },
-          text: "",
-        },
-      ];
-
-      handleSend(imageMessage);
+      setImages((prev: string[]) => {
+        return [...prev, imageUri];
+      });
     }
   };
 
@@ -320,30 +301,24 @@ export const Index: React.FC<{}> = () => {
       handleSend([videoMessage]);
     }
   };
+  useEffect(() => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollToEnd({ animated: true });
+    }
+  }, [messages]);
 
-  const renderActions = () => {
-    return (
-      <View style={{ flexDirection: "row" }}>
-        <Ionicons
-          name="image-outline"
-          size={24}
-          color={fontColor}
-          onPress={handleImageUpload}
-        />
-      </View>
-    );
-  };
-  const navigation = useNavigation();
   return (
-    <KeyboardAvoidingView
-      style={[global_styles.wrapper, { backgroundColor: "#5A544A" }]}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+    <View
+      style={[
+        global_styles.wrapper,
+        global_styles.ColumnCenter,
+        { backgroundColor: "#5A544A" },
+      ]}
     >
       <View style={global_styles.rowCenter}>
         <Ionicons
           onPress={() => {
-            navigation.goBack();
+            // navigation.goBack();
           }}
           name="arrow-back"
           size={20}
@@ -363,63 +338,113 @@ export const Index: React.FC<{}> = () => {
           <Ionicons name="videocam-outline" size={20} color={fontColor} />
         </View>
       </View>
-      <View style={styles.items}>
-        <GiftedChat
-          messages={messages}
-          showAvatarForEveryMessage={true}
-          onSend={(messages) => handleSend(messages)}
-          user={{ ...auth.user, _id: auth.user.id }}
-          listViewProps={{
-            showsVerticalScrollIndicator: false,
-          }}
-          renderComposer={(props) => (
-            // Custom composer component
-            <Composer {...props} placeholder="Message..." />
-          )}
-          renderSend={(props) => (
-            <Send {...props}>
-              <Ionicons name="send-outline" size={24} color={fontColor} />
-            </Send>
-          )}
-          renderBubble={(props) => (
-            <Bubble
-              {...props}
-              wrapperStyle={{
-                right: { backgroundColor: "rgb(55, 151, 240)" },
-              }}
-            />
-          )}
-          renderInputToolbar={(props) => {
-            const { containerStyle, ...otherProps } = props;
-            return (
-              <InputToolbar
-                {...otherProps}
-                containerStyle={[styles.inputToolbarContainer]}
-                primaryStyle={global_styles.rowCenter}
-                accessoryStyle={{}}
-                renderSend={(sendProps) => {
-                  const { containerStyle, ...otherSendProps } = sendProps;
-                  return (
-                    <Send
-                      containerStyle={styles.sendContainer}
-                      {...otherSendProps}
-                    >
-                      <View>
-                        <Ionicons name="send" size={24} color={fontColor} />
-                      </View>
-                    </Send>
-                  );
-                }}
+      <KeyboardAvoidingView
+        style={[global_styles.wrapper, { flex: 1 }]}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+      >
+        <View
+          style={[
+            global_styles.ColumnCenter,
+            styles.items,
+            { justifyContent: "space-around" },
+          ]}
+        >
+          <ScrollView
+            ref={scrollViewRef}
+            style={{ flex: 1, position: "relative", width: "100%" }}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Render your chat bubbles here */}
+            {messages.map((item, index) => {
+              return (
+                <Bubble
+                  key={index}
+                  isToMe={!(item.user._id == auth.user.id)}
+                  data={item}
+                />
+              );
+            })}
+          </ScrollView>
+
+          {/* Input component */}
+          <View
+            style={[
+              global_styles.rowCenter,
+              {
+                backgroundColor: itemColor,
+                borderRadius: 50,
+                height: 50,
+                padding: 10,
+              },
+            ]}
+          >
+            <TouchableOpacity onPress={handleImageUpload}>
+              <Ionicons
+                name="images"
+                size={20}
+                color={fontColor}
+                style={{ marginLeft: 1, opacity: 0.6 }}
               />
+            </TouchableOpacity>
+            <TextInput
+              selectionColor="hsl(210,8%,75%)"
+              style={styles.input}
+              placeholderTextColor={"hsl(210,8%,75%)"}
+              textColor={fontColor}
+              placeholder="Type your message..."
+              value={inputValue}
+              onChangeText={(text) => setInputValue(text)}
+              underlineColorAndroid="transparent"
+            />
+            {inputValue && (
+              <TouchableOpacity
+                onPress={() => {
+                  handleSend([
+                    {
+                      _id: Math.floor(Math.random() * 100),
+                      text: inputValue,
+                      images: images,
+                      createdAt: new Date(),
+                    },
+                  ]);
+                }}
+              >
+                <Ionicons
+                  name="send"
+                  size={20}
+                  color={fontColor}
+                  style={{ marginLeft: 1, opacity: 0.6 }}
+                />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+        <View
+          style={[
+            global_styles.rowCenter,
+            { marginTop: 10, backgroundColor: itemColor },
+          ]}
+        >
+          {images.map((item: string, index) => {
+            return (
+              <Image
+                key={index}
+                source={{
+                  uri: item,
+                }}
+                style={{
+                  borderRadius: 20,
+                  width: 50,
+                  height: 50,
+                  marginRight: 10,
+                }}
+              ></Image>
             );
-          }}
-          textInputProps={{
-            style: { color: "white", flex: 1, marginLeft: 10 },
-          }}
-          renderActions={renderActions}
-        />
-      </View>
-    </KeyboardAvoidingView>
+          })}
+        </View>
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 
