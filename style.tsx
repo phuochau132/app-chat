@@ -1,9 +1,8 @@
 import { StyleSheet } from "react-native";
 
 export const greyColor = "rgba(190,194,197,255)";
-export const blueColor = "#1877F2";
+export const blueColor = "#0096FF";
 export const greyColorBtn = "#b1b2b4";
-
 export const backgroundColor = "white";
 export const itemColor = "rgba(133,126,117,255)";
 export const itemSubColor = "rgba(100, 95, 90, 255)";

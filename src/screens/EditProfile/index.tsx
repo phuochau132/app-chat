@@ -3,12 +3,13 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { blueColor, global_styles, greyColor } from "../../../style";
+import { blueColor, fontColor, global_styles, greyColor } from "../../../style";
 import { Image, Input, Overlay } from "react-native-elements";
 import * as ImagePicker from "expo-image-picker";
 import { useDispatch, useSelector } from "react-redux";
 import { changeInfo } from "../../redux/slice/authSlice";
 import Constants from "expo-constants";
+import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
 
 const styles = StyleSheet.create({
   header: {
@@ -23,6 +24,12 @@ const styles = StyleSheet.create({
   text: {
     width: 60,
     textAlign: "center",
+  },
+  inputTitle: {
+    fontSize: 12,
+    marginLeft: 10,
+    opacity: 0.7,
+    color: fontColor,
   },
 });
 const Index: React.FC = () => {
@@ -93,175 +100,176 @@ const Index: React.FC = () => {
     dispatch(changeInfo({ user: data, file: imageUri }));
   };
   return (
-    <View style={global_styles.wrapper}>
-      <View style={global_styles.rowCenterBetween}>
-        <Ionicons
-          onPress={() => {
-            navigation.goBack();
-          }}
-          name="close-outline"
-          size={30}
-          color="black"
-        />
-        <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-          Chỉnh sửa trang cá nhân
-        </Text>
-        <TouchableOpacity>
+    <LinearGradientWrapper>
+      <View style={global_styles.wrapper}>
+        <View style={global_styles.rowCenterBetween}>
           <Ionicons
-            onPress={handleChangeProfile}
-            style={{ color: blueColor }}
-            name="checkmark-outline"
+            onPress={() => {
+              navigation.goBack();
+            }}
+            name="close-outline"
             size={30}
-            color="black"
+            color={fontColor}
           />
-        </TouchableOpacity>
-      </View>
-      <View style={[global_styles.rowCenter, { marginTop: 20 }]}>
-        <View style={[global_styles.ColumnCenter, { width: "100%" }]}>
-          <View style={[global_styles.rowCenter, { width: "100%" }]}>
-            <Image
-              source={{
-                uri: Constants.manifest.extra.HOST_SERVER + auth.user.avatar,
-              }}
-              style={[styles.img, { marginRight: 5 }]}
+          <Text style={{ fontSize: 18, fontWeight: "bold", color: fontColor }}>
+            Chỉnh sửa trang cá nhân
+          </Text>
+          <TouchableOpacity>
+            <Ionicons
+              onPress={handleChangeProfile}
+              style={{ color: blueColor }}
+              name="checkmark-outline"
+              size={30}
+              color="black"
             />
-            {imageUri && (
-              <Ionicons name="arrow-forward" size={30} color="black" />
-            )}
-            {imageUri && (
-              <Image
-                source={{
-                  uri: imageUri,
-                }}
-                style={[styles.img, { marginLeft: 5 }]}
-              />
-            )}
-          </View>
-          <TouchableOpacity onPress={handleImageUpload}>
-            <Text
-              style={{ marginTop: 10, fontWeight: "bold", color: blueColor }}
-            >
-              Chỉnh sửa ảnh
-            </Text>
           </TouchableOpacity>
         </View>
-      </View>
-      <View
-        style={[global_styles.ColumnCenter, { marginTop: 20, width: "100%" }]}
-      >
-        <View
-          style={[
-            global_styles.ColumnCenter,
-            { alignItems: "flex-start", width: "100%" },
-          ]}
-        >
-          <Text style={{ fontSize: 12, marginLeft: 10, opacity: 0.7 }}>
-            Tên
-          </Text>
-          <Input
-            onPressIn={() => {
-              setModal({
-                name: "Tên",
-                specificName: "Tên người dùng",
-                type: 0,
-              });
-              setModalInputValue(data.fullName);
-              setVisible(!visible);
-            }}
-            value={data.fullName}
-            style={{ fontSize: 15 }}
-            placeholder="Tên người dùng"
-          />
-        </View>
-        <View
-          style={[
-            global_styles.ColumnCenter,
-            { alignItems: "flex-start", width: "100%" },
-          ]}
-        >
-          <Text style={{ fontSize: 12, marginLeft: 10, opacity: 0.7 }}>
-            Biệt danh
-          </Text>
-          <Input
-            onPressIn={() => {
-              setModal({
-                name: "Biệt danh",
-                specificName: "Biệt danh",
-                type: 1,
-              });
-              setModalInputValue(data.nickName);
-              setVisible(!visible);
-            }}
-            value={data.nickName}
-            style={{ fontSize: 15 }}
-            placeholder="Biệt danh"
-          />
-        </View>
-        <View
-          style={[
-            global_styles.ColumnCenter,
-            { alignItems: "flex-start", width: "100%" },
-          ]}
-        >
-          <Input
-            onPressIn={() => {
-              setModal({
-                name: "Ngày sinh",
-                specificName: "Ngày sinh",
-                type: 2,
-              });
-              setModalInputValue(data.birthDay);
-              setVisible(!visible);
-            }}
-            value={data.birthDay}
-            style={{ fontSize: 15 }}
-            placeholder="Ngày sinh"
-          />
-        </View>
-        <View
-          style={[
-            global_styles.ColumnCenter,
-            { alignItems: "flex-start", width: "100%" },
-          ]}
-        >
-          <Text style={{ fontSize: 12, marginLeft: 10, opacity: 0.7 }}>
-            Tiểu sử
-          </Text>
-          <Input
-            onPressIn={() => {
-              setModal({
-                name: "Tiểu sử",
-                specificName: "Tiểu sử",
-                type: 3,
-              });
-              setModalInputValue(data.story);
-              setVisible(!visible);
-            }}
-            value={data.story}
-            style={{ fontSize: 15 }}
-            placeholder="Tiểu sử"
-          />
-        </View>
-      </View>
-      <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
-        <View style={{ width: 200 }}>
-          <Text style={{ marginLeft: 10, fontSize: 18, fontWeight: "bold" }}>
-            {modal.name}
-          </Text>
-          <View>
-            <Input
-              onChangeText={(text) => {
-                setInputValue(text);
-              }}
-              defaultValue={modalInputValue}
-              placeholder={modal.specificName}
-              style={{ fontSize: 15 }}
-            ></Input>
+        <View style={[global_styles.rowCenter, { marginTop: 20 }]}>
+          <View style={[global_styles.ColumnCenter, { width: "100%" }]}>
+            <View style={[global_styles.rowCenter, { width: "100%" }]}>
+              <Image
+                source={{
+                  uri: Constants.manifest.extra.HOST_SERVER + auth.user.avatar,
+                }}
+                style={[styles.img, { marginRight: 5 }]}
+              />
+              {imageUri && (
+                <Ionicons
+                  name="chevron-forward-outline"
+                  size={30}
+                  color={fontColor}
+                />
+              )}
+              {imageUri && (
+                <Image
+                  source={{
+                    uri: imageUri,
+                  }}
+                  style={[styles.img, { marginLeft: 5 }]}
+                />
+              )}
+            </View>
+            <TouchableOpacity onPress={handleImageUpload}>
+              <Text
+                style={{ marginTop: 10, fontWeight: "bold", color: blueColor }}
+              >
+                Chỉnh sửa ảnh
+              </Text>
+            </TouchableOpacity>
           </View>
-          <Button title="Oke" onPress={toggleOverlay} />
         </View>
-      </Overlay>
-    </View>
+        <View
+          style={[global_styles.ColumnCenter, { marginTop: 20, width: "100%" }]}
+        >
+          <View
+            style={[
+              global_styles.ColumnCenter,
+              { alignItems: "flex-start", width: "100%" },
+            ]}
+          >
+            <Text style={styles.inputTitle}>Tên</Text>
+            <Input
+              onPressIn={() => {
+                setModal({
+                  name: "Tên",
+                  specificName: "Tên người dùng",
+                  type: 0,
+                });
+                setModalInputValue(data.fullName);
+                setVisible(!visible);
+              }}
+              value={data.fullName}
+              style={{ fontSize: 15, color: fontColor }}
+              placeholder="Tên người dùng"
+            />
+          </View>
+          <View
+            style={[
+              global_styles.ColumnCenter,
+              { alignItems: "flex-start", width: "100%" },
+            ]}
+          >
+            <Text style={styles.inputTitle}>Biệt danh</Text>
+            <Input
+              onPressIn={() => {
+                setModal({
+                  name: "Biệt danh",
+                  specificName: "Biệt danh",
+                  type: 1,
+                });
+                setModalInputValue(data.nickName);
+                setVisible(!visible);
+              }}
+              value={data.nickName}
+              style={{ fontSize: 15, color: fontColor }}
+              placeholder="Biệt danh"
+            />
+          </View>
+          <View
+            style={[
+              global_styles.ColumnCenter,
+              { alignItems: "flex-start", width: "100%" },
+            ]}
+          >
+            <Text style={styles.inputTitle}>Ngày sinh</Text>
+            <Input
+              onPressIn={() => {
+                setModal({
+                  name: "Ngày sinh",
+                  specificName: "Ngày sinh",
+                  type: 2,
+                });
+                setModalInputValue(data.birthDay);
+                setVisible(!visible);
+              }}
+              value={data.birthDay}
+              style={{ fontSize: 15, color: fontColor }}
+              placeholder="Ngày sinh"
+            />
+          </View>
+          <View
+            style={[
+              global_styles.ColumnCenter,
+              { alignItems: "flex-start", width: "100%" },
+            ]}
+          >
+            <Text style={styles.inputTitle}>Tiểu sử</Text>
+            <Input
+              onPressIn={() => {
+                setModal({
+                  name: "Tiểu sử",
+                  specificName: "Tiểu sử",
+                  type: 3,
+                });
+                setModalInputValue(data.story);
+                setVisible(!visible);
+              }}
+              value={data.story}
+              style={{ fontSize: 15, color: fontColor }}
+              placeholder="Tiểu sử"
+            />
+          </View>
+        </View>
+        <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
+          <View style={{ width: 200 }}>
+            <Text style={{ marginLeft: 10, fontSize: 18, fontWeight: "bold" }}>
+              {modal.name}
+            </Text>
+            <View>
+              <Input
+                onChangeText={(text) => {
+                  setInputValue(text);
+                }}
+                defaultValue={modalInputValue}
+                placeholder={modal.specificName}
+                style={{ fontSize: 15 }}
+              ></Input>
+            </View>
+            <Button title="Oke" onPress={toggleOverlay} />
+          </View>
+        </Overlay>
+      </View>
+    </LinearGradientWrapper>
   );
 };
 

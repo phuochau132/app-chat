@@ -143,7 +143,6 @@ const profileSlice = createSlice({
       .addCase(changeInfo.fulfilled, (state: any, action: any) => {
         state.status = "succeeded";
         console.log(action.payload.data);
-        console.log(98123);
         if (action.payload.data.type) {
           state.user = action.payload.data.user;
         }

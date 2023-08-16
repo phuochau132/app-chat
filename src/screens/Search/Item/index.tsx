@@ -1,15 +1,13 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Image } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Constants from "expo-constants";
 
 import { fontColor, itemColor } from "../../../../style";
+import { useCallback } from "react";
+import Avatar from "../../../Component/Avatar";
+import moment from "moment";
 
 const styles = StyleSheet.create({
   container: {
@@ -60,29 +58,37 @@ const styles = StyleSheet.create({
 const Item: React.FC<{ item: any; onPress: any }> = ({ item, onPress }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const statusUser = useSelector((state: any) => {
+    return state.user.statusUser;
+  });
+  const check = useCallback(() => {
+    return statusUser.filter((tmp: any) => {
+      return tmp.id === item.id && tmp.status == "offline";
+    });
+  }, [statusUser]);
+
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
       <View>
-        <Image
-          source={{
-            uri: Constants.manifest.extra.HOST_SERVER + item.avatar,
-          }}
-          style={styles.img}
-        >
-          {/* <View style={styles.span}></View> */}
-        </Image>
+        <Avatar user={item} size={{ width: 50, height: 50 }} />
       </View>
       <View style={styles.info}>
-        <Text style={styles.name}>{item.nickName} </Text>
+        <Text style={styles.name}>{item.fullName} </Text>
         <Text
           numberOfLines={1}
           ellipsizeMode="tail"
           style={styles.content_message}
         >
-          {item.fullName}
+          {item.nickName}
         </Text>
       </View>
-      <Text style={styles.status}>now </Text>
+      {statusUser.some((tmp: any) => {
+        return tmp.id === item.id && tmp.status == "offline";
+      }) && (
+        <Text style={styles.content_message}>
+          {moment(check()[0].createAt).fromNow()}
+        </Text>
+      )}
     </TouchableOpacity>
   );
 };

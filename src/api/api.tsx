@@ -57,4 +57,16 @@ const getFriends: any = createAsyncThunk(
     }
   }
 );
-export { sendPushNotification, getFriends };
+const getPostsByUser: any = async (id: number) => {
+  try {
+    const response = await axiosInstance.get(`api/posts/user/${id}`);
+    return {
+      type: 1,
+      data: response.data,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { sendPushNotification, getFriends, getPostsByUser };

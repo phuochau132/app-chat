@@ -289,7 +289,7 @@ const Index: React.FC = () => {
               </ScrollView>
             </View>
           </View>
-          <View style={global_styles.ColumnCenter}>
+          <View style={[global_styles.ColumnCenter, { paddingBottom: 40 }]}>
             {posts.map((item: any, index: number) => {
               return (
                 <Item

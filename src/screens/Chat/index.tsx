@@ -104,7 +104,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-let check = false;
 export const Index: React.FC<{}> = () => {
   const route = useRoute();
   const { item } = route.params;
@@ -121,7 +120,9 @@ export const Index: React.FC<{}> = () => {
   });
   const filterMessage = useCallback(() => {
     const array: any = [];
-    friendShip.room.message.forEach((item: any) => {
+    const messageList = friendShip.room.message.slice(-10);
+
+    messageList.forEach((item: any) => {
       if (auth.user.id != item.sender.id) {
         const message = {
           _id: item._id,
@@ -154,69 +155,64 @@ export const Index: React.FC<{}> = () => {
   }, []);
   useEffect(() => {
     filterMessage();
-    if (!check) {
-      stompClient.subscribe(
-        `/topic/rooms/${friendShip.room.id}`,
-        (message: any) => {
-          const bodyData = JSON.parse(message.body);
-          const formattedMessage: IMessage = {
-            _id: bodyData.body._id,
-            text: bodyData.body.text,
-            image: bodyData.body.image,
-            createdAt: new Date(bodyData.body.createdAt),
-            user: {
-              _id: bodyData.body.user._id,
-              name: bodyData.body.user.name,
-              avatar: bodyData.body.user.avatar,
-            },
-          };
-          if (bodyData.body.user._id != auth.user.id) {
-            dispatch(
-              addMessage({
-                roomId: friendShip.room.id,
-                message: {
-                  _id: bodyData.body._id,
-                  sender: {
-                    id: bodyData.body.user.id,
-                    avatar: bodyData.body.user.avatar,
-                  },
-                  receiver: { id: auth.user.id },
-                  roomId: friendShip.room.id,
-                  text: bodyData.body.text,
-                  createAt: bodyData.body.createdAt,
-                },
-              })
-            );
-            setMessages((prevMessages) => [...prevMessages, formattedMessage]);
-          } else {
-            dispatch(
-              addMessage({
-                roomId: friendShip.room.id,
-                message: {
-                  _id: bodyData.body._id,
-                  sender: {
-                    id: auth.user.id,
-                    avatar: auth.user.avatar,
-                  },
-                  receiver: {
-                    id: bodyData.body.user.id,
-                    avatar: bodyData.body.user.avatar,
-                  },
-                  roomId: friendShip.room.id,
-                  text: bodyData.body.text,
-                  createAt: bodyData.body.createdAt,
-                },
-              })
-            );
-          }
-        }
-      );
-    }
-    check = true;
-  }, []);
-  console.log("haudeptrai");
-  console.log(messages);
 
+    stompClient.subscribe(
+      `/topic/rooms/${friendShip.room.id}`,
+      (message: any) => {
+        const bodyData = JSON.parse(message.body);
+        const formattedMessage: IMessage = {
+          _id: bodyData.body._id,
+          text: bodyData.body.text,
+          image: bodyData.body.image,
+          createdAt: new Date(bodyData.body.createdAt),
+          user: {
+            _id: bodyData.body.user._id,
+            name: bodyData.body.user.name,
+            avatar: bodyData.body.user.avatar,
+          },
+        };
+        if (bodyData.body.user._id != auth.user.id) {
+          dispatch(
+            addMessage({
+              roomId: friendShip.room.id,
+              message: {
+                _id: bodyData.body._id,
+                sender: {
+                  id: bodyData.body.user.id,
+                  avatar: bodyData.body.user.avatar,
+                },
+                receiver: { id: auth.user.id },
+                roomId: friendShip.room.id,
+                text: bodyData.body.text,
+                createAt: bodyData.body.createdAt,
+              },
+            })
+          );
+          setMessages((prevMessages) => [...prevMessages, formattedMessage]);
+        } else {
+          dispatch(
+            addMessage({
+              roomId: friendShip.room.id,
+              message: {
+                _id: bodyData.body._id,
+                sender: {
+                  id: auth.user.id,
+                  avatar: auth.user.avatar,
+                },
+                receiver: {
+                  id: bodyData.body.user.id,
+                  avatar: bodyData.body.user.avatar,
+                },
+                roomId: friendShip.room.id,
+                text: bodyData.body.text,
+                createAt: bodyData.body.createdAt,
+              },
+            })
+          );
+        }
+      }
+    );
+  }, []);
   const handleSend = useCallback(
     (newMessages: any) => {
       if (newMessages[0].text.trim() || images.length > 0) {
@@ -301,6 +297,13 @@ export const Index: React.FC<{}> = () => {
       handleSend([videoMessage]);
     }
   };
+  // const handleScroll = (event: any) => {
+  //   const step=0
+  //   const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+  //   if (contentOffset.y <= 0) {
+  //     setMessages(me)
+  //   }
+  // };
   useEffect(() => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollToEnd({ animated: true });
@@ -318,7 +321,7 @@ export const Index: React.FC<{}> = () => {
       <View style={global_styles.rowCenter}>
         <Ionicons
           onPress={() => {
-            // navigation.goBack();
+            navigation.goBack();
           }}
           name="arrow-back"
           size={20}
@@ -351,6 +354,7 @@ export const Index: React.FC<{}> = () => {
           ]}
         >
           <ScrollView
+            // onScroll={handleScroll}
             ref={scrollViewRef}
             style={{ flex: 1, position: "relative", width: "100%" }}
             showsVerticalScrollIndicator={false}

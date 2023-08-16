@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -17,8 +17,9 @@ Notifications.setNotificationHandler({
   }),
 });
 
-import { addFriend } from "../../redux/slice/userSlice";
+import { addFriend, delRequestAF } from "../../redux/slice/userSlice";
 import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
+import { getPostsByUser } from "../../api/api";
 
 const styles = StyleSheet.create({
   img: {
@@ -36,6 +37,7 @@ const UserProfile: React.FC = () => {
   const navigator = useNavigation();
   const dispatch = useDispatch();
   const route = useRoute();
+  const [posts, setPosts] = useState<any[]>([]);
   const { item } = route.params;
   const profileUser = JSON.parse(item);
   const user = useSelector((state: any) => {
@@ -52,11 +54,23 @@ const UserProfile: React.FC = () => {
   const handleAddFriend = () => {
     dispatch(addFriend({ senderId: user.id, receiverId: profileUser.id }));
   };
+
   const check = useCallback(() => {
     return friends.filter((tmp: any) => {
       return tmp.user.id == profileUser.id;
     });
   }, [friends]);
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await getPostsByUser(user.id);
+        setPosts(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchPosts();
+  }, []);
   return (
     <LinearGradientWrapper>
       <View style={global_styles.wrapper}>
@@ -117,23 +131,26 @@ const UserProfile: React.FC = () => {
                 fontSize: 16,
               }}
             >
-              2
+              {posts.length}
             </Text>
             <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
               Bài viết
             </Text>
           </View>
+
           <View style={[global_styles.ColumnCenter]}>
             <Text
-              style={[
-                styles.text,
-                { fontWeight: "bold", textAlign: "center", fontSize: 16 },
-              ]}
+              style={{
+                color: fontColor,
+                fontWeight: "bold",
+                textAlign: "center",
+                fontSize: 16,
+              }}
             >
-              2
+              {friends.filter((item: any) => item.status == 1).length}
             </Text>
             <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
-              Người theo giỏi
+              Bạn bè
             </Text>
           </View>
           <View style={[global_styles.ColumnCenter]}>
@@ -145,10 +162,10 @@ const UserProfile: React.FC = () => {
                 fontSize: 16,
               }}
             >
-              2
+              {friends.filter((item: any) => item.status == 0).length}
             </Text>
             <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
-              Đang theo dõi
+              Đã gửi lời mời
             </Text>
           </View>
         </View>
@@ -159,7 +176,10 @@ const UserProfile: React.FC = () => {
                 check().length === 0 && handleAddFriend();
               }
               {
-                check().length > 0 && check()[0].status == 0 && "Hủy kết bạn";
+                check().length > 0 &&
+                  check()[0].status == 0 &&
+                  "Hủy kết bạn" &&
+                  dispatch(delRequestAF(friendShip()[0].id));
               }
               {
                 check().length > 0 && check()[0].status == 1 && "Bạn bè";

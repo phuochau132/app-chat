@@ -32,9 +32,6 @@ const styles = StyleSheet.create({
 });
 const Item: React.FC<{ item: any }> = ({ item }) => {
   const dispatch = useDispatch();
-  console.log(9871);
-
-  console.log(item);
   const user = item.user;
   const handleRequest = (action: number) => {
     if (!action) {
@@ -97,7 +94,11 @@ const Item: React.FC<{ item: any }> = ({ item }) => {
             }}
             style={[styles.btn, { backgroundColor: blueColor }]}
           >
-            <Text style={[global_styles.text, styles.text]}>Chấp Nhận</Text>
+            <Text
+              style={[global_styles.text, styles.text, { color: blueColor }]}
+            >
+              Chấp Nhận
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {

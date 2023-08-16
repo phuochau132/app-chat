@@ -50,7 +50,7 @@ export const addFriend = createAsyncThunk(
           },
         }
       );
-      return { type: 1, data: user };
+      return { type: 1, data: response.data };
     } catch (error) {
       console.log(error);
       return { type: 0 };
@@ -100,6 +100,8 @@ export const acceptRequestAF: any = createAsyncThunk(
 export const delRequestAF: any = createAsyncThunk(
   "user/delRequestAF",
   async (id: number) => {
+    console.log(id);
+
     try {
       const response = await axiosInstance.post(`api/friends/delete`, {
         id,
@@ -116,7 +118,6 @@ export const delRequestAF: any = createAsyncThunk(
     }
   }
 );
-// 123
 export const getFriends: any = createAsyncThunk(
   "user/getFriends",
   async (idUser: number) => {
@@ -249,6 +250,7 @@ const userSlice = createSlice({
       .addCase(addFriend.fulfilled, (state: any, action: any) => {
         state.status = "succeeded";
         state.error = null;
+        state.friends = [...state.friends, action.payload.data];
         if (action.payload.type) {
           Toast.show("Thêm bạn thành công", Toast.LONG, {
             backgroundColor: "white",
@@ -328,6 +330,9 @@ const userSlice = createSlice({
             return item.id != action.payload.data.id;
           }
         );
+        state.friends = state.friends.filter((item: any) => {
+          return item.id != action.payload.data.id;
+        });
         Toast.show("Đã xóa yêu cầu kết bạn", Toast.LONG, {
           backgroundColor: "white",
           textColor: "black",

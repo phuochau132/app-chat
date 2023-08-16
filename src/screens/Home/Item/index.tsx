@@ -53,6 +53,7 @@ const Item: React.FC<{
   };
 
   const toggleIndex = (index: Number) => [setIndex(Number)];
+
   return (
     <View
       style={[
@@ -81,7 +82,7 @@ const Item: React.FC<{
             {item.user.nickName}
           </Text>
           <Text style={{ opacity: 0.6, fontSize: 12, color: fontColor }}>
-            {moment(item.createAt).fromNow()}
+            {moment(item.createdAt).fromNow()}
           </Text>
         </View>
       </View>

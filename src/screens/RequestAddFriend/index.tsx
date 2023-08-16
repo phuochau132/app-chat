@@ -133,11 +133,24 @@ export const Index: React.FC<{}> = () => {
           </Text>
         </View>
         <View style={styles.items}>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {listRequestAddFriend.map((item: any, index: number) => {
-              return <Item key={index} item={item} />;
-            })}
-          </ScrollView>
+          {listRequestAddFriend.length > 0 ? (
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {listRequestAddFriend.map((item: any, index: number) => {
+                return <Item key={index} item={item} />;
+              })}
+            </ScrollView>
+          ) : (
+            <View
+              style={[
+                global_styles.ColumnCenter,
+                { flex: 1, marginBottom: 60 },
+              ]}
+            >
+              <Text style={{ color: "#CCCCCC", fontSize: 20 }}>
+                Không có bạn bè để hiển thị!
+              </Text>
+            </View>
+          )}
         </View>
       </View>
     </LinearGradientWrapper>

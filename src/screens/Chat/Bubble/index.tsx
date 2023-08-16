@@ -81,7 +81,6 @@ export const Bubble: React.FC<{ data: Object; isToMe: boolean }> = ({
         >
           {data.image.map((item: string) => {
             console.log(item);
-
             return (
               <Image
                 source={{

@@ -1,6 +1,10 @@
-import React from "react";
-import { StyleSheet, View } from "react-native";
-import { StackActions, useNavigation } from "@react-navigation/native";
+import React, { useState } from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  CommonActions,
+  StackActions,
+  useNavigation,
+} from "@react-navigation/native";
 import { ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,12 +36,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
+
 const Index: React.FC = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const isLoading = useSelector((state: any) => {
-    return state.user.status;
-  });
+  const [isLoading, setIsLoading] = useState("");
   const user = useSelector((state: any) => {
     return state.auth.user;
   });
@@ -49,6 +52,7 @@ const Index: React.FC = () => {
   });
 
   const handleSearch = (keyword: string) => {
+    setIsLoading("loading");
     if (listUser && keyword) {
       const filteredItems = listUser.filter((item: any) => {
         for (let tmp of Object.keys(item)) {
@@ -64,6 +68,7 @@ const Index: React.FC = () => {
       });
       dispatch(filter(filteredItems));
     }
+    setIsLoading("success");
   };
   const changeScreen = (item: any) => {
     navigation.navigate("userProfile", { item: JSON.stringify(item) });
@@ -73,14 +78,21 @@ const Index: React.FC = () => {
       {isLoading == "loading" && <Loading />}
       <View style={global_styles.wrapper}>
         <View style={[global_styles.rowCenter]}>
-          <Ionicons
-            onPress={() => {
-              navigation.dispatch(StackActions.replace("tabHome"));
-            }}
-            name="arrow-back-outline"
-            size={25}
-            color={fontColor}
-          />
+          <TouchableOpacity>
+            <Ionicons
+              onPress={() => {
+                navigation.dispatch(
+                  CommonActions.reset({
+                    index: 0,
+                    routes: [{ name: "tabHome" }],
+                  })
+                );
+              }}
+              name="arrow-back-outline"
+              size={25}
+              color={fontColor}
+            />
+          </TouchableOpacity>
           <SearchBar setSearchPhrase={handleSearch} />
         </View>
         <View style={styles.items}>

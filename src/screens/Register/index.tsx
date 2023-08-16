@@ -4,6 +4,7 @@ import {
   Text,
   View,
   TouchableOpacity,
+  ImageBackground,
 } from "react-native";
 import { Image } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   text: {
-    color: "black",
+    color: fontColor,
     fontWeight: "bold",
   },
   float_right: {
@@ -60,10 +61,10 @@ const styles = StyleSheet.create({
   inputContainer: {
     height: 50,
     borderWidth: 1,
-    borderColor: "black",
+    borderColor: fontColor,
     borderRadius: 10,
     paddingHorizontal: 10,
-    backgroundColor: "white",
+    backgroundColor: "rgba(128, 128, 128, 0.4)",
     flexDirection: "row",
     alignItems: "center",
     marginTop: 5,
@@ -73,6 +74,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 10,
     fontSize: 16,
+    color: "white",
   },
   iconContainer: {
     borderRightWidth: 1,
@@ -95,7 +97,12 @@ const Index: React.FC = () => {
   }, [data]);
 
   return (
-    <LinearGradientWrapper>
+    <ImageBackground
+      source={{
+        uri: "https://images.unsplash.com/photo-1502899576159-f224dc2349fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80",
+      }}
+      style={{ width: "100%", height: "100%" }}
+    >
       {isLoading == "loading" && <Loading />}
       <View style={[global_styles.rowCenter, { paddingTop: 50 }]}>
         <Image source={logo} style={{ width: 250, height: 200 }} />
@@ -170,19 +177,20 @@ const Index: React.FC = () => {
             </Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.row_center}>
-          <Ionicons name="arrow-back" size={20} color={fontColor} />
-          <Text
-            onPress={() => {
-              navigation.goBack();
-            }}
-            style={styles.text}
-          >
-            Login
-          </Text>
-        </View>
+        <TouchableOpacity
+          style={{ marginTop: 10 }}
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
+          <Ionicons
+            name="arrow-back-circle-outline"
+            size={40}
+            color={fontColor}
+          />
+        </TouchableOpacity>
       </View>
-    </LinearGradientWrapper>
+    </ImageBackground>
   );
 };
 

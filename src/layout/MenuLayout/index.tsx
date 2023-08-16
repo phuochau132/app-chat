@@ -30,7 +30,6 @@ const Index: React.FC = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   console.log(123);
-
   const user = useSelector((state: any) => {
     return state.auth.user;
   });

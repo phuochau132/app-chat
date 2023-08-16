@@ -5,6 +5,7 @@ import {
   View,
   TextInput,
   TouchableOpacity,
+  ImageBackground,
 } from "react-native";
 import { Image } from "@rneui/themed";
 import { StackActions, useNavigation } from "@react-navigation/native";
@@ -13,8 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { login } from "../../redux/slice/authSlice";
 import Loading from "../../Component/Loading";
-import { btnBgr, btnColor, global_styles } from "../../../style";
-import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
+import { btnBgr, btnColor, fontColor, global_styles } from "../../../style";
 import logo from "../../img/logo.png";
 
 const styles = StyleSheet.create({
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   text: {
-    color: "black",
+    color: fontColor,
     fontWeight: "bold",
   },
   float_right: {
@@ -61,10 +61,10 @@ const styles = StyleSheet.create({
   inputContainer: {
     height: 50,
     borderWidth: 1,
-    borderColor: "black",
+    borderColor: "white",
     borderRadius: 10,
     paddingHorizontal: 10,
-    backgroundColor: "white",
+    backgroundColor: "rgba(128, 128, 128, 0.4)",
     flexDirection: "row",
     alignItems: "center",
     marginTop: 5,
@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 10,
     fontSize: 16,
+    color: "white",
   },
   iconContainer: {
     borderRightWidth: 1,
@@ -103,112 +104,89 @@ const Index: React.FC = () => {
   }, [data]);
 
   return (
-    <LinearGradientWrapper>
-      {isLoading == "loading" && <Loading />}
-      <View style={[global_styles.rowCenter, { paddingTop: 50 }]}>
-        <Image source={logo} style={{ width: 250, height: 200 }} />
-      </View>
-
-      <View style={styles.col_center}>
-        <View style={styles.inputContainer}>
-          <View style={styles.iconContainer}>
-            <Ionicons name="person-circle" size={20} color="black" />
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => {
-              setData((prev) => ({
-                ...prev,
-                email: text,
-              }));
-            }}
-            value={data.email}
-            placeholder="UserName"
-            placeholderTextColor="gray"
-          />
-        </View>
-        <View style={[styles.inputContainer]}>
-          <View style={styles.iconContainer}>
-            <Ionicons name="key" size={20} color="black" />
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => {
-              setData((prev) => ({
-                ...prev,
-                password: text,
-              }));
-            }}
-            value={data.password}
-            placeholder="Password"
-            placeholderTextColor="gray"
-          />
+    <>
+      <ImageBackground
+        source={{
+          uri: "https://images.unsplash.com/photo-1502899576159-f224dc2349fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80",
+        }}
+        style={{ width: "100%", height: "100%" }}
+      >
+        {isLoading == "loading" && <Loading />}
+        <View style={[global_styles.rowCenter, { paddingTop: 50 }]}>
+          <Image source={logo} style={{ width: 250, height: 200 }} />
         </View>
 
-        {/* <Input
-          onChangeText={(text) => {
-            
-          }}
-          secureTextEntry={securePass}
-          placeholder="Password"
-          leftIcon={<Ionicons name="key" size={20} color="#3797EF" />}
-          rightIcon={
-            !securePass ? (
-              <Ionicons
-                onPress={(prev) => {
-                  setSecurePass(true);
-                }}
-                name="eye-outline"
-                size={20}
-                color="#3797EF"
-              />
-            ) : (
-              <Ionicons
-                onPress={(prev) => {
-                  setSecurePass(false);
-                }}
-                name="eye-off-outline"
-                size={20}
-                color="#3797EF"
-              />
-            )
-          }
-        /> */}
-        <View style={[styles.login_btn_wrapper, { marginTop: 20 }]}>
-          <TouchableOpacity
-            style={{ padding: 10, backgroundColor: btnBgr }}
-            onPress={handleLogin}
-          >
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: "bold",
-                textAlign: "center",
-                color: btnColor,
+        <View style={styles.col_center}>
+          <View style={styles.inputContainer}>
+            <View style={styles.iconContainer}>
+              <Ionicons name="person-circle" size={20} color={"black"} />
+            </View>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) => {
+                setData((prev) => ({
+                  ...prev,
+                  email: text,
+                }));
               }}
+              value={data.email}
+              placeholder="UserName"
+              placeholderTextColor="gray"
+            />
+          </View>
+          <View style={[styles.inputContainer]}>
+            <View style={styles.iconContainer}>
+              <Ionicons name="key" size={20} color="black" />
+            </View>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) => {
+                setData((prev) => ({
+                  ...prev,
+                  password: text,
+                }));
+              }}
+              value={data.password}
+              placeholder="Password"
+              placeholderTextColor="gray"
+            />
+          </View>
+          <View style={[styles.login_btn_wrapper, { marginTop: 20 }]}>
+            <TouchableOpacity
+              style={{ padding: 10, backgroundColor: btnBgr, borderRadius: 10 }}
+              onPress={handleLogin}
             >
-              Login
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  color: btnColor,
+                }}
+              >
+                Login
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={[styles.float_right, { marginTop: 20 }]}>
+            <Text style={styles.text}>Forgot Password</Text>
+          </View>
+          <View style={styles.row_center}>
+            <Text style={{ color: fontColor, opacity: 0.6 }}>
+              Don't have an account?
             </Text>
-          </TouchableOpacity>
+            <Text
+              onPress={() => {
+                navigation.navigate("register");
+              }}
+              style={styles.text}
+            >
+              Sign up
+            </Text>
+          </View>
         </View>
-        <View style={[styles.float_right, { marginTop: 20 }]}>
-          <Text style={styles.text}>Forgot Password</Text>
-        </View>
-        <View style={styles.row_center}>
-          <Text style={{ color: "#000000", opacity: 0.6 }}>
-            Don't have an account?
-          </Text>
-          <Text
-            onPress={() => {
-              navigation.navigate("register");
-            }}
-            style={styles.text}
-          >
-            Sign up
-          </Text>
-        </View>
-      </View>
-    </LinearGradientWrapper>
+      </ImageBackground>
+    </>
   );
 };
 

@@ -1,5 +1,4 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import Constants from "expo-constants";
 import { useNavigation } from "@react-navigation/native";
 import { fontColor, global_styles, itemColor } from "../../../../style";
 import Avatar from "../../../Component/Avatar";

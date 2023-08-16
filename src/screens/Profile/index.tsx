@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  FlatList,
+  Animated,
+  Modal,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { StackActions, useNavigation } from "@react-navigation/native";
 import { btnBgr, fontColor, global_styles } from "../../../style";
@@ -9,6 +17,9 @@ import { logout } from "../../redux/slice/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
 import Constants from "expo-constants";
+import { getPostsByUser } from "../../api/api";
+import PostsModal from "./PostsModal";
+import FriendsModal from "./FriendsModal";
 
 const styles = StyleSheet.create({
   header: {
@@ -27,34 +38,113 @@ const styles = StyleSheet.create({
   },
   background: {
     height: "30%",
-    backgroundColor: "red",
+    width: "100%",
+  },
+  tabContainer: {
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: fontColor,
+    padding: 10,
+  },
+  tabButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    width: "60%",
+  },
+  activeTab: {
+    borderBottomWidth: 2,
+    borderColor: fontColor, // Assuming `fontColor` is defined
+  },
+  tabButtonText: {
+    fontSize: 16,
+    textAlign: "center",
     width: "100%",
   },
 });
 const Index: React.FC = () => {
   const navigation = useNavigation();
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [indexTab, setIndexTab] = useState<number>(0);
+  const [modalDisplay, setModalDisplayed] = useState<number>(-1);
   const user = useSelector((state: any) => {
     return state.auth.user;
   });
-  const [data, setData] = useState({
-    email: "",
-    password: "",
-  });
-  const [securePass, setSecurePass] = useState(false);
   const friends = useSelector((state: any) => {
     return state.user.friends;
   });
-  const posts = useSelector((state: any) => {
-    return state.post.posts;
-  });
+
   const handleLogout = async () => {
     navigation.dispatch(StackActions.replace("login"));
     dispatch(logout());
     await AsyncStorage.removeItem("accessToken");
   };
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await getPostsByUser(user.id);
+        console.log(response.data);
+        setPosts(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchPosts();
+  }, []);
+  const [activeTab, setActiveTab] = useState(0);
+  const tabData = [
+    {
+      label: "Bạn bè",
+      event: () => {
+        setModalDisplayed(1);
+      },
+    },
+    {
+      label: "Bài đăng",
+      event: () => {
+        setModalDisplayed(0);
+      },
+    },
+  ];
+  const handleTabPress = (index: number) => {
+    tabData[index].event();
+    setActiveTab(index);
+  };
 
+  const renderItem = ({ item, index }: { item: any; index: number }) => {
+    const isActive = index === activeTab;
+    const animatedScale = new Animated.Value(isActive ? 1.2 : 1);
+
+    const handleTabPressWithAnimation = () => {
+      handleTabPress(index);
+      Animated.spring(animatedScale, {
+        toValue: isActive ? 1 : 1.2,
+        useNativeDriver: false,
+      }).start();
+    };
+
+    return (
+      <TouchableOpacity
+        onPress={handleTabPressWithAnimation}
+        style={[styles.tabButton, isActive && styles.activeTab]}
+      >
+        <Animated.Text
+          style={[
+            styles.tabButtonText,
+            {
+              color: isActive ? fontColor : "gray",
+            },
+          ]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {item.label}
+        </Animated.Text>
+      </TouchableOpacity>
+    );
+  };
   return (
     <LinearGradientWrapper>
       <View style={[global_styles.wrapper]}>
@@ -97,7 +187,7 @@ const Index: React.FC = () => {
             style={[
               global_styles.rowCenterBetween,
               {
-                width: "70%",
+                width: "100%",
                 paddingLeft: 20,
                 paddingRight: 20,
                 marginTop: 20,
@@ -111,11 +201,7 @@ const Index: React.FC = () => {
                   { fontWeight: "bold", textAlign: "center", fontSize: 16 },
                 ]}
               >
-                {
-                  posts.filter((item: any) => {
-                    return item.user.id == user.id;
-                  }).length
-                }
+                {posts.length}
               </Text>
               <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
                 Bài viết
@@ -123,15 +209,32 @@ const Index: React.FC = () => {
             </View>
             <View style={[global_styles.ColumnCenter]}>
               <Text
-                style={[
-                  styles.text,
-                  { fontWeight: "bold", textAlign: "center", fontSize: 16 },
-                ]}
+                style={{
+                  color: fontColor,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  fontSize: 16,
+                }}
               >
-                {friends.length}
+                {friends.filter((item: any) => item.status == 1).length}
               </Text>
               <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
                 Bạn bè
+              </Text>
+            </View>
+            <View style={[global_styles.ColumnCenter]}>
+              <Text
+                style={{
+                  color: fontColor,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  fontSize: 16,
+                }}
+              >
+                {friends.filter((item: any) => item.status == 0).length}
+              </Text>
+              <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
+                Đã gửi lời mời
               </Text>
             </View>
           </View>
@@ -141,11 +244,14 @@ const Index: React.FC = () => {
             onPress={() => {
               navigation.navigate("editProfile");
             }}
-            style={[global_styles.touchBtn, { backgroundColor: btnBgr }]}
+            style={[
+              global_styles.touchBtn,
+              { backgroundColor: btnBgr, width: "50%" },
+            ]}
           >
             <Text
               style={{
-                width: 140,
+                width: "100%",
                 fontWeight: "bold",
                 color: "white",
               }}
@@ -157,10 +263,10 @@ const Index: React.FC = () => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleLogout}
-            style={[global_styles.touchBtn]}
+            style={[global_styles.touchBtn, { width: "50%" }]}
           >
             <Text
-              style={[styles.text, { width: 140, color: fontColor }]}
+              style={[styles.text, { width: "100%", color: fontColor }]}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
@@ -168,7 +274,48 @@ const Index: React.FC = () => {
             </Text>
           </TouchableOpacity>
         </View>
+        <View
+          style={[
+            global_styles.rowCenter,
+            styles.tabContainer,
+            { marginTop: 10 },
+          ]}
+        >
+          <FlatList
+            data={tabData}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1 }}
+          />
+        </View>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalDisplay == 0}
+      >
+        <PostsModal
+          userId={user.id}
+          data={posts}
+          event={() => {
+            setModalDisplayed(-1);
+          }}
+        />
+      </Modal>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalDisplay == 1}
+      >
+        <FriendsModal
+          userId={user.id}
+          event={() => {
+            setModalDisplayed(-1);
+          }}
+        />
+      </Modal>
     </LinearGradientWrapper>
   );
 };
