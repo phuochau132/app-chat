@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 
 const axiosInstance = axios.create({
-  baseURL: `${Constants.manifest.extra.HOST_SERVER}`,
+  baseURL: `${Constants.manifest?.extra?.HOST_SERVER}`,
 });
 axiosInstance.interceptors.request.use(
   async (config) => {
@@ -20,9 +20,8 @@ axiosInstance.interceptors.request.use(
 const refreshAccessToken = async () => {
   try {
     const accessToken = await AsyncStorage.getItem("accessToken");
-    console.log(accessToken);
     const response = await axios.post(
-      `${Constants.manifest.extra.HOST_SERVER}/api/auth/refreshToken`,
+      `${Constants.manifest?.extra?.HOST_SERVER}/api/auth/refreshToken`,
       null,
       {
         headers: {
@@ -31,8 +30,6 @@ const refreshAccessToken = async () => {
       }
     );
     const newAccessToken = response.data.accessToken;
-    console.log("refresh Token");
-    console.log(newAccessToken);
     await AsyncStorage.setItem("accessToken", newAccessToken);
     return newAccessToken;
   } catch (error) {
@@ -48,16 +45,11 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config;
     const statusCode = error.response.status;
     const responseData = error.response.data;
-    console.log(statusCode);
     if (statusCode === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      console.log("hậu");
       try {
-        console.log("hậu 1");
         const newAccessToken = await refreshAccessToken();
-        console.log(newAccessToken);
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        console.log(originalRequest);
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         console.log("Lỗi khi refresh token:", refreshError);

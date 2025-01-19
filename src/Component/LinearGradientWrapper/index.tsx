@@ -6,7 +6,13 @@ let ScreenHeight = Dimensions.get("window").height;
 let ScreenWidth = Dimensions.get("window").width;
 const LinearGradientWrapper: React.FC<{ children: any }> = ({ children }) => {
   return (
-    <View style={{ width: ScreenWidth, height: ScreenHeight }}>
+    <View
+      style={{
+        width: ScreenWidth,
+        height: ScreenHeight,
+        overflow: "hidden",
+      }}
+    >
       <LinearGradient
         colors={["#6A6257", "#5A544A", "#302D28"]}
         style={{ width: "100%", height: "100%", padding: 10, zIndex: -100 }}
@@ -19,5 +25,3 @@ const LinearGradientWrapper: React.FC<{ children: any }> = ({ children }) => {
   );
 };
 export default LinearGradientWrapper;
-
-// styles

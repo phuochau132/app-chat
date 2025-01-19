@@ -7,6 +7,7 @@ import {
   Search,
   EditProfile,
   RequestAddFriend,
+  ForgotPassword,
 } from "../screens";
 import { MenuLayout, MainLayout } from "../layout";
 import UserProfile from "../screens/OtherUserProfile";
@@ -19,6 +20,7 @@ const publicRoutes = [
   { name: "chat", component: Chat, layout: MainLayout },
   { name: "editProfile", component: EditProfile, layout: MainLayout },
   { name: "userProfile", component: UserProfile, layout: MainLayout },
+  { name: "forgotPassword", component: ForgotPassword, layout: MainLayout },
 ];
 const tabRoutes = [
   { name: "tabHome", component: Home, iconName: "home-outline" },

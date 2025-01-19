@@ -7,10 +7,8 @@ import LinearGradientWrapper from "../../../Component/LinearGradientWrapper";
 import Item from "../../Home/Item";
 import CommentModal from "../../Home/CommentModal";
 import LikesModal from "../FriendsModal";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Text } from "react-native-elements";
-import axios from "axios";
-import axiosInstance from "../../../config/axiosConfig";
 
 const styles = StyleSheet.create({
   icon: {
@@ -32,8 +30,6 @@ const PostsModal: React.FC<{ userId: number; event: any; data: any[] }> = ({
   const [isModalLikesVisible, setModalLikesVisible] = useState<boolean>(false);
   const [isCommentModalVisible, setCommentModalVisible] =
     useState<boolean>(false);
-  console.log("123", data);
-
   return (
     <LinearGradientWrapper>
       <View style={global_styles.rowCenterBetween}>
@@ -48,9 +44,9 @@ const PostsModal: React.FC<{ userId: number; event: any; data: any[] }> = ({
         <Text style={[global_styles.title, { fontSize: 25 }]}>Bài đăng</Text>
       </View>
       {data.length > 0 ? (
-        <>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <View>
+        <View>
+          <ScrollView showsVerticalScrollIndicator={true}>
+            <View style={[{ paddingBottom: 70 }]}>
               {data.map((item: any, index: number) => {
                 return (
                   <Item
@@ -93,7 +89,7 @@ const PostsModal: React.FC<{ userId: number; event: any; data: any[] }> = ({
               }}
             />
           </Modal>
-        </>
+        </View>
       ) : (
         <View
           style={[global_styles.ColumnCenter, { flex: 1, marginBottom: 60 }]}

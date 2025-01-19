@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import Item from "./Item";
 import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
 import SearchBar from "../../Component/SearchBar";
-import { fontColor, global_styles } from "../../../style";
+import { backgroundColor, fontColor, global_styles } from "../../../style";
 import { useDispatch, useSelector } from "react-redux";
 import { getFriends } from "../../redux/slice/userSlice";
 
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F2F2F2",
   },
   items: {
-    flex: 1,
+    height: "70%",
   },
 });
 
@@ -32,12 +32,6 @@ const Index: React.FC = () => {
   const handleTextSearch = (text: string) => {
     setValueSearch(text);
   };
-  useEffect(() => {
-    dispatch(getFriends(user.id));
-  }, []);
-  useEffect(() => {
-    console.log(87123123);
-  }, [friends]);
   return (
     <LinearGradientWrapper>
       <View style={[global_styles.rowCenterBetween, { marginTop: 20 }]}>
@@ -48,17 +42,19 @@ const Index: React.FC = () => {
           color={fontColor}
         />
         <Text style={[global_styles.title, { fontSize: 24 }]}>
-          {user.nickName}
+          {user && user.name}
         </Text>
         <Ionicons name="add" size={30} color={fontColor} />
       </View>
-      <View style={{ height: "10%" }}>
+      <View>
         <SearchBar setSearchPhrase={handleTextSearch} />
       </View>
       <View style={styles.items}>
         <ScrollView showsVerticalScrollIndicator={false}>
           {friends.map((item: any, index: number) => {
-            return <Item key={index} item={item} />;
+            if (item.status == 1) {
+              return <Item key={index} item={item} />;
+            }
           })}
         </ScrollView>
       </View>

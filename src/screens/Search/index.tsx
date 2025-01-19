@@ -93,7 +93,9 @@ const Index: React.FC = () => {
               color={fontColor}
             />
           </TouchableOpacity>
-          <SearchBar setSearchPhrase={handleSearch} />
+          <View style={{ flex: 1, marginLeft: 10 }}>
+            <SearchBar setSearchPhrase={handleSearch} />
+          </View>
         </View>
         <View style={styles.items}>
           <ScrollView showsVerticalScrollIndicator={false}>

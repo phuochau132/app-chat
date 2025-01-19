@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { changeInfo } from "../../redux/slice/authSlice";
 import Constants from "expo-constants";
 import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
+import { uploadFiles } from "../../util/cloudary";
 
 const styles = StyleSheet.create({
   header: {
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
 });
 const Index: React.FC = () => {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<any>();
   const auth = useSelector((state: any) => state.auth);
   const [inputValue, setInputValue] = useState("");
   const [modalInputValue, setModalInputValue] = useState("");
@@ -96,8 +97,28 @@ const Index: React.FC = () => {
       setImageUri(imageUri);
     }
   };
-  const handleChangeProfile = () => {
-    dispatch(changeInfo({ user: data, file: imageUri }));
+  const handleChangeProfile = async () => {
+    try {
+      let reqData: any = {
+        user: data,
+      };
+
+      if (imageUri) {
+        const fileUploaded: any = await uploadFiles({
+          fileUris: [imageUri],
+        });
+
+        if (fileUploaded) {
+          reqData = {
+            user: {
+              ...data,
+              avatar: fileUploaded[0],
+            },
+          };
+        }
+      }
+      dispatch(changeInfo(reqData));
+    } catch (error) {}
   };
   return (
     <LinearGradientWrapper>
@@ -129,7 +150,7 @@ const Index: React.FC = () => {
             <View style={[global_styles.rowCenter, { width: "100%" }]}>
               <Image
                 source={{
-                  uri: Constants.manifest.extra.HOST_SERVER + auth.user.avatar,
+                  uri: auth.user.avatar,
                 }}
                 style={[styles.img, { marginRight: 5 }]}
               />

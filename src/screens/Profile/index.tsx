@@ -16,10 +16,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slice/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
-import Constants from "expo-constants";
-import { getPostsByUser } from "../../api/api";
+
 import PostsModal from "./PostsModal";
 import FriendsModal from "./FriendsModal";
+import { getPostsByUser } from "../../redux/slice/postSlice";
 
 const styles = StyleSheet.create({
   header: {
@@ -65,13 +65,13 @@ const styles = StyleSheet.create({
 const Index: React.FC = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
-  const [indexTab, setIndexTab] = useState<number>(0);
+  const userPosts = useSelector((state: any) => state.post.userPosts);
   const [modalDisplay, setModalDisplayed] = useState<number>(-1);
   const user = useSelector((state: any) => {
     return state.auth.user;
   });
+
   const friends = useSelector((state: any) => {
     return state.user.friends;
   });
@@ -82,18 +82,13 @@ const Index: React.FC = () => {
     await AsyncStorage.removeItem("accessToken");
   };
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await getPostsByUser(user.id);
-        console.log(response.data);
-        setPosts(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchPosts();
-  }, []);
+    setPosts(userPosts);
+  }, [userPosts]);
+
   const [activeTab, setActiveTab] = useState(0);
+  useEffect(() => {
+    dispatch(getPostsByUser(user.id));
+  }, [activeTab]);
   const tabData = [
     {
       label: "Bạn bè",
@@ -145,6 +140,7 @@ const Index: React.FC = () => {
       </TouchableOpacity>
     );
   };
+
   return (
     <LinearGradientWrapper>
       <View style={[global_styles.wrapper]}>
@@ -170,7 +166,7 @@ const Index: React.FC = () => {
           <View style={global_styles.ColumnCenter}>
             <Image
               source={{
-                uri: user && Constants.manifest.extra.HOST_SERVER + user.avatar,
+                uri: user && user.avatar,
               }}
               style={styles.img}
             />
@@ -180,7 +176,7 @@ const Index: React.FC = () => {
                 { fontWeight: "bold", marginTop: 10, fontSize: 20 },
               ]}
             >
-              {user && user.name}
+              {user && user.fullName}
             </Text>
           </View>
           <View
@@ -297,7 +293,7 @@ const Index: React.FC = () => {
         visible={modalDisplay == 0}
       >
         <PostsModal
-          userId={user.id}
+          userId={user && user.id}
           data={posts}
           event={() => {
             setModalDisplayed(-1);
@@ -310,7 +306,7 @@ const Index: React.FC = () => {
         visible={modalDisplay == 1}
       >
         <FriendsModal
-          userId={user.id}
+          userId={user && user.id}
           event={() => {
             setModalDisplayed(-1);
           }}

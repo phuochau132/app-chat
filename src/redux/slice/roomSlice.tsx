@@ -1,8 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 import axiosInstance from "../../config/axiosConfig";
 import Toast from "react-native-simple-toast";
-import Constants from "expo-constants";
 const initialState = {
   room: [],
   error: null,
@@ -21,7 +19,6 @@ export const getRoom: any = createAsyncThunk(
   async (idRoom: number) => {
     try {
       const response = await axiosInstance.get(`api/rooms/${idRoom}`);
-      console.log(response.data);
       return {
         type: 1,
         data: response.data,

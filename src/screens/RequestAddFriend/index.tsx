@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { blueColor, global_styles } from "../../../style";
 import Item from "./Item";
 import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
+
 const styles = StyleSheet.create({
   container: {
     height: "100%",
@@ -147,7 +148,7 @@ export const Index: React.FC<{}> = () => {
               ]}
             >
               <Text style={{ color: "#CCCCCC", fontSize: 20 }}>
-                Không có bạn bè để hiển thị!
+                Không có lời mời kết bạn!
               </Text>
             </View>
           )}

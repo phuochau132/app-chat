@@ -2,7 +2,6 @@ import { StyleSheet, Text, View } from "react-native";
 import moment from "moment";
 import { Image } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
-import Constants from "expo-constants";
 
 import { fontColor, itemColor } from "../../../../../style";
 
@@ -73,7 +72,7 @@ const Item: React.FC<{ item: any; margin: any | undefined }> = ({
       <View>
         <Image
           source={{
-            uri: Constants.manifest.extra.HOST_SERVER + item.user.avatar,
+            uri: item.user.avatar,
           }}
           style={styles.img}
         >
@@ -81,7 +80,7 @@ const Item: React.FC<{ item: any; margin: any | undefined }> = ({
         </Image>
       </View>
       <View style={styles.info}>
-        <Text style={styles.name}>{item.user.fullName} </Text>
+        <Text style={styles.name}>{item.user.name} </Text>
         <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nickName}>
           {item.text}
         </Text>

@@ -10,12 +10,12 @@ import { Image } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { register } from "../../redux/slice/authSlice";
 import { TextInput } from "react-native";
 import { btnBgr, btnColor, fontColor, global_styles } from "../../../style";
 import Loading from "../../Component/Loading";
 import logo from "../../img/logo.png";
 import Toast from "react-native-simple-toast";
+import { forgotPassword } from "../../redux/slice/authSlice";
 
 const styles = StyleSheet.create({
   container: {
@@ -88,19 +88,16 @@ const Index: React.FC = () => {
   const dispatch = useDispatch();
   const isLoading = useSelector((state: any) => state.auth.status);
   const [data, setData] = useState({
-    userName: "",
-    password: "",
-    fullName: "",
     email: "",
   });
-  const handleRegister = useCallback(async () => {
+  const handleForgotPassword = useCallback(async () => {
     try {
       const isAllFieldsFilled = Object.values(data).every(
         (field) => field.trim() !== ""
       );
+      // await sendDirectSMS("+84979574301", "etasdasdasd");
       if (isAllFieldsFilled) {
-        await dispatch(register(data) as any);
-        navigation.navigate("login");
+        await dispatch(forgotPassword(data) as any);
       } else {
         Toast.show("Vui lòng nhập đầy đủ thông tin!", Toast.LONG, {
           backgroundColor: "white",
@@ -118,47 +115,13 @@ const Index: React.FC = () => {
       style={{ width: "100%", height: "100%" }}
     >
       {isLoading == "loading" && <Loading />}
-      <View style={[global_styles.rowCenter, { paddingTop: 10 }]}>
+      <View style={[global_styles.rowCenter, { paddingTop: 50 }]}>
         <Image source={logo} style={{ width: 250, height: 200 }} />
       </View>
       <View style={[styles.col_center]}>
         <View style={styles.inputContainer}>
           <View style={styles.iconContainer}>
             <Ionicons name="person-circle" size={20} color="black" />
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => {
-              setData((prev) => ({
-                ...prev,
-                userName: text,
-              }));
-            }}
-            value={data.userName}
-            placeholder="UserName"
-            placeholderTextColor="gray"
-          />
-        </View>
-        <View style={[styles.inputContainer]}>
-          <View style={styles.iconContainer}>
-            <Ionicons name="key" size={20} color="black" />
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => {
-              setData((prev) => ({
-                ...prev,
-                password: text,
-              }));
-            }}
-            value={data.password}
-            placeholder="Password"
-            placeholderTextColor="gray"
-          />
-        </View>
-        <View style={[styles.inputContainer]}>
-          <View style={styles.iconContainer}>
-            <Ionicons name="key" size={20} color="black" />
           </View>
           <TextInput
             style={styles.input}
@@ -173,27 +136,10 @@ const Index: React.FC = () => {
             placeholderTextColor="gray"
           />
         </View>
-        <View style={[styles.inputContainer]}>
-          <View style={styles.iconContainer}>
-            <Ionicons name="key" size={20} color="black" />
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => {
-              setData((prev) => ({
-                ...prev,
-                fullName: text,
-              }));
-            }}
-            value={data.fullName}
-            placeholder="Full Name"
-            placeholderTextColor="gray"
-          />
-        </View>
         <View style={[styles.login_btn_wrapper, { marginTop: 20 }]}>
           <TouchableOpacity
             style={{ padding: 10, backgroundColor: btnBgr }}
-            onPress={handleRegister}
+            onPress={handleForgotPassword}
           >
             <Text
               style={{
@@ -203,7 +149,7 @@ const Index: React.FC = () => {
                 color: btnColor,
               }}
             >
-              Register
+              Submit
             </Text>
           </TouchableOpacity>
         </View>

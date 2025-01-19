@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
   text: {
     color: fontColor,
     fontWeight: "bold",
+    marginLeft: 2,
   },
   float_right: {
     display: "flex",
@@ -86,7 +87,7 @@ const styles = StyleSheet.create({
 
 const Index: React.FC = () => {
   const dispatch = useDispatch();
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const isLoading = useSelector((state: any) => state.auth.status);
   const user = useSelector((state: any) => state.auth.user);
   useEffect(() => {
@@ -98,18 +99,17 @@ const Index: React.FC = () => {
     email: "",
     password: "",
   });
-  const [securePass, setSecurePass] = useState(false);
   const handleLogin = useCallback(() => {
     dispatch(login(data) as any);
   }, [data]);
 
   return (
-    <>
+    <View>
       <ImageBackground
         source={{
           uri: "https://images.unsplash.com/photo-1502899576159-f224dc2349fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80",
         }}
-        style={{ width: "100%", height: "100%" }}
+        style={{ width: "100%", height: "100%", backgroundColor: "black" }}
       >
         {isLoading == "loading" && <Loading />}
         <View style={[global_styles.rowCenter, { paddingTop: 50 }]}>
@@ -169,7 +169,14 @@ const Index: React.FC = () => {
             </TouchableOpacity>
           </View>
           <View style={[styles.float_right, { marginTop: 20 }]}>
-            <Text style={styles.text}>Forgot Password</Text>
+            <Text
+              style={styles.text}
+              onPress={() => {
+                navigation.navigate("forgotPassword");
+              }}
+            >
+              Forgot Password
+            </Text>
           </View>
           <View style={styles.row_center}>
             <Text style={{ color: fontColor, opacity: 0.6 }}>
@@ -186,7 +193,7 @@ const Index: React.FC = () => {
           </View>
         </View>
       </ImageBackground>
-    </>
+    </View>
   );
 };
 

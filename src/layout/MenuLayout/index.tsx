@@ -16,6 +16,7 @@ import {
 import { stompClient } from "../../../index";
 import { tabRoutes } from "../../route";
 import { useNavigation } from "@react-navigation/native";
+import { global_styles } from "../../../style";
 
 const Tab = createBottomTabNavigator();
 const styles = StyleSheet.create({
@@ -28,20 +29,21 @@ const styles = StyleSheet.create({
 let check = false;
 const Index: React.FC = () => {
   const dispatch = useDispatch();
-  const navigation = useNavigation();
-  console.log(123);
   const user = useSelector((state: any) => {
     return state.auth.user;
   });
   const friends = useSelector((state: any) => {
     return state.user.friends;
   });
-  useEffect(() => {
-    dispatch(loadAllUser());
-    dispatch(getRequestAddFriend(user.id));
+  const initComponent = async () => {
+    await dispatch(loadAllUser());
     if (friends.length == 0) {
-      dispatch(getFriends(user.id));
+      await dispatch(getFriends(user.id));
+      await dispatch(getRequestAddFriend(user.id));
     }
+  };
+  useEffect(() => {
+    initComponent();
   }, []);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
@@ -53,9 +55,12 @@ const Index: React.FC = () => {
         {},
         JSON.stringify({ id: user.id, createAt: null, status: "online" })
       );
-      stompClient.subscribe(`/topic/users/status`, (data: any) => {
-        dispatch(setActiveUser(JSON.parse(data.body)));
-      });
+      const subscribe = stompClient.subscribe(
+        `/topic/users/status`,
+        (data: any) => {
+          dispatch(setActiveUser(JSON.parse(data.body)));
+        }
+      );
       const subscription = AppState.addEventListener(
         "change",
         (nextAppState) => {
@@ -88,9 +93,11 @@ const Index: React.FC = () => {
       check = true;
       return () => {
         subscription.remove();
+        subscribe.unsubscribe();
       };
     }
   }, [stompClient.connected]);
+
   return (
     <View
       style={{
@@ -111,16 +118,31 @@ const Index: React.FC = () => {
             <Tab.Screen
               key={index}
               name={item.name}
+              listeners={{
+                tabPress: (item) => {
+                  if (item.target?.startsWith("requestAddFriend")) {
+                    dispatch(getRequestAddFriend(user.id));
+                  }
+                  if (item.target?.startsWith("tabSearch")) {
+                    dispatch(loadAllUser());
+                  }
+                  if (item.target?.startsWith("listFriend")) {
+                    dispatch(getFriends(user.id));
+                  }
+                },
+              }}
               options={{
                 headerShown: false,
-                tabBarIcon: ({ size, focused }) => (
-                  <Ionicons
-                    key={index}
-                    name={item.iconName}
-                    size={size}
-                    color={focused ? "white" : "gray"}
-                  />
-                ),
+                tabBarIcon: ({ size, focused }) => {
+                  return (
+                    <Ionicons
+                      key={index}
+                      name={item.iconName}
+                      size={size}
+                      color={focused ? "white" : "gray"}
+                    />
+                  );
+                },
               }}
             >
               {(props) => <Page />}
@@ -143,9 +165,7 @@ const Index: React.FC = () => {
               >
                 <Image
                   source={{
-                    uri:
-                      user &&
-                      Constants.manifest.extra.HOST_SERVER + user.avatar,
+                    uri: user && user.avatar,
                   }}
                   style={[styles.img]}
                 />

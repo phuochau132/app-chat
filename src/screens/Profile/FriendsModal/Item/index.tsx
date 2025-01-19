@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
 });
 
 const Item: React.FC<{ item: any }> = ({ item }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   return (
     <TouchableOpacity
       onPress={() =>
@@ -65,15 +65,13 @@ const Item: React.FC<{ item: any }> = ({ item }) => {
       <View>
         <Image
           source={{
-            uri: Constants.manifest.extra.HOST_SERVER + item.avatar,
+            uri: item.avatar,
           }}
           style={styles.img}
-        >
-          {/* <View style={styles.span}></View> */}
-        </Image>
+        ></Image>
       </View>
       <View style={styles.info}>
-        <Text style={styles.name}>{item.fullName} </Text>
+        <Text style={styles.name}>{item.name} </Text>
         <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nickName}>
           {item.nickName}
         </Text>

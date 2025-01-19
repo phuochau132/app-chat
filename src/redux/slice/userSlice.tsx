@@ -34,22 +34,29 @@ export const addFriend = createAsyncThunk(
     try {
       const response = await axiosInstance.post(`api/friends`, data);
       const user = response.data.user;
-      const response1 = await axios.post(
-        `https://exp.host/--/api/v2/push/send`,
-        JSON.stringify({
-          to: user.expoPushToken,
-          sound: "default",
-          title: "You've got mail! 📬",
-          body: "Here is the notification body",
-          data: { data: "goes here" },
-        }),
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      await sendNotification({
+        to: user.expoPushToken,
+        title: `Bạn có lời mời kết bạn từ: ${user.fullName}`,
+        body: "Nhấn vào đây để đi đến trang cá nhân",
+      });
+      return { type: 1, data: response.data };
+    } catch (error) {
+      console.log(error);
+      return { type: 0 };
+    }
+  }
+);
+interface AddStoryData {
+  content: string;
+  status: number;
+  image: string;
+  userId: number;
+}
+export const addStory = createAsyncThunk(
+  "user/addStory",
+  async (data: AddStoryData) => {
+    try {
+      const response = await axiosInstance.post(`/api/users/story`, data);
       return { type: 1, data: response.data };
     } catch (error) {
       console.log(error);
@@ -80,10 +87,15 @@ export const getRequestAddFriend: any = createAsyncThunk(
 );
 export const acceptRequestAF: any = createAsyncThunk(
   "user/acceptRequestAF",
-  async (id: number) => {
+  async ({ friend }: { friend: any }) => {
     try {
       const response = await axiosInstance.post(`api/friends/accept`, {
-        id,
+        id: Number(friend.id),
+      });
+      await sendNotification({
+        to: friend.user.expoPushToken,
+        title: `${friend.friend.fullName} đã chấp nhận lời mời kết bạn`,
+        body: "Nhấn vào đây để đi đến trang cá nhân",
       });
       return {
         type: 1,
@@ -100,8 +112,6 @@ export const acceptRequestAF: any = createAsyncThunk(
 export const delRequestAF: any = createAsyncThunk(
   "user/delRequestAF",
   async (id: number) => {
-    console.log(id);
-
     try {
       const response = await axiosInstance.post(`api/friends/delete`, {
         id,
@@ -125,7 +135,6 @@ export const getFriends: any = createAsyncThunk(
       const response = await axiosInstance.get(
         `api/friends/getFriends/${idUser}`
       );
-      console.log(response.data);
 
       return {
         type: 1,
@@ -146,7 +155,7 @@ interface Message {
 }
 interface Notification {
   to: string;
-  sound: string;
+  sound?: string;
   title: string;
   body: string;
 }
@@ -181,7 +190,6 @@ export const sendMessage: any = createAsyncThunk(
     try {
       const response = await axiosInstance.post(`api/messages`, data);
       await sendNotification(notificationData);
-      console.log(response.data);
       return {
         type: 1,
         data: {
@@ -235,6 +243,27 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(loadAllUser.rejected, (state: any, action: any) => {
+        state.status = "failed";
+        state.user = null;
+        state.error = action.error.message;
+        Toast.show(action.error.message, Toast.LONG, {
+          backgroundColor: "white",
+          textColor: "black",
+        });
+      })
+      .addCase(addStory.pending, (state: any) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(addStory.fulfilled, (state: any, action: any) => {
+        state.status = "succeeded";
+        state.error = null;
+        Toast.show("Thêm story thành công", Toast.LONG, {
+          backgroundColor: "white",
+          textColor: "black",
+        });
+      })
+      .addCase(addStory.rejected, (state: any, action: any) => {
         state.status = "failed";
         state.user = null;
         state.error = action.error.message;

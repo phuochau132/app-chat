@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const CommentModal: React.FC<{ idPost: number; event: any }> = ({
+const CommentModal: React.FC<{ idPost: number | undefined; event: any }> = ({
   idPost,
   event,
 }) => {
@@ -81,6 +81,7 @@ const CommentModal: React.FC<{ idPost: number; event: any }> = ({
           onChangeText={(text: string) => {
             setText(text);
           }}
+          underlineColor="transparent" // Remove the underline
           placeholderTextColor={placeholderTextColor}
           focusable={false}
           style={styles.textInput}
@@ -88,6 +89,11 @@ const CommentModal: React.FC<{ idPost: number; event: any }> = ({
           placeholder="Viết bình luận..."
           textColor="white"
           value={text}
+          theme={{
+            colors: {
+              primary: "transparent", // Remove the focus color
+            },
+          }}
         />
         <TouchableOpacity onPress={handleAddComment}>
           <Ionicons name="send-outline" size={25} color={fontColor} />

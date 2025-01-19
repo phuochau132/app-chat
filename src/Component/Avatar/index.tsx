@@ -12,17 +12,22 @@ const Avatar: React.FC<{
   const statusUser = useSelector((state: any) => {
     return state.user.statusUser;
   });
+  const mainUser = useSelector((state: any) => {
+    return state.auth.user;
+  });
+
   return (
     <View style={[global_styles.rowCenter]}>
       <Image
         source={{
-          uri: Constants.manifest.extra.HOST_SERVER + user.avatar,
+          uri: user && user.avatar,
         }}
         style={{ borderRadius: 50, ...size }}
       ></Image>
-      {statusUser.some((item: any) => {
+      {(statusUser.some((item: any) => {
         return item.id === user.id && item.status == "online";
-      }) && (
+      }) ||
+        (mainUser && user.id == mainUser.id)) && (
         <Text
           style={{
             position: "absolute",

@@ -7,6 +7,7 @@ const initialState = {
   posts: [],
   error: null,
   status: "",
+  userPosts: [],
 };
 interface Post {
   idUser: number;
@@ -14,13 +15,25 @@ interface Post {
   files: any;
   statusPost: any;
 }
-export const getPosts: any = createAsyncThunk(
+export const getPostsByUser: any = createAsyncThunk(
+  "getPostsByUser",
+  async (id: number) => {
+    try {
+      const response = await axiosInstance.get(`api/posts/user/${id}`);
+      return {
+        type: 1,
+        data: response.data,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+export const getPost: any = createAsyncThunk(
   "getPost",
   async (idPost: number) => {
-    console.log(idPost);
     try {
       const response = await axiosInstance.get(`api/posts/${idPost}`);
-      console.log(response.data);
       return {
         type: 1,
         data: response.data,
@@ -44,7 +57,7 @@ export const addPost: any = createAsyncThunk("addPost", async (data: Post) => {
       });
     });
     const response = await axios.post(
-      `${Constants.manifest.extra.HOST_SERVER}/api/posts`,
+      `${Constants.manifest?.extra?.HOST_SERVER}/api/posts`,
       formData,
       {
         headers: { "Content-Type": "multipart/form-data" },
@@ -53,6 +66,20 @@ export const addPost: any = createAsyncThunk("addPost", async (data: Post) => {
     return {
       type: 1,
       data: response.data,
+    };
+  } catch (error) {
+    throw error;
+  }
+});
+export const delPost: any = createAsyncThunk("delPost", async (id: number) => {
+  try {
+    const response = await axios.delete(
+      `${Constants.manifest?.extra?.HOST_SERVER}/api/posts/${id}`
+    );
+    return {
+      type: 1,
+      data: response.data,
+      id: id,
     };
   } catch (error) {
     throw error;
@@ -112,8 +139,6 @@ interface Comment {
 export const addComment: any = createAsyncThunk(
   "addComment",
   async (data: Comment) => {
-    console.log(981328);
-    console.log(data);
     try {
       const response = await axiosInstance.post(`api/comments`, data);
       return {
@@ -131,25 +156,25 @@ const postSlice = createSlice({
   reducers: {},
   extraReducers: (builder: any) => {
     builder
-      .addCase(getPosts.pending, (state: any) => {
+      .addCase(getPost.pending, (state: any) => {
         state.status = "loading";
         state.error = null;
       })
-      .addCase(getPosts.fulfilled, (state: any, action: any) => {
+      .addCase(getPost.fulfilled, (state: any, action: any) => {
         state.status = "succeeded";
         state.error = null;
         const statePosts = [...state.posts];
-        const newData = action.payload.data.filter(
+        let newData = action.payload.data.filter(
           (item: any) => !statePosts.some((post) => post.id === item.id)
         );
-        newData.forEach((item: any) => {
-          item.comments = item.comments.reverse();
-        });
-
+        newData = newData.sort(
+          (a: any, b: any) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
         const updatedPosts = [...statePosts, ...newData];
         state.posts = updatedPosts;
       })
-      .addCase(getPosts.rejected, (state: any, action: any) => {
+      .addCase(getPost.rejected, (state: any, action: any) => {
         state.status = "failed";
         state.user = null;
         state.error = action.error.message;
@@ -193,7 +218,13 @@ const postSlice = createSlice({
           for (let index = 0; index < state.posts.length; index++) {
             const post = state.posts[index];
             if (post.id === action.payload.data.postId) {
-              console.log(action.payload.data.id);
+              post.likedUsers = [action.payload.data, ...post.likedUsers];
+              break;
+            }
+          }
+          for (let index = 0; index < state.userPosts.length; index++) {
+            const post = state.userPosts[index];
+            if (post.id === action.payload.data.postId) {
               post.likedUsers = [action.payload.data, ...post.likedUsers];
               break;
             }
@@ -220,12 +251,19 @@ const postSlice = createSlice({
           for (let index = 0; index < state.posts.length; index++) {
             const post = state.posts[index];
             if (post.id === action.payload.data.postId) {
-              console.log(action.payload.data.id);
               const updatedLikedUsers = post.likedUsers.filter((item: any) => {
                 return item.id !== action.payload.data.id;
               });
-              console.log(updatedLikedUsers);
-
+              post.likedUsers = updatedLikedUsers;
+              break;
+            }
+          }
+          for (let index = 0; index < state.userPosts.length; index++) {
+            const post = state.userPosts[index];
+            if (post.id === action.payload.data.postId) {
+              const updatedLikedUsers = post.likedUsers.filter((item: any) => {
+                return item.id !== action.payload.data.id;
+              });
               post.likedUsers = updatedLikedUsers;
               break;
             }
@@ -264,6 +302,51 @@ const postSlice = createSlice({
         });
       })
       .addCase(addComment.rejected, (state: any, action: any) => {
+        state.status = "failed";
+        state.user = null;
+        state.error = action.error.message;
+        Toast.show(action.error.message, Toast.LONG, {
+          backgroundColor: "white",
+          textColor: "black",
+        });
+      })
+      .addCase(delPost.pending, (state: any) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(delPost.fulfilled, (state: any, action: any) => {
+        state.status = "succeeded";
+        state.error = null;
+        state.userPosts = state.userPosts.filter((item: any) => {
+          return item.id != action.payload.id;
+        });
+        Toast.show("Xóa bài viết thành công.", Toast.LONG, {
+          backgroundColor: "white",
+          textColor: "black",
+        });
+      })
+      .addCase(delPost.rejected, (state: any, action: any) => {
+        state.status = "failed";
+        state.user = null;
+        state.error = action.error.message;
+        Toast.show(action.error.message, Toast.LONG, {
+          backgroundColor: "white",
+          textColor: "black",
+        });
+      })
+      .addCase(getPostsByUser.pending, (state: any) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(getPostsByUser.fulfilled, (state: any, action: any) => {
+        state.status = "succeeded";
+        state.error = null;
+        state.userPosts = action.payload.data.sort(
+          (a: any, b: any) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      })
+      .addCase(getPostsByUser.rejected, (state: any, action: any) => {
         state.status = "failed";
         state.user = null;
         state.error = action.error.message;

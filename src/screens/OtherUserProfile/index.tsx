@@ -6,7 +6,6 @@ import { fontColor, global_styles } from "../../../style";
 import { Image } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
 import * as Notifications from "expo-notifications";
-import Constants from "expo-constants";
 import { useRoute } from "@react-navigation/native";
 
 Notifications.setNotificationHandler({
@@ -17,9 +16,14 @@ Notifications.setNotificationHandler({
   }),
 });
 
-import { addFriend, delRequestAF } from "../../redux/slice/userSlice";
+import {
+  addFriend,
+  delRequestAF,
+  getFriends,
+} from "../../redux/slice/userSlice";
 import LinearGradientWrapper from "../../Component/LinearGradientWrapper";
-import { getPostsByUser } from "../../api/api";
+import { getPostsByUser } from "../../redux/slice/postSlice";
+import { AppDispatch } from "../../redux";
 
 const styles = StyleSheet.create({
   img: {
@@ -35,7 +39,7 @@ const styles = StyleSheet.create({
 });
 const UserProfile: React.FC = () => {
   const navigator = useNavigation();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const route = useRoute();
   const [posts, setPosts] = useState<any[]>([]);
   const { item } = route.params;
@@ -43,6 +47,7 @@ const UserProfile: React.FC = () => {
   const user = useSelector((state: any) => {
     return state.auth.user;
   });
+  const userPosts = useSelector((state: any) => state.post.userPosts);
   const friends = useSelector((state: any) => {
     return state.user.friends;
   });
@@ -51,7 +56,7 @@ const UserProfile: React.FC = () => {
       return tmp.user.id === profileUser.id;
     });
   };
-  const handleAddFriend = () => {
+  const handleAddFriend = async () => {
     dispatch(addFriend({ senderId: user.id, receiverId: profileUser.id }));
   };
 
@@ -61,15 +66,11 @@ const UserProfile: React.FC = () => {
     });
   }, [friends]);
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await getPostsByUser(user.id);
-        setPosts(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchPosts();
+    setPosts(userPosts);
+  }, [userPosts]);
+  useEffect(() => {
+    dispatch(getPostsByUser(user.id));
+    dispatch(getFriends(user.id));
   }, []);
   return (
     <LinearGradientWrapper>
@@ -83,7 +84,6 @@ const UserProfile: React.FC = () => {
           <View style={global_styles.rowCenter}>
             <Ionicons
               onPress={() => {
-                console.log(123);
                 navigator.navigate("tabSearch");
               }}
               name="arrow-back-outline"
@@ -112,7 +112,7 @@ const UserProfile: React.FC = () => {
           <View style={global_styles.ColumnCenter}>
             <Image
               source={{
-                uri: Constants.manifest.extra.HOST_SERVER + profileUser.avatar,
+                uri: profileUser.avatar,
               }}
               style={styles.img}
             />
@@ -191,8 +191,6 @@ const UserProfile: React.FC = () => {
               {check().length === 0 && (
                 <Ionicons name="person-add-outline" color="white" size={17} />
               )}
-              {/* {check().length > 0 && check()[0].status == 0 && "Hủy kết bạn"}
-              {check().length > 0 && check()[0].status == 1 && "Bạn bè"} */}
 
               <Text
                 style={{
@@ -235,9 +233,6 @@ const UserProfile: React.FC = () => {
                 Nhắn tin
               </Text>
             </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={[global_styles.touchBtn]}>
-            <Ionicons name="person-add-outline" size={17} />
           </TouchableOpacity>
         </View>
       </View>

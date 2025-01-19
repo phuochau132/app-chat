@@ -22,6 +22,8 @@ import Avatar from "../../Component/Avatar";
 import { TextInput } from "react-native-paper";
 import Bubble from "./Bubble";
 import { Image } from "react-native-elements";
+import { uploadFiles } from "../../util/cloudary";
+import Loading from "../../Component/Loading";
 const styles = StyleSheet.create({
   container: {
     height: "100%",
@@ -87,6 +89,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     marginLeft: 8,
     borderBottomWidth: 0,
+    borderWidth: 0, // Không border
   },
   sendButton: {
     borderRadius: 20,
@@ -108,8 +111,8 @@ export const Index: React.FC<{}> = () => {
   const route = useRoute();
   const { item } = route.params;
   const friendShip = JSON.parse(item);
-  const dispatch = useDispatch();
-  const scrollViewRef = useRef(null);
+  const dispatch = useDispatch<any>();
+  const scrollViewRef = useRef<ScrollView>(null);
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [videoUri, setVideoUri] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>([]);
@@ -118,6 +121,7 @@ export const Index: React.FC<{}> = () => {
   const auth = useSelector((state: any) => {
     return state.auth;
   });
+
   const filterMessage = useCallback(() => {
     const array: any = [];
     const messageList = friendShip.room.message.slice(-10);
@@ -127,7 +131,11 @@ export const Index: React.FC<{}> = () => {
         const message = {
           _id: item._id,
           text: item.text,
-          image: [],
+          image:
+            item.imgMessage &&
+            item.imgMessage.map((item) => {
+              return item.urlImg;
+            }),
           createdAt: item.createAt,
           user: {
             _id: item.sender.id,
@@ -140,7 +148,11 @@ export const Index: React.FC<{}> = () => {
         const message = {
           _id: item._id,
           text: item.text,
-          image: [],
+          image:
+            item.imgMessage &&
+            item.imgMessage.map((item) => {
+              return item.urlImg;
+            }),
           createdAt: item.createAt,
           user: {
             _id: auth.user.id,
@@ -155,8 +167,7 @@ export const Index: React.FC<{}> = () => {
   }, []);
   useEffect(() => {
     filterMessage();
-
-    stompClient.subscribe(
+    const subscription = stompClient.subscribe(
       `/topic/rooms/${friendShip.room.id}`,
       (message: any) => {
         const bodyData = JSON.parse(message.body);
@@ -213,47 +224,69 @@ export const Index: React.FC<{}> = () => {
       }
     );
   }, []);
+  const [status, setStatus] = useState(false);
   const handleSend = useCallback(
-    (newMessages: any) => {
-      if (newMessages[0].text.trim() || images.length > 0) {
-        const formattedMessage: IMessage = {
-          _id: newMessages[0]._id,
-          text: newMessages[0].text,
-          image: newMessages[0].images,
-          createdAt: newMessages[0].createdAt,
-          user: {
-            _id: auth.user.id,
-            name: auth.user.fullName,
-            avatar: auth.user.avatar,
-          },
-        };
-        dispatch(
-          sendMessage({
-            data: {
-              senderId: auth.user.id,
-              receiverId: friendShip.user.id,
-              roomId: friendShip.room.id,
-              text: newMessages[0].text,
-              images: newMessages[0].images,
+    async (newMessages: any) => {
+      setStatus(true);
+      let imagesList = null;
+
+      try {
+        if (newMessages[0].text.trim() || images.length > 0) {
+          if (newMessages[0].images.length > 0) {
+            try {
+              const fileUploaded = await uploadFiles({
+                fileUris: newMessages[0].images,
+              });
+              imagesList = fileUploaded;
+            } catch (error) {
+              console.error("Error uploading files:", error);
+            }
+          }
+
+          const formattedMessage: IMessage = {
+            _id: newMessages[0]._id,
+            text: newMessages[0].text,
+            image: imagesList ? [imagesList[0]] : [],
+            createdAt: newMessages[0].createdAt,
+            user: {
+              _id: auth.user.id,
+              name: auth.user.fullName,
+              avatar: auth.user.avatar,
             },
-            notificationData: {
-              to: friendShip.user.expoPushToken,
-              title: `Bạn có tin nhắn đến từ: ${auth.user.fullName}`,
-              body: newMessages[0].text,
-            },
-          })
-        );
-        setMessages((prev) => [...prev, formattedMessage]);
-        setInputValue("");
-        stompClient.send(
-          `/app/chat/${friendShip.room.id}`,
-          {},
-          JSON.stringify(formattedMessage)
-        );
+          };
+
+          await dispatch(
+            sendMessage({
+              data: {
+                senderId: auth.user.id,
+                receiverId: friendShip.user.id,
+                roomId: friendShip.room.id,
+                text: newMessages[0].text,
+                images: imagesList,
+              },
+              notificationData: {
+                to: friendShip.user.expoPushToken,
+                title: `Bạn có tin nhắn đến từ: ${auth.user.name}`,
+                body: newMessages[0].text,
+              },
+            })
+          );
+
+          setMessages((prev) => [...prev, formattedMessage]);
+          setInputValue("");
+          stompClient.send(
+            `/app/chat/${friendShip.room.id}`,
+            {},
+            JSON.stringify(formattedMessage)
+          );
+        }
+      } catch (error) {
+        console.error("Error handling send:", error);
+      } finally {
+        setStatus(false);
       }
     },
-
-    [messages]
+    [messages, auth, friendShip, dispatch]
   );
   const handleImageUpload = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -276,27 +309,27 @@ export const Index: React.FC<{}> = () => {
     }
   };
 
-  const handleVideoUpload = async () => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: "video/*",
-    });
-    if (result.type === "success") {
-      const { uri } = result;
-      setVideoUri(uri);
-      const videoMessage: IMessage = {
-        _id: Math.round(Math.random() * 1000000),
-        video: uri,
-        createdAt: new Date(),
-        user: {
-          _id: 1,
-          name: "hau",
-        },
-        text: "",
-      };
+  // const handleVideoUpload = async () => {
+  //   const result = await DocumentPicker.getDocumentAsync({
+  //     type: "video/*",
+  //   });
+  //   if (result.type === "success") {
+  //     const { uri } = result;
+  //     setVideoUri(uri);
+  //     const videoMessage: IMessage = {
+  //       _id: Math.round(Math.random() * 1000000),
+  //       video: uri,
+  //       createdAt: new Date(),
+  //       user: {
+  //         _id: 1,
+  //         name: "hau",
+  //       },
+  //       text: "",
+  //     };
 
-      handleSend([videoMessage]);
-    }
-  };
+  //     handleSend([videoMessage]);
+  //   }
+  // };
   // const handleScroll = (event: any) => {
   //   const step=0
   //   const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
@@ -315,9 +348,10 @@ export const Index: React.FC<{}> = () => {
       style={[
         global_styles.wrapper,
         global_styles.ColumnCenter,
-        { backgroundColor: "#5A544A" },
+        { backgroundColor: "#5A544A", paddingTop: 50 },
       ]}
     >
+      {status && <Loading />}
       <View style={global_styles.rowCenter}>
         <Ionicons
           onPress={() => {
@@ -329,17 +363,9 @@ export const Index: React.FC<{}> = () => {
         />
         <View style={styles.info}>
           <Avatar user={friendShip.user} size={{ width: 50, height: 50 }} />
-          <Text style={styles.name}>{auth.user.nickName}</Text>
+          <Text style={styles.name}>{auth.user.fullName}</Text>
         </View>
-        <View style={styles.row_center}>
-          <Ionicons
-            style={{ marginRight: 15 }}
-            name="call-outline"
-            size={20}
-            color={fontColor}
-          />
-          <Ionicons name="videocam-outline" size={20} color={fontColor} />
-        </View>
+        <View style={styles.row_center}></View>
       </View>
       <KeyboardAvoidingView
         style={[global_styles.wrapper, { flex: 1 }]}
@@ -399,7 +425,13 @@ export const Index: React.FC<{}> = () => {
               placeholder="Type your message..."
               value={inputValue}
               onChangeText={(text) => setInputValue(text)}
-              underlineColorAndroid="transparent"
+              underlineColorAndroid="red"
+              keyboardAppearance="light"
+              theme={{
+                colors: {
+                  primary: "transparent",
+                },
+              }}
             />
             {inputValue && (
               <TouchableOpacity
@@ -417,7 +449,7 @@ export const Index: React.FC<{}> = () => {
                 <Ionicons
                   name="send"
                   size={20}
-                  color={fontColor}
+                  color="#0084ff"
                   style={{ marginLeft: 1, opacity: 0.6 }}
                 />
               </TouchableOpacity>
@@ -427,25 +459,40 @@ export const Index: React.FC<{}> = () => {
         <View
           style={[
             global_styles.rowCenter,
-            { marginTop: 10, backgroundColor: itemColor },
+            { marginTop: 10, backgroundColor: itemColor, position: "relative" },
           ]}
         >
-          {images.map((item: string, index) => {
-            return (
-              <Image
-                key={index}
-                source={{
-                  uri: item,
-                }}
-                style={{
-                  borderRadius: 20,
-                  width: 50,
-                  height: 50,
-                  marginRight: 10,
-                }}
-              ></Image>
-            );
-          })}
+          {images.length > 0 &&
+            images.map((item: string, index) => {
+              return (
+                <Image
+                  key={index}
+                  source={{
+                    uri: item,
+                  }}
+                  style={{
+                    borderRadius: 20,
+                    width: 50,
+                    height: 50,
+                    marginRight: 10,
+                  }}
+                ></Image>
+              );
+            })}
+          {images.length > 0 && (
+            <TouchableOpacity
+              style={{ position: "absolute", top: 0, right: 0 }}
+              onPress={() => {
+                setImages([]);
+              }}
+            >
+              <Ionicons
+                name="close-circle-outline"
+                size={20}
+                color={fontColor}
+              />
+            </TouchableOpacity>
+          )}
         </View>
       </KeyboardAvoidingView>
     </View>

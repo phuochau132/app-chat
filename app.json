@@ -22,13 +22,25 @@
         "backgroundColor": "#ffffff",
         "softwareKeyboardLayoutMode": "pan"
       },
-      "permissions": ["INTERNET", "NOTIFICATIONS"]
+      "permissions": [
+        "INTERNET",
+        "NOTIFICATIONS",
+        "SEND_SMS",
+        "READ_SMS",
+        "RECEIVE_SMS"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "HOST_SERVER": "https://bc5e-14-169-197-253.ngrok-free.app"
-    }
+      "HOST_SERVER": "https://fc96-2001-ee0-f1b9-1ca0-8c36-1a3d-b063-b8c8.ngrok-free.app",
+      "VITE_CLOUD_NAME": "dvgjegefi",
+      "VITE_UPLOAD_PRESET": "shoes_commerce",
+      "eas": {
+        "projectId": "d70f4566-cd44-4b07-9053-61d3d60d8732"
+      }
+    },
+    "owner": "riven123"
   }
 }

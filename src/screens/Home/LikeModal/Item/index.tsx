@@ -1,9 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Image } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { fontColor, itemColor } from "../../../../../style";
@@ -56,7 +51,7 @@ const styles = StyleSheet.create({
 });
 
 const Item: React.FC<{ item: any }> = ({ item }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   return (
     <TouchableOpacity
       onPress={() =>
@@ -70,7 +65,7 @@ const Item: React.FC<{ item: any }> = ({ item }) => {
       <View>
         <Image
           source={{
-            uri: Constants.manifest.extra.HOST_SERVER + item.avatar,
+            uri: item.avatar,
           }}
           style={styles.img}
         >
@@ -83,7 +78,6 @@ const Item: React.FC<{ item: any }> = ({ item }) => {
           {item.nickName}
         </Text>
       </View>
-      <Text style={styles.status}>now </Text>
     </TouchableOpacity>
   );
 };

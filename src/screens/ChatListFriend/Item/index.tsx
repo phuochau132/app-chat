@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
 });
 
 const Item: React.FC<{ item: any }> = ({ item }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const statusUser = useSelector((state: any) => {
     return state.user.statusUser;
   });
@@ -67,7 +67,7 @@ const Item: React.FC<{ item: any }> = ({ item }) => {
         <Avatar user={item.user} size={{ width: 50, height: 50 }} />
       </View>
       <View style={styles.info}>
-        <Text style={styles.name}>{item.user.nickName} </Text>
+        <Text style={styles.name}>{item.user.fullName} </Text>
         <Text
           numberOfLines={1}
           ellipsizeMode="tail"

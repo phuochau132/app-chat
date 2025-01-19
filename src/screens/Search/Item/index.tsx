@@ -56,8 +56,6 @@ const styles = StyleSheet.create({
 });
 
 const Item: React.FC<{ item: any; onPress: any }> = ({ item, onPress }) => {
-  const navigation = useNavigation();
-  const dispatch = useDispatch();
   const statusUser = useSelector((state: any) => {
     return state.user.statusUser;
   });

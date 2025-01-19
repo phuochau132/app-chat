@@ -7,7 +7,7 @@ import Constants from "expo-constants";
 import { fontColor, global_styles, itemColor } from "../../../../style";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { dislikePost, likePost } from "../../../redux/slice/postSlice";
+import { delPost, dislikePost, likePost } from "../../../redux/slice/postSlice";
 import Avatar from "../../../Component/Avatar";
 
 const styles = StyleSheet.create({
@@ -25,11 +25,9 @@ const Item: React.FC<{
   item: any;
   eventOnCommentModal: any;
 }> = ({ item, eventOnLikesModal, eventOnCommentModal }) => {
-  const [listImg, setListImg] = useState(item.imgPosts);
-  const [comment, setListComment] = useState(item.comments);
+  const listImg = item.imgPosts || [];
   const [index, setIndex] = useState(1);
   const user = useSelector((state: any) => state.auth.user);
-
   const dispatch = useDispatch();
   const getLengthWidth = () => {
     if (listImg.length == 1) {
@@ -46,10 +44,16 @@ const Item: React.FC<{
     }
   };
   const handleLike = () => {
-    dispatch(likePost({ postId: item.id, userId: user.id }));
+    if (user) dispatch(likePost({ postId: item.id, userId: user.id }));
   };
   const handleDisLike = () => {
-    dispatch(dislikePost({ postId: item.id, userId: user.id }));
+    if (user) dispatch(dislikePost({ postId: item.id, userId: user.id }));
+  };
+
+  const handleDelPost = () => {
+    if (user) {
+      dispatch(delPost(item.id));
+    }
   };
 
   const toggleIndex = (index: Number) => [setIndex(Number)];
@@ -79,7 +83,7 @@ const Item: React.FC<{
           ]}
         >
           <Text style={{ fontWeight: "bold", fontSize: 16, color: fontColor }}>
-            {item.user.nickName}
+            {item.user.fullName}
           </Text>
           <Text style={{ opacity: 0.6, fontSize: 12, color: fontColor }}>
             {moment(item.createdAt).fromNow()}
@@ -129,7 +133,7 @@ const Item: React.FC<{
                       toggleIndex(index);
                     }}
                     source={{
-                      uri: Constants.manifest.extra.HOST_SERVER + item.urlImg,
+                      uri: Constants.manifest?.extra?.HOST_SERVER + item.urlImg,
                     }}
                     style={{
                       borderRadius: 10,
@@ -159,7 +163,7 @@ const Item: React.FC<{
                       toggleIndex(index);
                     }}
                     source={{
-                      uri: item,
+                      uri: Constants.manifest?.extra?.HOST_SERVER + item.urlImg,
                     }}
                     style={{
                       borderRadius: 10,
@@ -195,7 +199,7 @@ const Item: React.FC<{
       >
         <View style={[global_styles.rowCenter]}>
           <View style={[global_styles.rowCenter, { marginRight: 20 }]}>
-            {item.likedUsers.some((e: any) => e.id === user.id) ? (
+            {user && item.likedUsers.some((e: any) => e.id === user.id) ? (
               <Ionicons
                 onPress={handleDisLike}
                 style={[styles.icon, { color: "#f84f6b" }]}
@@ -211,7 +215,7 @@ const Item: React.FC<{
             <View>
               <TouchableOpacity
                 onPress={() => {
-                  eventOnLikesModal(item.id);
+                  user && eventOnLikesModal(item.id);
                 }}
               >
                 <Text style={[global_styles.text, { marginLeft: 10 }]}>
@@ -224,16 +228,20 @@ const Item: React.FC<{
             <Ionicons name="chatbubble-ellipses-outline" style={styles.icon} />
             <TouchableOpacity
               onPress={() => {
-                eventOnCommentModal(item.id);
+                item && eventOnCommentModal(item.id);
               }}
             >
               <Text style={[global_styles.text, { marginLeft: 10 }]}>
-                {comment.length}
+                {item.comments.length && item.comments.length}
               </Text>
             </TouchableOpacity>
           </View>
         </View>
-        <Ionicons name="return-up-forward" style={styles.icon} />
+        {user && user.id == item.user.id && (
+          <TouchableOpacity onPress={handleDelPost}>
+            <Ionicons name="remove-circle" style={styles.icon} />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

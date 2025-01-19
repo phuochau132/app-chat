@@ -37,36 +37,5 @@ const sendPushNotification = createAsyncThunk(
     }
   }
 );
-const getFriends: any = createAsyncThunk(
-  "user/getFriends",
-  async (idUser: number) => {
-    try {
-      const response = await axiosInstance.get(
-        `api/friends/getFriends/${idUser}`
-      );
-      console.log(response.data);
 
-      return {
-        type: 1,
-        data: response.data,
-      };
-    } catch (error) {
-      return {
-        type: 0,
-      };
-    }
-  }
-);
-const getPostsByUser: any = async (id: number) => {
-  try {
-    const response = await axiosInstance.get(`api/posts/user/${id}`);
-    return {
-      type: 1,
-      data: response.data,
-    };
-  } catch (error) {
-    throw error;
-  }
-};
-
-export { sendPushNotification, getFriends, getPostsByUser };
+export { sendPushNotification };

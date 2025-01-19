@@ -1,13 +1,6 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Image, Text } from "react-native-elements";
-import {
-  backgroundColor,
-  fontColor,
-  global_styles,
-  itemColor,
-} from "../../../../style";
+import { global_styles, itemColor } from "../../../../style";
 import Avatar from "../../../Component/Avatar";
 
 const styles = StyleSheet.create({
@@ -79,10 +72,10 @@ export const Bubble: React.FC<{ data: Object; isToMe: boolean }> = ({
             },
           ]}
         >
-          {data.image.map((item: string) => {
-            console.log(item);
+          {data.image?.map((item: string, index: number) => {
             return (
               <Image
+                key={index}
                 source={{
                   uri: item,
                 }}

@@ -7,10 +7,6 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { Linking } from "react-native";
 import * as Notifications from "expo-notifications";
-import { StyleSheet } from "react-native";
-import BackgroundTimer from "react-native-background-timer";
-import { AppState } from "react-native";
-const styles = StyleSheet.create({});
 
 const App: React.FC = () => {
   return (

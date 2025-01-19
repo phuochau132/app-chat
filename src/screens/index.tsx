@@ -7,3 +7,4 @@ export { default as Chat } from "./Chat";
 export { default as Search } from "./Search";
 export { default as EditProfile } from "./EditProfile";
 export { default as RequestAddFriend } from "./RequestAddFriend";
+export { default as ForgotPassword } from "./ForgotPassword";

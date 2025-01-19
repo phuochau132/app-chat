@@ -35,7 +35,11 @@ const Item: React.FC<{ item: any }> = ({ item }) => {
   const user = item.user;
   const handleRequest = (action: number) => {
     if (!action) {
-      dispatch(acceptRequestAF(item.id));
+      dispatch(
+        acceptRequestAF({
+          friend: item,
+        })
+      );
     } else {
       dispatch(delRequestAF(item.id));
     }
@@ -64,7 +68,7 @@ const Item: React.FC<{ item: any }> = ({ item }) => {
       <View>
         <Image
           source={{
-            uri: Constants.manifest.extra.HOST_SERVER + user.avatar,
+            uri: user.avatar,
           }}
           style={styles.img}
         >
@@ -94,9 +98,7 @@ const Item: React.FC<{ item: any }> = ({ item }) => {
             }}
             style={[styles.btn, { backgroundColor: blueColor }]}
           >
-            <Text
-              style={[global_styles.text, styles.text, { color: blueColor }]}
-            >
+            <Text style={[global_styles.text, styles.text, { color: "white" }]}>
               Chấp Nhận
             </Text>
           </TouchableOpacity>

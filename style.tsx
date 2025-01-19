@@ -45,6 +45,12 @@ export const global_styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
+  rowStart: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
   ColumnCenter: {
     display: "flex",
     alignItems: "center",
